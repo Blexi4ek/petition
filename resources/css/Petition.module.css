@@ -1,0 +1,41 @@
+.optionsBox {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+}
+
+.item {
+    margin: 5px;
+    padding: 5px;
+  }
+.active {
+    border: solid 1px black;
+    border-radius: 70px;
+}
+  
+.pagination {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    height: 60px;
+    justify-content: center;
+    list-style-type: none;
+    position: relative;
+    width: 1000px;
+}
+
+.multiSelect {
+    background-color: white;
+    border: 1px black solid;
+    text-align: center;
+    align-items: center;
+    padding: 10px;
+    width: 300px;
+}
+
+.multiSelectItem {
+    margin-bottom: 5px;
+    padding-left: 10px;
+}
+    
+

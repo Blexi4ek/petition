@@ -13,10 +13,7 @@ class PetitionController extends Controller
 {
     public function indexAll() {
         $results = Petition::where([])
-        ->select(['petitions.*', 'users.name as userName'])
-        
-        
-        ->join('users', 'users.id', '=', 'petitions.created_by')
+
         ->limit(10)->offset(0)->get()->all();
 
         $totalCount = Petition::where([])->get()->all();
@@ -46,11 +43,18 @@ class PetitionController extends Controller
             'data' => '$signs']);
     }
 
-    public function index()
+    
+    public function index(PetitionController $request)
     {
-        $petitions = Petition::paginate(10);
-        return response()-> json([
-            'status' => Response::HTTP_OK,
-            'data' => $petitions]);
+        $query = Petition::query();
+        
+      //  $filtered = $query->where(['status' => $request->selectedStatus[]]);
+
+        $petitions = Petition::select(['petitions.*', 'users.name as userName'])
+        ->join('users', 'users.id', '=', 'petitions.created_by')
+        ->paginate(10);
+        return response()-> json($petitions);
     }
+
+
 }

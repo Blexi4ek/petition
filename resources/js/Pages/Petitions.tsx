@@ -6,7 +6,8 @@ import axios from 'axios';
 import { PetitionItem } from '@/Components/PetitionItem';
 import { MultiSelect } from 'primereact/multiselect';
 import ReactPaginate from 'react-paginate';
-import stylePagination from '../../css/Pagination.module.css'
+import style from '../../css/Petition.module.css'
+import optionsStatus from '../consts/petitionOptionsStatus'
 
 
 export default function Petitions({ auth }: PageProps) {
@@ -21,22 +22,31 @@ export default function Petitions({ auth }: PageProps) {
     const [selectedSort, setSelectedSort] = useState('1')
     const [page, setPage] = useState(1)
     const [totalPages, setTotalPages] = useState(0)
-    const info = usePage()
+
+    const [selectedStatus, setSelectedStatus] = useState([20, 30, 50, 60, 80])
+
+
 
     useEffect(()=> {
         if (queryPage) setPage(Number(queryPage))
+        if (queryParams.getAll('status[0]')) {
+            let queryStatus:number[] = []
+            queryParams.forEach((value, key) => {
+                if (key.includes('status')) queryStatus.push(Number(value))
+            })
+            console.log(queryStatus)
+            setSelectedStatus(queryStatus)
+        }
     },[])
 
     useEffect(()=> {
-        const fetchPetitions = async () => {
-
-            
-            const result = await axios(`/api/v1/petitions`, {params: {
-                page
+        const fetchPetitions = async () => {   
+            const {data: response} = await axios(`/api/v1/petitions`, {params: {
+                page, selectedStatus
             }});
-            console.log(queryPage)
-            setTotalPages(result.data.data.last_page)
-            setPetitions(result.data.data.data)
+            setTotalPages(response.last_page)
+            setPetitions(response.data)
+
 
         }
         fetchPetitions()
@@ -53,20 +63,27 @@ export default function Petitions({ auth }: PageProps) {
         //     setPetitionsAll(resultSigned.data.data);
         //     }
         // fetchData()
-    }, [page, selectedSort])
+    }, [page])
 
 
         const selectSort = (e: React.ChangeEvent<HTMLSelectElement>) => {
             setSelectedSort(e.target.value)
+            
         }
         
+        const refreshPage = (page: number, status: number[]) => {
+            router.get('petitions', {page, status}, {preserveState: true, preserveScroll: true})  
+        }
 
-        const handlePageClick = (e : any) => {
-                
+        const handlePageClick = (e : any) => {   
             setPage(e.selected+1)
-            router.get('petitions', {page: e.selected+1}, {preserveState: true, preserveScroll: true})
-                
-            
+            refreshPage(e.selected+1, selectedStatus)  
+        }
+
+        const handleStatusChange = (e: any) => {        
+            setSelectedStatus(e.value)
+            setPage(1)
+            refreshPage(1, e.value)  
         }
 
         const clickCheck = async () => {
@@ -82,7 +99,8 @@ export default function Petitions({ auth }: PageProps) {
         >
             <Head title="Petitions" />
 
-            <button onClick={()=> clickCheck()}>
+            <div className={style.optionsBox}>
+                <button onClick={()=> clickCheck()}>
                 console check
             </button>
 
@@ -91,6 +109,12 @@ export default function Petitions({ auth }: PageProps) {
                 <option value="2">My</option>
                 <option value="3">Signed</option>
             </select>
+
+            <MultiSelect value={selectedStatus} options={optionsStatus} optionLabel="label" onChange={(e) => handleStatusChange(e)} fixedPlaceholder={true} 
+            placeholder="Select Status" maxSelectedLabels={3} className={style.multiSelect} panelClassName={style.multiSelect} itemClassName={style.multiSelectItem} />
+            </div>
+
+            
 
             {petitions.map((item) => <PetitionItem index={item.id} name={item.name} author={item.created_by} created_at={12} updated_at={42} key={item.id} userName={item.userName}/>)}
 
@@ -118,9 +142,9 @@ export default function Petitions({ auth }: PageProps) {
                     pageCount={totalPages || 100}
                     previousLabel="< "
                     renderOnZeroPageCount={null}
-                    containerClassName={stylePagination.pagination}
-                    pageClassName={stylePagination.item}
-                    activeClassName={stylePagination.active}
+                    containerClassName={style.pagination}
+                    pageClassName={style.item}
+                    activeClassName={style.active}
                     forcePage={(page || 1) - 1}
                 />
             </div>
