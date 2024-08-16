@@ -11,6 +11,9 @@ import stylePagination from '../../css/Pagination.module.css'
 
 export default function Petitions({ auth }: PageProps) {
 
+    const queryParams = new URLSearchParams(window.location.search)
+    const queryPage = queryParams.get('page')
+
     const [petitions, setPetitions] = useState<IPetition[]>([])
     const [petitionsAll, setPetitionsAll] = useState<IPetition[]>([])
     const [petitionsMy, setPetitionsMy] = useState<IPetition[]>([])
@@ -21,10 +24,17 @@ export default function Petitions({ auth }: PageProps) {
     const info = usePage()
 
     useEffect(()=> {
+        if (queryPage) setPage(Number(queryPage))
+    },[])
+
+    useEffect(()=> {
         const fetchPetitions = async () => {
 
-            const result = await axios(`/api/v1/petitions?page=${page}`);
-            console.log(result)
+            
+            const result = await axios(`/api/v1/petitions`, {params: {
+                page
+            }});
+            console.log(queryPage)
             setTotalPages(result.data.data.last_page)
             setPetitions(result.data.data.data)
 
@@ -53,10 +63,9 @@ export default function Petitions({ auth }: PageProps) {
 
         const handlePageClick = (e : any) => {
                 
-                setPage(e.selected+1)
-                // router.get('petitions', {page: e.selected+1}, {preserveState: true})
-
-
+            setPage(e.selected+1)
+            router.get('petitions', {page: e.selected+1}, {preserveState: true, preserveScroll: true})
+                
             
         }
 
@@ -106,12 +115,13 @@ export default function Petitions({ auth }: PageProps) {
                     nextLabel=" >"
                     onPageChange={handlePageClick}
                     pageRangeDisplayed={5}
-                    pageCount={totalPages}
+                    pageCount={totalPages || 100}
                     previousLabel="< "
                     renderOnZeroPageCount={null}
                     containerClassName={stylePagination.pagination}
                     pageClassName={stylePagination.item}
                     activeClassName={stylePagination.active}
+                    forcePage={(page || 1) - 1}
                 />
             </div>
             
