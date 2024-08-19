@@ -16,3 +16,47 @@
     --tw-text-opacity: 1;
     color: rgb(17 24 39 / var(--tw-text-opacity))
 }
+
+.petitionInnerBox {
+    display: flex;
+    align-items: center;
+}
+
+.black {
+    background-color: black;
+    color: white;
+    border-radius: 15px;
+    padding: 1px 7px;
+    text-align: center;
+}
+
+.yellow{
+    background-color: yellow;
+    border-radius: 15px;
+    padding: 1px 7px;
+    text-align: center;
+}
+
+.blue{
+    background-color: blue;
+    color: white;
+    border-radius: 15px;
+    padding: 1px 7px;
+    text-align: center;
+}
+
+.red{
+    background-color: red;
+    color: white;
+    border-radius: 15px;
+    padding: 1px 7px;
+    text-align: center;
+}
+
+.green{
+    background-color: green;
+    color: white;
+    border-radius: 15px;
+    padding: 1px 7px;
+    text-align: center;
+}

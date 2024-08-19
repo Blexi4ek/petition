@@ -171,7 +171,8 @@ export default function Petitions({ auth }: PageProps) {
 
             
 
-            {petitions.map((item, index) => <PetitionItem index={(index+2)+(10*(page-1))} name={item.name} author={item.created_by} created_at={item.created_at} updated_at={42} key={item.id} userName={item.userName}/>)}
+            {petitions.map((item, index) => <PetitionItem index={(index+2)+(10*(page-1))} name={item.name} author={item.created_by} created_at={item.created_at} updated_at={42}
+             key={item.id} userName={item.userName} status={item.status}/>)}
 
             {/* { selectedSort === '1' ? 
                 petitionsAll.map((item, index) => <PetitionItem index={index} name={item.name} author={item.created_by} created_at={12} updated_at={42} key={item.id} userName={item.userName}  />)
