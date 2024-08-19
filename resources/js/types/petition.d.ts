@@ -3,7 +3,7 @@ interface IPetition {
     created_by: number;
     moderated_by: number;
     answered_by: number;
-    title: string;
+    name: string;
     description: string;
     status: number;
     created_at: Date;

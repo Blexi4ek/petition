@@ -25,6 +25,7 @@ export default function Petitions({ auth }: PageProps) {
     const [totalPages, setTotalPages] = useState(0)
     const [refresh, setRefresh] = useState(false)
     const [inputTitle, setInputTitle] = useState('')
+    const [inputDateFrom, setInputDateFrom] = useState()
 
     const [selectedStatus, setSelectedStatus] = useState([2, 3, 5, 6, 8])
 
@@ -37,7 +38,6 @@ export default function Petitions({ auth }: PageProps) {
             queryParams.forEach((value, key) => {
                 if (key.includes('status')) queryStatus.push(Number(value))
             })
-            console.log(queryStatus)
             setSelectedStatus(queryStatus)
         }
         if (queryTitle) { 
@@ -114,27 +114,36 @@ export default function Petitions({ auth }: PageProps) {
         >
             <Head title="Petitions" />
 
-            <div className={style.optionsBox}>
-                <button onClick={()=> clickCheck()}>
+            <button onClick={()=> clickCheck()}>
                 console check
             </button>
 
-            <select name="selectedSort" defaultValue={'1'} onChange={e => selectSort(e)}>
-                <option value="1">All</option>
-                <option value="2">My</option>
-                <option value="3">Signed</option>
-            </select>
+            <div className={style.optionsBox}>
+                
 
-            <MultiSelect value={selectedStatus} options={optionsStatus} optionLabel="label" onChange={(e) => handleStatusChange(e)} fixedPlaceholder={true} 
+                <select name="selectedSort" defaultValue={'1'} onChange={e => selectSort(e)}>
+                    <option value="1">All</option>
+                    <option value="2">My</option>
+                    <option value="3">Signed</option>
+                </select>
+
+                <MultiSelect value={selectedStatus} options={optionsStatus} optionLabel="label" onChange={(e) => handleStatusChange(e)} fixedPlaceholder={true} 
             placeholder="Select Status" maxSelectedLabels={3} className={style.multiSelect} panelClassName={style.multiSelect} itemClassName={style.multiSelectItem} />
            
-           <input value={inputTitle} onChange={e => handleInputTitleChange(e)} placeholder='Search by title'/>
+                <input value={inputTitle} onChange={e => handleInputTitleChange(e)} placeholder='Search by name'/>
            
+                <div>
+                    Choose date from {' '}
+                    <input type='date'/>
+                    {' to '}
+                    <input type='date'/>
+                </div>
+                
             </div>
 
+            
 
-
-            {petitions.map((item, index) => <PetitionItem index={(index+2)+(10*(page-1))} name={item.title} author={item.created_by} created_at={12} updated_at={42} key={item.id} userName={item.userName}/>)}
+            {petitions.map((item, index) => <PetitionItem index={(index+2)+(10*(page-1))} name={item.name} author={item.created_by} created_at={12} updated_at={42} key={item.id} userName={item.userName}/>)}
 
             {/* { selectedSort === '1' ? 
                 petitionsAll.map((item, index) => <PetitionItem index={index} name={item.name} author={item.created_by} created_at={12} updated_at={42} key={item.id} userName={item.userName}  />)

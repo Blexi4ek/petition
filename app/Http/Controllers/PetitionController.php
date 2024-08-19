@@ -41,11 +41,11 @@ class PetitionController extends Controller
         }
 
         if (!empty($request->get('inputTitle'))) {
-            $query->where('title', 'like', "%{$request->get('inputTitle')}%");
+            $query->where('petitions.name', 'like', "%{$request->get('inputTitle')}%");
         }
 
 
-        $petitions = $query->paginate(10);
+        $petitions = $query->paginate(10);  
         
 
 
