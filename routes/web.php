@@ -37,7 +37,7 @@ Route::post('/petitions', function ($page) {
     return Inertia::render('Petitions', compact('page'));
  });
 
-Route::get('/api/v1/petitions/all', [PetitionController::class,'indexAll'])->name('petition.list.all');
+
 Route::get('/api/v1/petitions/my', [PetitionController::class,'indexMy'])->name('petition.list.my');
 Route::get('/api/v1/petitions/signed', [PetitionController::class,'indexSigned'])->name('petition.list.signed');
 Route::get('/api/v1/petitions', [PetitionController::class,'index'])->name('petition.list');

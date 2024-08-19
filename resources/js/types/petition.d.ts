@@ -1,10 +1,9 @@
-interface IPetition {
-        
+interface IPetition {      
     id: number;
     created_by: number;
     moderated_by: number;
     answered_by: number;
-    name: string;
+    title: string;
     description: string;
     status: number;
     created_at: Date;
@@ -17,5 +16,5 @@ interface IPetition {
     answering_started_at: Date;
     answered_at: Date;
     userName: string;
-
 }
+

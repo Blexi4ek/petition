@@ -8,23 +8,11 @@ use App\Models\User;
 use Auth;
 use Illuminate\Http\Response;
 use Inertia\Inertia;
+use Illuminate\Http\Request;
 
 class PetitionController extends Controller 
 {
-    public function indexAll() {
-        $results = Petition::where([])
-
-        ->limit(10)->offset(0)->get()->all();
-
-        $totalCount = Petition::where([])->get()->all();
-
-        return response()-> json([
-            'status' => Response::HTTP_OK,
-            'data' => $results,
-            'count' => ceil(count($totalCount)/10)
-        ]);
-    }
-    public function indexMy() {
+    public function my() {
         $results = Petition::where(['created_by' => Auth::id()])
         ->select(['petitions.*', 'users.name as userName'])
         ->join('users', 'users.id', '=', 'petitions.created_by')
@@ -35,7 +23,7 @@ class PetitionController extends Controller
             'status' => Response::HTTP_OK,
             'data' => $results]);
     }
-    public function indexSigned() {
+    public function signed() {
         $user_id = 1; //to change
         //$user = User::query()->with(['signedPetitions'])->where('id', $user_id)->first();
         return response()-> json([
@@ -44,15 +32,23 @@ class PetitionController extends Controller
     }
 
     
-    public function index(PetitionController $request)
-    {
-        $query = Petition::query();
-        
-      //  $filtered = $query->where(['status' => $request->selectedStatus[]]);
+    public function index(Request $request)
+    { 
+        $query = Petition::select(['petitions.*', 'users.name as userName'])->join('users', 'users.id', '=', 'petitions.created_by');
+       
+        if (!empty($request->get('selectedStatus'))) {
+            $query->whereIn('status', $request->get('selectedStatus'));
+        }
 
-        $petitions = Petition::select(['petitions.*', 'users.name as userName'])
-        ->join('users', 'users.id', '=', 'petitions.created_by')
-        ->paginate(10);
+        if (!empty($request->get('inputTitle'))) {
+            $query->where('title', 'like', "%{$request->get('inputTitle')}%");
+        }
+
+
+        $petitions = $query->paginate(10);
+        
+
+
         return response()-> json($petitions);
     }
 

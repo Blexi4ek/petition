@@ -1,9 +1,9 @@
 const optionsStatus = [
-    { label: "Unmoderated", value: 20 },
-    { label: "Active", value: 30 },
-    { label: "Supported", value: 50 },
-    { label: "Unsupported", value: 60 },
-    { label: "Answered", value: 80 },
+    { label: "Unmoderated", value: 2 },
+    { label: "Active", value: 3 },
+    { label: "Supported", value: 5 },
+    { label: "Unsupported", value: 6 },
+    { label: "Answered", value: 8 },
     
     ]
 

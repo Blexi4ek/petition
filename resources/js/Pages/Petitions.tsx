@@ -4,7 +4,7 @@ import { PageProps } from '@/types';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { PetitionItem } from '@/Components/PetitionItem';
-import { MultiSelect } from 'primereact/multiselect';
+import { MultiSelect, MultiSelectChangeEvent } from 'primereact/multiselect';
 import ReactPaginate from 'react-paginate';
 import style from '../../css/Petition.module.css'
 import optionsStatus from '../consts/petitionOptionsStatus'
@@ -14,6 +14,7 @@ export default function Petitions({ auth }: PageProps) {
 
     const queryParams = new URLSearchParams(window.location.search)
     const queryPage = queryParams.get('page')
+    const queryTitle = queryParams.get('title')
 
     const [petitions, setPetitions] = useState<IPetition[]>([])
     const [petitionsAll, setPetitionsAll] = useState<IPetition[]>([])
@@ -22,8 +23,10 @@ export default function Petitions({ auth }: PageProps) {
     const [selectedSort, setSelectedSort] = useState('1')
     const [page, setPage] = useState(1)
     const [totalPages, setTotalPages] = useState(0)
+    const [refresh, setRefresh] = useState(false)
+    const [inputTitle, setInputTitle] = useState('')
 
-    const [selectedStatus, setSelectedStatus] = useState([20, 30, 50, 60, 80])
+    const [selectedStatus, setSelectedStatus] = useState([2, 3, 5, 6, 8])
 
 
 
@@ -37,12 +40,16 @@ export default function Petitions({ auth }: PageProps) {
             console.log(queryStatus)
             setSelectedStatus(queryStatus)
         }
+        if (queryTitle) { 
+            setInputTitle(queryTitle)
+        }
+        setRefresh(!refresh)
     },[])
 
     useEffect(()=> {
         const fetchPetitions = async () => {   
             const {data: response} = await axios(`/api/v1/petitions`, {params: {
-                page, selectedStatus
+                page, selectedStatus, inputTitle
             }});
             setTotalPages(response.last_page)
             setPetitions(response.data)
@@ -63,7 +70,7 @@ export default function Petitions({ auth }: PageProps) {
         //     setPetitionsAll(resultSigned.data.data);
         //     }
         // fetchData()
-    }, [page])
+    }, [page,refresh])
 
 
         const selectSort = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -71,8 +78,8 @@ export default function Petitions({ auth }: PageProps) {
             
         }
         
-        const refreshPage = (page: number, status: number[]) => {
-            router.get('petitions', {page, status}, {preserveState: true, preserveScroll: true})  
+        const refreshPage = (page: number, status: number[], title: string = inputTitle) => {
+            router.get('petitions', {page, status, title}, {preserveState: true, preserveScroll: true})  
         }
 
         const handlePageClick = (e : any) => {   
@@ -80,10 +87,18 @@ export default function Petitions({ auth }: PageProps) {
             refreshPage(e.selected+1, selectedStatus)  
         }
 
-        const handleStatusChange = (e: any) => {        
+        const handleStatusChange = (e: MultiSelectChangeEvent) => {        
             setSelectedStatus(e.value)
+            if (page === 1) setRefresh(!refresh) 
             setPage(1)
             refreshPage(1, e.value)  
+        }
+
+        const handleInputTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+            setInputTitle(e.target.value)
+            if (page === 1) setRefresh(!refresh) 
+            setPage(1)
+            refreshPage(1, selectedStatus, e.target.value)  
         }
 
         const clickCheck = async () => {
@@ -112,11 +127,14 @@ export default function Petitions({ auth }: PageProps) {
 
             <MultiSelect value={selectedStatus} options={optionsStatus} optionLabel="label" onChange={(e) => handleStatusChange(e)} fixedPlaceholder={true} 
             placeholder="Select Status" maxSelectedLabels={3} className={style.multiSelect} panelClassName={style.multiSelect} itemClassName={style.multiSelectItem} />
+           
+           <input value={inputTitle} onChange={e => handleInputTitleChange(e)} placeholder='Search by title'/>
+           
             </div>
 
-            
 
-            {petitions.map((item) => <PetitionItem index={item.id} name={item.name} author={item.created_by} created_at={12} updated_at={42} key={item.id} userName={item.userName}/>)}
+
+            {petitions.map((item, index) => <PetitionItem index={(index+2)+(10*(page-1))} name={item.title} author={item.created_by} created_at={12} updated_at={42} key={item.id} userName={item.userName}/>)}
 
             {/* { selectedSort === '1' ? 
                 petitionsAll.map((item, index) => <PetitionItem index={index} name={item.name} author={item.created_by} created_at={12} updated_at={42} key={item.id} userName={item.userName}  />)
@@ -139,7 +157,7 @@ export default function Petitions({ auth }: PageProps) {
                     nextLabel=" >"
                     onPageChange={handlePageClick}
                     pageRangeDisplayed={5}
-                    pageCount={totalPages || 100}
+                    pageCount={totalPages || 1}
                     previousLabel="< "
                     renderOnZeroPageCount={null}
                     containerClassName={style.pagination}
