@@ -15,6 +15,8 @@ export default function Petitions({ auth }: PageProps) {
     const queryParams = new URLSearchParams(window.location.search)
     const queryPage = queryParams.get('page')
     const queryTitle = queryParams.get('title')
+    const queryCreatedFrom = queryParams.get('createdFrom')
+    const queryCreatedTo = queryParams.get('createdTo')
 
     const [petitions, setPetitions] = useState<IPetition[]>([])
     const [petitionsAll, setPetitionsAll] = useState<IPetition[]>([])
@@ -24,8 +26,9 @@ export default function Petitions({ auth }: PageProps) {
     const [page, setPage] = useState(1)
     const [totalPages, setTotalPages] = useState(0)
     const [refresh, setRefresh] = useState(false)
-    const [inputTitle, setInputTitle] = useState('')
-    const [inputDateFrom, setInputDateFrom] = useState()
+    const [inputPetitionQ, setinputPetitionQ] = useState('')
+    const [inputPetitionCreatedFrom, setinputPetitionCreatedFrom] = useState('')
+    const [inputPetitionCreatedTo, setinputPetitionCreatedTo] = useState('')
 
     const [selectedStatus, setSelectedStatus] = useState([2, 3, 5, 6, 8])
 
@@ -41,7 +44,13 @@ export default function Petitions({ auth }: PageProps) {
             setSelectedStatus(queryStatus)
         }
         if (queryTitle) { 
-            setInputTitle(queryTitle)
+            setinputPetitionQ(queryTitle)
+        }
+        if (queryCreatedFrom) { 
+            setinputPetitionCreatedFrom(queryCreatedFrom)
+        }
+        if (queryCreatedTo) { 
+            setinputPetitionCreatedTo(queryCreatedTo)
         }
         setRefresh(!refresh)
     },[])
@@ -49,7 +58,11 @@ export default function Petitions({ auth }: PageProps) {
     useEffect(()=> {
         const fetchPetitions = async () => {   
             const {data: response} = await axios(`/api/v1/petitions`, {params: {
-                page, selectedStatus, inputTitle
+                page, 
+                petitionStatus:selectedStatus, 
+                petitionQ:inputPetitionQ,
+                petitionCreatedAtFrom:inputPetitionCreatedFrom,
+                petitionCreatedAtTo: inputPetitionCreatedTo
             }});
             setTotalPages(response.last_page)
             setPetitions(response.data)
@@ -78,8 +91,10 @@ export default function Petitions({ auth }: PageProps) {
             
         }
         
-        const refreshPage = (page: number, status: number[], title: string = inputTitle) => {
-            router.get('petitions', {page, status, title}, {preserveState: true, preserveScroll: true})  
+        const refreshPage = (page: number, status: number[] = selectedStatus, title: string = inputPetitionQ, createdFrom: string = inputPetitionCreatedFrom,
+            createdTo: string = inputPetitionCreatedTo  
+        ) => {
+            router.get('petitions', {page, status, title, createdFrom, createdTo}, {preserveState: true, preserveScroll: true})  
         }
 
         const handlePageClick = (e : any) => {   
@@ -94,16 +109,29 @@ export default function Petitions({ auth }: PageProps) {
             refreshPage(1, e.value)  
         }
 
-        const handleInputTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-            setInputTitle(e.target.value)
+        const handleinputPetitionQChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+            setinputPetitionQ(e.target.value)
             if (page === 1) setRefresh(!refresh) 
             setPage(1)
             refreshPage(1, selectedStatus, e.target.value)  
         }
 
+        const handleDateFromChange = (e: any) => {
+            setinputPetitionCreatedFrom(e.target.value)
+            if (page === 1) setRefresh(!refresh) 
+            setPage(1)
+            refreshPage(1, selectedStatus, inputPetitionQ, e.target.value)  
+        }
+
+        const handleDateToChange = (e: any) => {
+            setinputPetitionCreatedTo(e.target.value)
+            if (page === 1) setRefresh(!refresh) 
+            setPage(1)
+            refreshPage(1, selectedStatus, inputPetitionQ, inputPetitionCreatedFrom,e.target.value)  
+        }
+
         const clickCheck = async () => {
-            const result = await axios(
-                '/api/v1/petitions',);
+            console.log(inputPetitionCreatedFrom)
         }
     
 
@@ -130,20 +158,20 @@ export default function Petitions({ auth }: PageProps) {
                 <MultiSelect value={selectedStatus} options={optionsStatus} optionLabel="label" onChange={(e) => handleStatusChange(e)} fixedPlaceholder={true} 
             placeholder="Select Status" maxSelectedLabels={3} className={style.multiSelect} panelClassName={style.multiSelect} itemClassName={style.multiSelectItem} />
            
-                <input value={inputTitle} onChange={e => handleInputTitleChange(e)} placeholder='Search by name'/>
+                <input value={inputPetitionQ} onChange={e => handleinputPetitionQChange(e)} placeholder='Search by name'/>
            
                 <div>
-                    Choose date from {' '}
-                    <input type='date'/>
+                    Created from {' '}
+                    <input type='datetime-local' value={inputPetitionCreatedFrom} onChange={e => handleDateFromChange(e)}/>
                     {' to '}
-                    <input type='date'/>
+                    <input type='datetime-local' value={inputPetitionCreatedTo} onChange={e => handleDateToChange(e)}/>
                 </div>
-                
+
             </div>
 
             
 
-            {petitions.map((item, index) => <PetitionItem index={(index+2)+(10*(page-1))} name={item.name} author={item.created_by} created_at={12} updated_at={42} key={item.id} userName={item.userName}/>)}
+            {petitions.map((item, index) => <PetitionItem index={(index+2)+(10*(page-1))} name={item.name} author={item.created_by} created_at={item.created_at} updated_at={42} key={item.id} userName={item.userName}/>)}
 
             {/* { selectedSort === '1' ? 
                 petitionsAll.map((item, index) => <PetitionItem index={index} name={item.name} author={item.created_by} created_at={12} updated_at={42} key={item.id} userName={item.userName}  />)

@@ -36,14 +36,28 @@ class PetitionController extends Controller
     { 
         $query = Petition::select(['petitions.*', 'users.name as userName'])->join('users', 'users.id', '=', 'petitions.created_by');
        
-        if (!empty($request->get('selectedStatus'))) {
-            $query->whereIn('status', $request->get('selectedStatus'));
+        if (!empty($request->get('petitionStatus'))) {
+            $query->whereIn('status', $request->get('petitionStatus'));
         }
 
-        if (!empty($request->get('inputTitle'))) {
-            $query->where('petitions.name', 'like', "%{$request->get('inputTitle')}%");
+        if (!empty($request->get('petitionQ'))) {
+#(
+            $query->where('petitions.name', 'like', "%{$request->get('petitionQ')}%");
+#OR
+           # $query->where('petitions.name', 'like', "%{$request->get('petition.q')}%");
+
+#)
+
+
         }
 
+        if (!empty($request->get('petitionCreatedAtFrom'))) {
+            $query->where('petitions.created_at',  '>=' , $request->get('petitionCreatedAtFrom'));
+        }
+
+        if (!empty($request->get('petitionCreatedAtTo'))) {
+            $query->where('petitions.created_at',  '<=' , $request->get('petitionCreatedAtTo'));
+        }
 
         $petitions = $query->paginate(10);  
         
