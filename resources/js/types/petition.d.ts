@@ -17,7 +17,6 @@ interface IPetition {
     answered_at: Date;
     userName: string;
 }
-
 interface IPetitionOptions {
     status?: number[];
     name?: string;
@@ -25,4 +24,6 @@ interface IPetitionOptions {
     createdTo?: string;
     activatedFrom?: string;
     activatedTo?: string;
+    answeredFrom?: string;
+    answeredTo?: string;
 }

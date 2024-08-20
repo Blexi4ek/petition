@@ -69,3 +69,10 @@
     padding: 1px 7px;
     text-align: center;
 }
+
+.petitionButton{
+    border: 2px green solid;
+    border-radius: 15px;
+    padding: 2px;
+    margin-right: 10px;
+}

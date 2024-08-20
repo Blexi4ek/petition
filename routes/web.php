@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\PetitionController;
+use App\Http\Controllers\PetitionIdController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -33,11 +34,12 @@ Route::get('/petitions', function () {
     return Inertia::render('Petitions');
 })->middleware(['auth', 'verified'])->name('petitions');
 
-Route::post('/petitions', function ($page) {
-    return Inertia::render('Petitions', compact('page'));
- });
-
-
 Route::get('/api/v1/petitions/my', [PetitionController::class,'indexMy'])->name('petition.list.my');
 Route::get('/api/v1/petitions/signed', [PetitionController::class,'indexSigned'])->name('petition.list.signed');
 Route::get('/api/v1/petitions', [PetitionController::class,'index'])->name('petition.list');
+
+Route::get('/petition', function () {
+    return Inertia::render('PetitionId');
+})->middleware(['auth', 'verified'])->name('petition');
+
+Route::get('/api/v1/petition', [PetitionController::class,'open'])->name('petition.id');

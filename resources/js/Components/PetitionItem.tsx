@@ -5,8 +5,10 @@ import moment from 'moment';
 import dateFormat from '@/consts/dateFormat';
 import cn from 'classnames';
 import petitionStatuses from '../consts/petitionStatuses';
+import { router } from '@inertiajs/react';
 
 interface IPetition {
+    id: number;
     name: string;
     author: number;
     created_at: Date;
@@ -15,7 +17,12 @@ interface IPetition {
     status: number;
 }
 
-export const PetitionItem: FC<IPetition> = ({name, author, created_at, updated_at, userName, status}) => {
+export const PetitionItem: FC<IPetition> = ({name, author, created_at, updated_at, userName, status,  id}) => {
+
+    const openPetition = () => {
+        console.log(id)
+        router.get('petition', {id})
+    }
     
 
     const time = moment(Number(created_at) * 1000)
@@ -34,7 +41,10 @@ export const PetitionItem: FC<IPetition> = ({name, author, created_at, updated_a
                     <div className={style.petitionInnerBox}>
                         <span className={style.petitionText}>{time.format(dateFormat)}</span>
                         <span className={style.petitionText}>Author: {userName}</span>
+                        <button className={style.petitionButton} onClick={e => openPetition()}>Open</button>
                     </div>
+
+                    
 
                 </div>
             </div>

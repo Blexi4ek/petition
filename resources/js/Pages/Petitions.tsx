@@ -20,6 +20,8 @@ export default function Petitions({ auth }: PageProps) {
     const queryCreatedTo = queryParams.get('createdTo')
     const queryActivatedFrom = queryParams.get('activatedFrom')
     const queryActivatedTo = queryParams.get('activatedTo')
+    const queryAnsweredFrom = queryParams.get('answeredFrom')
+    const queryAnsweredTo = queryParams.get('answeredTo')
 
     const [petitions, setPetitions] = useState<IPetition[]>([])
     const [selectedSort, setSelectedSort] = useState('1')
@@ -33,7 +35,9 @@ export default function Petitions({ auth }: PageProps) {
         createdFrom: '',
         createdTo: '',
         activatedFrom: '',
-        activatedTo: ''})
+        activatedTo: '',
+        answeredFrom: '',
+        answeredTo: ''})
 
     useEffect(()=> {
         if (queryPage) setPage(Number(queryPage))
@@ -46,7 +50,8 @@ export default function Petitions({ auth }: PageProps) {
             })
         }
         setPetitionOptions({status: queryStatus, name: queryName || '', createdFrom:queryCreatedFrom || '',
-            createdTo:queryCreatedTo || '', activatedFrom:queryActivatedFrom || '', activatedTo:queryActivatedTo || ''
+            createdTo:queryCreatedTo || '', activatedFrom:queryActivatedFrom || '', activatedTo:queryActivatedTo || '',
+            answeredFrom: queryAnsweredFrom || '', answeredTo: queryAnsweredTo || ''
         })
         setRefresh(!refresh)
     },[])
@@ -61,6 +66,8 @@ export default function Petitions({ auth }: PageProps) {
                 petitionCreatedAtTo: petitionOptions.createdTo,
                 petitionActivatedAtFrom: petitionOptions.activatedFrom,
                 petitionActivatedAtTo: petitionOptions.activatedTo,
+                petitionAnsweredFrom: petitionOptions.answeredFrom,
+                petitionAnsweredTo: petitionOptions.answeredTo
             }});
             setTotalPages(response.last_page)
             setPetitions(response.data)
@@ -79,13 +86,10 @@ export default function Petitions({ auth }: PageProps) {
             if (newPage === 1) setRefresh(!refresh)
             setPetitionOptions(options)
 
-            let status = options.status                //workaround inertia+ts bug
-            let name = options.name
-            let createdFrom = options.createdFrom
-            let createdTo = options.createdTo
-            let activatedFrom = options.activatedFrom
-            let activatedTo = options.activatedTo
-            router.get('petitions', {page: newPage, status, name, createdFrom, createdTo, activatedFrom, activatedTo}, {preserveState: true, preserveScroll: true})
+            router.get('petitions', {page: newPage, status:options.status, name:options.name,
+                createdFrom:options.createdFrom, createdTo:options.createdTo, activatedFrom:options.activatedFrom,
+                activatedTo:options.activatedTo, answeredFrom:options.answeredFrom, answeredTo:options.answeredTo},
+                {preserveState: true, preserveScroll: true})
         }
 
         const handlePageClick = (e : any) => {   
@@ -93,33 +97,42 @@ export default function Petitions({ auth }: PageProps) {
         }
 
         const handleStatusChange = (e: MultiSelectChangeEvent) => {        
-            refreshPage({...petitionOptions ,status: e.value})  
+            refreshPage({...petitionOptions ,status: e.target.value})  
         }
 
         const handleinputPetitionQChange = (e: React.ChangeEvent<HTMLInputElement>) => {
             refreshPage({...petitionOptions , name: e.target.value})   
         }
 
-        const handleCreatedFromChange = (e: any) => {
+        const handleCreatedFromChange = (e: React.ChangeEvent<HTMLInputElement>) => {
             refreshPage({...petitionOptions , createdFrom: e.target.value})  
         }
 
-        const handleCreatedToChange = (e: any) => {
+        const handleCreatedToChange = (e: React.ChangeEvent<HTMLInputElement>) => {
             refreshPage({...petitionOptions , createdTo: e.target.value})  
         }
 
-        const handleActivatedFromChange = (e: any) => {
+        const handleActivatedFromChange = (e: React.ChangeEvent<HTMLInputElement>) => {
             refreshPage({...petitionOptions , activatedFrom: e.target.value})  
         }
 
-        const handleActivatedToChange = (e: any) => {
+        const handleActivatedToChange = (e: React.ChangeEvent<HTMLInputElement>) => {
             refreshPage({...petitionOptions , activatedTo: e.target.value})    
         }
 
-        const clickCheck = async () => {
-            console.log(petitionOptions.status)
+        const handleAnsweredFromChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+            refreshPage({...petitionOptions , answeredFrom: e.target.value})  
+        }
+
+        const handleAnsweredToChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+            refreshPage({...petitionOptions , answeredTo: e.target.value})    
+        }
+
+        const clickCheck = () => {
+            router.get('petition', {id:1})
         }
     
+
 
     return (
         <AuthenticatedLayout
@@ -141,8 +154,9 @@ export default function Petitions({ auth }: PageProps) {
                     <option value="3">Signed</option>
                 </select>
 
-                <MultiSelect value={petitionOptions.status} options={optionsStatus} optionLabel="label" onChange={(e) => handleStatusChange(e)} fixedPlaceholder={true} 
-            placeholder="Select Status" maxSelectedLabels={3} className={style.multiSelect} panelClassName={style.multiSelect} itemClassName={style.multiSelectItem} />
+                <MultiSelect value={petitionOptions.status} options={optionsStatus} optionLabel="label" onChange={(e) => handleStatusChange(e)}
+                fixedPlaceholder={true} placeholder="Select Status" maxSelectedLabels={3} className={style.multiSelect}
+                panelClassName={style.multiSelect} itemClassName={style.multiSelectItem} checkboxIcon={'a'} />
             
                 <input value={petitionOptions.name} onChange={e => handleinputPetitionQChange(e)} placeholder='Search by name'/>
             
@@ -162,11 +176,18 @@ export default function Petitions({ auth }: PageProps) {
                     {' to '}
                     <input type='datetime-local' value={petitionOptions.activatedTo} onChange={e => handleActivatedToChange (e)}/>
                 </div>
+
+                <div>
+                    Answered from {' '}
+                    <input type='datetime-local' value={petitionOptions.answeredFrom} onChange={e => handleAnsweredFromChange (e)}/>
+                    {' to '}
+                    <input type='datetime-local' value={petitionOptions.answeredTo} onChange={e => handleAnsweredToChange (e)}/>
+                </div>
             </div>
             
 
             {petitions.map((item) => <PetitionItem name={item.name} author={item.created_by} created_at={item.created_at} updated_at={42}
-            key={item.id} userName={item.userName} status={item.status}/>)}
+            key={item.id} id={item.id} userName={item.userName} status={item.status}/>)}
 
             <div
                 style={{

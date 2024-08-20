@@ -67,6 +67,14 @@ class PetitionController extends Controller
             $query->where('petitions.activated_at',  '<=' , $request->get('petitionActivatedAtTo'));
         }
 
+        if (!empty($request->get('petitionAnsweredAtFrom'))) {
+            $query->where('petitions.answered_at',  '>=' , $request->get('petitionAnsweredAtFrom'));
+        }
+
+        if (!empty($request->get('petitionAnsweredAtTo'))) {
+            $query->where('petitions.answered_at',  '<=' , $request->get('petitionAnsweredAtTo'));
+        }
+
         $petitions = $query->paginate(10);  
         
 
@@ -74,5 +82,10 @@ class PetitionController extends Controller
         return response()-> json($petitions);
     }
 
+    public function open(Request $request)
+    { 
+        $query = Petition::where(['id' => $request->get('id')])->get()->first();
 
+        return response()-> json($query);
+    }
 }
