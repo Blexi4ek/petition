@@ -82,10 +82,25 @@ class PetitionController extends Controller
         return response()-> json($petitions);
     }
 
-    public function open(Request $request)
+    public function view(Request $request)
     { 
-        $query = Petition::where(['id' => $request->get('id')])->get()->first();
+        $query = Petition::where(['id' => $request->get('id')])
+        
+            ->get()->first();
 
-        return response()-> json($query);
+        
+        
+
+
+        return response()->json($query);
+    }
+
+    public function delete(Request $request)
+    {
+        $result = Petition::where(['id' => $request->get('id')])->delete();
+        if ($result) $message = true;
+        else $message = false;
+
+        return response()->json($message);
     }
 }

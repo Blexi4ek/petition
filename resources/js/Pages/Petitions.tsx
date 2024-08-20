@@ -129,7 +129,11 @@ export default function Petitions({ auth }: PageProps) {
         }
 
         const clickCheck = () => {
-            router.get('petition', {id:1})
+            refreshPage()
+        }
+
+        const handleRefresh = () => {
+            setRefresh(!refresh)
         }
     
 
@@ -164,21 +168,21 @@ export default function Petitions({ auth }: PageProps) {
 
             <div className={style.optionsBox}>
                 <div>
-                    Created from {' '}
+                    Created {' '}
                     <input type='datetime-local' value={petitionOptions.createdFrom} onChange={e => handleCreatedFromChange(e)}/>
                     {' to '}
                     <input type='datetime-local' value={petitionOptions.createdTo} onChange={e => handleCreatedToChange(e)}/>
                 </div>
 
                 <div>
-                    Activated from {' '}
+                    Activated {' '}
                     <input type='datetime-local' value={petitionOptions.activatedFrom} onChange={e => handleActivatedFromChange (e)}/>
                     {' to '}
                     <input type='datetime-local' value={petitionOptions.activatedTo} onChange={e => handleActivatedToChange (e)}/>
                 </div>
 
                 <div>
-                    Answered from {' '}
+                    Answered {' '}
                     <input type='datetime-local' value={petitionOptions.answeredFrom} onChange={e => handleAnsweredFromChange (e)}/>
                     {' to '}
                     <input type='datetime-local' value={petitionOptions.answeredTo} onChange={e => handleAnsweredToChange (e)}/>
@@ -187,7 +191,7 @@ export default function Petitions({ auth }: PageProps) {
             
 
             {petitions.map((item) => <PetitionItem name={item.name} author={item.created_by} created_at={item.created_at} updated_at={42}
-            key={item.id} id={item.id} userName={item.userName} status={item.status}/>)}
+            key={item.id} id={item.id} userName={item.userName} status={item.status} refresh={() => handleRefresh()}/>)}
 
             <div
                 style={{

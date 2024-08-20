@@ -29,17 +29,17 @@ Route::middleware('auth')->group(function () {
 
 require __DIR__.'/auth.php';
 
+Route::get('/api/v1/petitions/my', [PetitionController::class,'indexMy'])->name('petition.list.my');
+Route::get('/api/v1/petitions/signed', [PetitionController::class, 'indexSigned'])->name('petition.list.signed');
+Route::get('/api/v1/petitions', [PetitionController::class, 'index'])->name('petition.list');
+Route::get('/api/v1/petitions/view', [PetitionController::class, 'view'])->name('petition.view');
+Route::delete('/api/v1/petitions/delete', [PetitionController::class, 'delete'])->name('petition.delete');
 
 Route::get('/petitions', function () {
     return Inertia::render('Petitions');
 })->middleware(['auth', 'verified'])->name('petitions');
 
-Route::get('/api/v1/petitions/my', [PetitionController::class,'indexMy'])->name('petition.list.my');
-Route::get('/api/v1/petitions/signed', [PetitionController::class,'indexSigned'])->name('petition.list.signed');
-Route::get('/api/v1/petitions', [PetitionController::class,'index'])->name('petition.list');
-
-Route::get('/petition', function () {
+Route::get('/petitions/view', function () {
     return Inertia::render('PetitionId');
 })->middleware(['auth', 'verified'])->name('petition');
 
-Route::get('/api/v1/petition', [PetitionController::class,'open'])->name('petition.id');

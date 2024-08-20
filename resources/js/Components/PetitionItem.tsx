@@ -15,13 +15,25 @@ interface IPetition {
     updated_at: number;
     userName: string;
     status: number;
+    refresh: () => void;
 }
 
-export const PetitionItem: FC<IPetition> = ({name, author, created_at, updated_at, userName, status,  id}) => {
+export const PetitionItem: FC<IPetition> = ({name, author, created_at, updated_at, userName, status, id, refresh}) => {
 
     const openPetition = () => {
         console.log(id)
-        router.get('petition', {id})
+        router.get('petitions/view', {id})
+    }
+
+    const deletePetition = async () => {
+        let answer = confirm(`Are you sure you want to delete petition "${name}"?`);
+        let response
+        if (answer) response = await axios({method: 'delete', url: '/api/v1/petitions/delete', params: { id }})
+        if (response) 
+        {
+            alert('petition was deleted')
+            refresh()
+        }
     }
     
 
@@ -42,6 +54,7 @@ export const PetitionItem: FC<IPetition> = ({name, author, created_at, updated_a
                         <span className={style.petitionText}>{time.format(dateFormat)}</span>
                         <span className={style.petitionText}>Author: {userName}</span>
                         <button className={style.petitionButton} onClick={e => openPetition()}>Open</button>
+                        <button className={style.petitionButtonRed} onClick={e => deletePetition()}>Delete</button>
                     </div>
 
                     

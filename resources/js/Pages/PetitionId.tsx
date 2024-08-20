@@ -15,7 +15,7 @@ export default function Petitions({ auth }: PageProps) {
 
     useEffect(() => {
         const fetchPetitions = async () => {
-            const {data:response} = await axios('/api/v1/petition', {params: {id: queryId}})
+            const {data:response} = await axios('/api/v1/petitions/view', {params: {id: queryId}})
             setPetition(response)
         }   
         fetchPetitions()

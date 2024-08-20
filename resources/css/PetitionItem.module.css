@@ -71,7 +71,14 @@
 }
 
 .petitionButton{
-    border: 2px green solid;
+    border: 2px darkgreen solid;
+    border-radius: 15px;
+    padding: 2px;
+    margin-right: 10px;
+}
+
+.petitionButtonRed{
+    border: 2px darkred solid;
     border-radius: 15px;
     padding: 2px;
     margin-right: 10px;
