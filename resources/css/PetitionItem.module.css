@@ -30,6 +30,15 @@
     text-align: center;
 }
 
+
+.gray {
+    background-color: gray;
+    color: white;
+    border-radius: 15px;
+    padding: 1px 7px;
+    text-align: center;
+}
+
 .yellow{
     background-color: yellow;
     border-radius: 15px;

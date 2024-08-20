@@ -59,6 +59,14 @@ class PetitionController extends Controller
             $query->where('petitions.created_at',  '<=' , $request->get('petitionCreatedAtTo'));
         }
 
+        if (!empty($request->get('petitionActivatedAtFrom'))) {
+            $query->where('petitions.activated_at',  '>=' , $request->get('petitionActivatedAtFrom'));
+        }
+
+        if (!empty($request->get('petitionActivatedAtTo'))) {
+            $query->where('petitions.activated_at',  '<=' , $request->get('petitionActivatedAtTo'));
+        }
+
         $petitions = $query->paginate(10);  
         
 
