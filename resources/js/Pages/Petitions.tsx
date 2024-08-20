@@ -3,9 +3,10 @@ import { Head, router, usePage } from '@inertiajs/react';
 import { PageProps } from '@/types';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { PetitionItem } from '@/Components/PetitionItem';
 import { MultiSelect, MultiSelectChangeEvent } from 'primereact/multiselect';
 import ReactPaginate from 'react-paginate';
+
+import { PetitionItem } from '@/Components/PetitionItem';
 import style from '../../css/Petition.module.css'
 import optionsStatus from '../consts/petitionStatuses'
 
@@ -14,54 +15,39 @@ export default function Petitions({ auth }: PageProps) {
 
     const queryParams = new URLSearchParams(window.location.search)
     const queryPage = queryParams.get('page')
-    const queryTitle = queryParams.get('title')
+    const queryName = queryParams.get('name')
     const queryCreatedFrom = queryParams.get('createdFrom')
     const queryCreatedTo = queryParams.get('createdTo')
     const queryActivatedFrom = queryParams.get('activatedFrom')
     const queryActivatedTo = queryParams.get('activatedTo')
 
     const [petitions, setPetitions] = useState<IPetition[]>([])
-    const [petitionsAll, setPetitionsAll] = useState<IPetition[]>([])
-    const [petitionsMy, setPetitionsMy] = useState<IPetition[]>([])
-    const [petitionsSigned, setPetitionsSigned] = useState([])
     const [selectedSort, setSelectedSort] = useState('1')
     const [page, setPage] = useState(1)
     const [totalPages, setTotalPages] = useState(0)
     const [refresh, setRefresh] = useState(false)
-    const [inputPetitionQ, setinputPetitionQ] = useState('')
-    const [inputPetitionCreatedFrom, setinputPetitionCreatedFrom] = useState('')
-    const [inputPetitionCreatedTo, setinputPetitionCreatedTo] = useState('')
-    const [inputPetitionActivatedFrom, setinputPetitionActivatedFrom] = useState('')
-    const [inputPetitionActivatedTo, setinputPetitionActivatedTo] = useState('')
 
-    const [selectedStatus, setSelectedStatus] = useState([2, 3, 5, 6, 8])
-
-
+    const [petitionOptions, setPetitionOptions] = useState<IPetitionOptions>({
+        status: [2,3,4],
+        name: '',
+        createdFrom: '',
+        createdTo: '',
+        activatedFrom: '',
+        activatedTo: ''})
 
     useEffect(()=> {
         if (queryPage) setPage(Number(queryPage))
+
+        let queryStatus:number[] = []
         if (queryParams.getAll('status[0]')) {
-            let queryStatus:number[] = []
+            
             queryParams.forEach((value, key) => {
                 if (key.includes('status')) queryStatus.push(Number(value))
             })
-            setSelectedStatus(queryStatus)
         }
-        if (queryTitle) { 
-            setinputPetitionQ(queryTitle)
-        }
-        if (queryCreatedFrom) { 
-            setinputPetitionCreatedFrom(queryCreatedFrom)
-        }
-        if (queryCreatedTo) { 
-            setinputPetitionCreatedTo(queryCreatedTo)
-        }
-        if (queryActivatedFrom) { 
-            setinputPetitionActivatedFrom(queryActivatedFrom)
-        }
-        if (queryActivatedTo) { 
-            setinputPetitionActivatedTo(queryActivatedTo)
-        }
+        setPetitionOptions({status: queryStatus, name: queryName || '', createdFrom:queryCreatedFrom || '',
+            createdTo:queryCreatedTo || '', activatedFrom:queryActivatedFrom || '', activatedTo:queryActivatedTo || ''
+        })
         setRefresh(!refresh)
     },[])
 
@@ -69,95 +55,69 @@ export default function Petitions({ auth }: PageProps) {
         const fetchPetitions = async () => {   
             const {data: response} = await axios(`/api/v1/petitions`, {params: {
                 page, 
-                petitionStatus:selectedStatus, 
-                petitionQ:inputPetitionQ,
-                petitionCreatedAtFrom:inputPetitionCreatedFrom,
-                petitionCreatedAtTo: inputPetitionCreatedTo,
-                petitionActivatedAtFrom: inputPetitionActivatedFrom,
-                petitionActivatedAtTo: inputPetitionActivatedTo,
+                petitionStatus:petitionOptions.status, 
+                petitionQ:petitionOptions.name,
+                petitionCreatedAtFrom:petitionOptions.createdFrom,
+                petitionCreatedAtTo: petitionOptions.createdTo,
+                petitionActivatedAtFrom: petitionOptions.activatedFrom,
+                petitionActivatedAtTo: petitionOptions.activatedTo,
             }});
             setTotalPages(response.last_page)
             setPetitions(response.data)
-
-
         }
         fetchPetitions()
-        // const fetchData = async() => {
-        //     const result = await axios(
-        //         '/api/v1/petitions/all',);
-        //     setPetitionsAll(result.data.data);
-        //     setTotalPages(result.data.count)
-        //     const resultMy = await axios(
-        //         '/api/v1/petitions/my',);
-        //     setPetitionsMy(resultMy.data.data);
-        //     const resultSigned = await axios(
-        //         '/api/v1/petitions/all',); //change when signed route is ready
-        //     setPetitionsAll(resultSigned.data.data);
-        //     }
-        // fetchData()
     }, [page,refresh])
 
 
         const selectSort = (e: React.ChangeEvent<HTMLSelectElement>) => {
             setSelectedSort(e.target.value)
-            
         }
         
-        const refreshPage = (page: number, status: number[] = selectedStatus, title: string = inputPetitionQ, createdFrom: string = inputPetitionCreatedFrom,
-            createdTo: string = inputPetitionCreatedTo,  activatedFrom: string = inputPetitionActivatedFrom, activatedTo: string = inputPetitionActivatedTo
-        ) => {
-            router.get('petitions', {page, status, title, createdFrom, createdTo, activatedFrom, activatedTo}, {preserveState: true, preserveScroll: true})  
+
+        const refreshPage = (options = petitionOptions, newPage: number = 1  ) => {
+            setPage(newPage)
+            if (newPage === 1) setRefresh(!refresh)
+            setPetitionOptions(options)
+
+            let status = options.status                //workaround inertia+ts bug
+            let name = options.name
+            let createdFrom = options.createdFrom
+            let createdTo = options.createdTo
+            let activatedFrom = options.activatedFrom
+            let activatedTo = options.activatedTo
+            router.get('petitions', {page: newPage, status, name, createdFrom, createdTo, activatedFrom, activatedTo}, {preserveState: true, preserveScroll: true})
         }
 
         const handlePageClick = (e : any) => {   
-            setPage(e.selected+1)
-            refreshPage(e.selected+1, selectedStatus)  
+            refreshPage(petitionOptions, e.selected+1)  
         }
 
         const handleStatusChange = (e: MultiSelectChangeEvent) => {        
-            setSelectedStatus(e.value)
-            if (page === 1) setRefresh(!refresh) 
-            setPage(1)
-            refreshPage(1, e.value)  
+            refreshPage({...petitionOptions ,status: e.value})  
         }
 
         const handleinputPetitionQChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-            setinputPetitionQ(e.target.value)
-            if (page === 1) setRefresh(!refresh) 
-            setPage(1)
-            refreshPage(1, selectedStatus, e.target.value)  
+            refreshPage({...petitionOptions , name: e.target.value})   
         }
 
         const handleCreatedFromChange = (e: any) => {
-            setinputPetitionCreatedFrom(e.target.value)
-            if (page === 1) setRefresh(!refresh) 
-            setPage(1)
-            refreshPage(1, selectedStatus, inputPetitionQ, e.target.value)  
+            refreshPage({...petitionOptions , createdFrom: e.target.value})  
         }
 
         const handleCreatedToChange = (e: any) => {
-            setinputPetitionCreatedTo(e.target.value)
-            if (page === 1) setRefresh(!refresh) 
-            setPage(1)
-            refreshPage(1, selectedStatus, inputPetitionQ, inputPetitionCreatedFrom,e.target.value)  
+            refreshPage({...petitionOptions , createdTo: e.target.value})  
         }
 
         const handleActivatedFromChange = (e: any) => {
-            setinputPetitionActivatedFrom(e.target.value)
-            if (page === 1) setRefresh(!refresh) 
-            setPage(1)
-            refreshPage(1, selectedStatus, inputPetitionQ, inputPetitionCreatedFrom, inputPetitionCreatedTo,  e.target.value)  
+            refreshPage({...petitionOptions , activatedFrom: e.target.value})  
         }
 
         const handleActivatedToChange = (e: any) => {
-            setinputPetitionActivatedTo(e.target.value)
-            if (page === 1) setRefresh(!refresh) 
-            setPage(1)
-            refreshPage(1, selectedStatus, inputPetitionQ, inputPetitionCreatedFrom, inputPetitionCreatedTo, inputPetitionActivatedFrom,  e.target.value)  
+            refreshPage({...petitionOptions , activatedTo: e.target.value})    
         }
 
         const clickCheck = async () => {
-            console.log(inputPetitionCreatedFrom)
+            console.log(petitionOptions.status)
         }
     
 
@@ -181,39 +141,33 @@ export default function Petitions({ auth }: PageProps) {
                     <option value="3">Signed</option>
                 </select>
 
-                <MultiSelect value={selectedStatus} options={optionsStatus} optionLabel="label" onChange={(e) => handleStatusChange(e)} fixedPlaceholder={true} 
+                <MultiSelect value={petitionOptions.status} options={optionsStatus} optionLabel="label" onChange={(e) => handleStatusChange(e)} fixedPlaceholder={true} 
             placeholder="Select Status" maxSelectedLabels={3} className={style.multiSelect} panelClassName={style.multiSelect} itemClassName={style.multiSelectItem} />
-           
-                <input value={inputPetitionQ} onChange={e => handleinputPetitionQChange(e)} placeholder='Search by name'/>
-           
+            
+                <input value={petitionOptions.name} onChange={e => handleinputPetitionQChange(e)} placeholder='Search by name'/>
+            
             </div>
 
             <div className={style.optionsBox}>
                 <div>
                     Created from {' '}
-                    <input type='datetime-local' value={inputPetitionCreatedFrom} onChange={e => handleCreatedFromChange(e)}/>
+                    <input type='datetime-local' value={petitionOptions.createdFrom} onChange={e => handleCreatedFromChange(e)}/>
                     {' to '}
-                    <input type='datetime-local' value={inputPetitionCreatedTo} onChange={e => handleCreatedToChange(e)}/>
+                    <input type='datetime-local' value={petitionOptions.createdTo} onChange={e => handleCreatedToChange(e)}/>
                 </div>
 
                 <div>
                     Activated from {' '}
-                    <input type='datetime-local' value={inputPetitionActivatedFrom} onChange={e => handleActivatedFromChange (e)}/>
+                    <input type='datetime-local' value={petitionOptions.activatedFrom} onChange={e => handleActivatedFromChange (e)}/>
                     {' to '}
-                    <input type='datetime-local' value={inputPetitionActivatedTo} onChange={e => handleActivatedToChange (e)}/>
+                    <input type='datetime-local' value={petitionOptions.activatedTo} onChange={e => handleActivatedToChange (e)}/>
                 </div>
             </div>
             
 
-            {petitions.map((item, index) => <PetitionItem index={(index+2)+(10*(page-1))} name={item.name} author={item.created_by} created_at={item.created_at} updated_at={42}
-             key={item.id} userName={item.userName} status={item.status}/>)}
+            {petitions.map((item) => <PetitionItem name={item.name} author={item.created_by} created_at={item.created_at} updated_at={42}
+            key={item.id} userName={item.userName} status={item.status}/>)}
 
-            {/* { selectedSort === '1' ? 
-                petitionsAll.map((item, index) => <PetitionItem index={index} name={item.name} author={item.created_by} created_at={12} updated_at={42} key={item.id} userName={item.userName}  />)
-            : selectedSort === '2' ?
-              petitionsMy.map((item, index) => <PetitionItem index={index} name={item.name} author={item.created_by} created_at={12} updated_at={42} key={item.id} userName={item.userName} />)
-            : 'empty' 
-            } */}
             <div
                 style={{
                 display: 'flex',
@@ -238,8 +192,6 @@ export default function Petitions({ auth }: PageProps) {
                     forcePage={(page || 1) - 1}
                 />
             </div>
-            
-            
         </AuthenticatedLayout>
     );
 }

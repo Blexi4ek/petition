@@ -18,3 +18,11 @@ interface IPetition {
     userName: string;
 }
 
+interface IPetitionOptions {
+    status?: number[];
+    name?: string;
+    createdFrom?: string;
+    createdTo?: string;
+    activatedFrom?: string;
+    activatedTo?: string;
+}

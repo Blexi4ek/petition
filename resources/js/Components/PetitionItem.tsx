@@ -7,7 +7,6 @@ import cn from 'classnames';
 import petitionStatuses from '../consts/petitionStatuses';
 
 interface IPetition {
-    index: number;
     name: string;
     author: number;
     created_at: Date;
@@ -16,7 +15,7 @@ interface IPetition {
     status: number;
 }
 
-export const PetitionItem: FC<IPetition> = ({name, author, created_at, updated_at, index, userName, status}) => {
+export const PetitionItem: FC<IPetition> = ({name, author, created_at, updated_at, userName, status}) => {
     
 
     const time = moment(Number(created_at) * 1000)
