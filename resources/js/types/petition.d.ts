@@ -16,9 +16,10 @@ interface IPetition {
     answering_started_at: Date;
     answered_at: Date;
     userName: string;
-    userMail: string;
-    adminName: string;
-    politicianName: string;
+    user_creator: IUser;
+    user_administrator: IUser;
+    user_politician: IUser;
+    user_petitions : IUserPetition[]
 }
 interface IPetitionOptions {
     status?: number[];

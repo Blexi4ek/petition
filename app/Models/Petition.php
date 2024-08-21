@@ -64,13 +64,39 @@ class Petition extends Model
         ];
     }
 
-    public function post(): BelongsTo
+    public function userCreator(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'created_by');
     }
 
-    public function deployments(): HasManyThrough
+    public function userAdministrator(): BelongsTo
     {
-        return $this->hasManyThrough(User::class, UserPetition::class);
+        return $this->belongsTo(User::class, 'moderated_by');
     }
+
+    public function userPolitician(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'answered_by');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'user_petition', 'petition_id', 'user_id');
+    }
+
+
+    public function userPetitions()
+    {
+        return $this->hasMany(UserPetition::class, 'petition_id', 'id');
+    }
+
+
+
+
+    //hasManyThrough($related, $through,      $firstKey = null,        $secondKey = null,       $localKey = null, $secondLocalKey = null                  )
+    //belongsToMany ($related, $table = null, $foreignPivotKey = null, $relatedPivotKey = null, $parentKey = null, $relatedKey = null,    $relation = null)
+
 }

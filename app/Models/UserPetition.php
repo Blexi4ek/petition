@@ -8,12 +8,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 
 class UserPetition extends Model
 {
     use HasFactory, Notifiable;
 
+    protected $table = 'user_petition';
     /**
      * The attributes that are mass assignable.
      *
@@ -45,6 +47,15 @@ class UserPetition extends Model
             'notified_at' => 'timestamp',
         ];
     }
+
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+
+
 
     
 }

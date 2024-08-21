@@ -45,19 +45,30 @@ export default function Petitions({ auth }: PageProps) {
                     </div>
 
                     <div className={style.infoBox}>
-                        <span className={style.descriptionText}>Created by: {petition ? petition.userName : 'loading'}
-                            {' '} at: {petition ? (moment(Number(petition.created_at) * 1000)).format(dateFormat) : 'error'} 
-                            <br/> Approved by: {petition? petition.adminName ? petition.adminName : 'Has not yet been approved' : 'loading'}
-                            {' '} at: {petition ? petition.activated_at ?  (moment(Number(petition.activated_at) * 1000)).format(dateFormat):' ': 'error'} 
-                            <br/> Answered by: {petition? petition.politicianName : 'loading'}
-                            {' '} at: {petition ? petition.answered_at ?  (moment(Number(petition.answered_at) * 1000)).format(dateFormat):' ': 'error'} 
+                        <span className={style.descriptionText}>
+                            Created by: {  petition?.user_creator?.name || 'loading' } {' '} at: {petition ? (moment(Number(petition.created_at) * 1000)).format(dateFormat) : 'loading'} 
+                            <br/> Approved by: { petition?.user_administrator.name? petition.user_administrator.name : 'Has not yet been approved' }
+                            {' '} at: { petition?.activated_at ? (moment(Number(petition.activated_at) * 1000)).format(dateFormat):' '} 
+                            <br/> Supported at: { petition?.supported_at ? (moment(Number(petition.supported_at) * 1000)).format(dateFormat):' '} 
+                            <br/> Signs finished at: { petition?.answering_started_at ? (moment(Number(petition.answering_started_at) * 1000)).format(dateFormat):' '} 
+                            <br/> Answered by: { petition?.user_politician.name? petition.user_politician.name : 'Has not yet been answered' }
+                            {' '} at: {petition?.answered_at ? (moment(Number(petition.answered_at) * 1000)).format(dateFormat):' '} 
                         </span> 
                     </div>
                 </div>
 
                 <div className={style.signBox}>
                     <h1 className={style.signHeader}>Petition signed by:</h1>
-                    <div>vasya, petya,</div>
+                    <div>
+                        { petition?.user_petitions?.map((item) => 
+                            <h3 key={item.id}>
+                                <span className={style.signName}>
+                                    {item.user.id}. {item.user.name}
+                                </span>
+                                at: {(moment(Number(item.created_at) * 1000)).format(dateFormat)}
+                            </h3>
+                        )}
+                    </div>
                 </div>
                 
             </div>
