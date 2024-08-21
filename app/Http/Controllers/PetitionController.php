@@ -12,29 +12,11 @@ use Illuminate\Http\Request;
 
 class PetitionController extends Controller 
 {
-    public function my() {
-        $results = Petition::where(['created_by' => Auth::id()])
-        ->select(['petitions.*', 'users.name as userName'])
-        ->join('users', 'users.id', '=', 'petitions.created_by')
-        
-            ->limit(10)->offset(0)->get()->all();
-
-        return response()-> json([
-            'status' => Response::HTTP_OK,
-            'data' => $results]);
-    }
-    public function signed() {
-        $user_id = 1; //to change
-        //$user = User::query()->with(['signedPetitions'])->where('id', $user_id)->first();
-        return response()-> json([
-            'status' => Response::HTTP_OK,
-            'data' => '$signs']);
-    }
 
     
     public function index(Request $request)
     { 
-        $query = Petition::select(['petitions.*', 'users.name as userName'])->join('users', 'users.id', '=', 'petitions.created_by');
+        $query = Petition::with(['userCreator']);
        
         if (!empty($request->get('petitionStatus'))) {
             $query->whereIn('status', $request->get('petitionStatus'));
@@ -45,9 +27,7 @@ class PetitionController extends Controller
             $query->where('petitions.name', 'like', "%{$request->get('petitionQ')}%");
 #OR
            # $query->where('petitions.name', 'like', "%{$request->get('petition.q')}%");
-
 #)
-
 
         }
 
@@ -77,28 +57,39 @@ class PetitionController extends Controller
 
         $petitions = $query->paginate(10);  
         
-
-
         return response()-> json($petitions);
     }
 
     public function view(Request $request)
     { 
-        $query = Petition::with(['userCreator', 'userAdministrator', 'userPolitician', 'userPetitions.user'])
-                ->where(['petitions.id' => $request->get('id')])->get()->first();
-
-        
-
-
+        $query = Petition::with(['userCreator', 'userModerator', 'userPolitician', 'userPetitions.user']) ->where(['petitions.id' => $request->get('id')])->get()->first();
         return response()->json(['data' => $query]);
     }
 
     public function delete(Request $request)
     {   
         $result = Petition::where(['id' => $request->get('id')])->delete();
-        if ($result) $message = true;
-        else $message = false;
-
-        return response()->json($message);
+        return response()->json($result);
     }
+
+
+    public function edit(Request $request) 
+    {
+        if($request->get('id')) {
+            $petition = Petition::where(['id' => $request->get('id')])->get()->first();
+
+            if ($request->isMethod('GET')) return response()->json($petition);
+                
+            if(!$petition) return abort(404);
+
+        } else return abort(404);
+
+        if ($request->isMethod('POST')) {
+
+            Petition::where(['id' => $request->get('id')])
+                ->update(['name' => $request->get('name'), 'description' => $request->get('description')]);
+
+        } 
+    }
+
 }

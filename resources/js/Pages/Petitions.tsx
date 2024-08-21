@@ -190,8 +190,8 @@ export default function Petitions({ auth }: PageProps) {
             </div>
             
 
-            {petitions.map((item) => <PetitionItem name={item.name} author={item.created_by} created_at={item.created_at} updated_at={42}
-            key={item.id} id={item.id} userName={item.userName} status={item.status} refresh={() => handleRefresh()}/>)}
+            {petitions.map((item) => <PetitionItem petition={item}
+            key={item.id} refresh={() => handleRefresh()}/>)}
 
             <div
                 style={{

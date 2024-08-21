@@ -1,5 +1,5 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head} from '@inertiajs/react';
+import { Head, router} from '@inertiajs/react';
 import { PageProps } from '@/types';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
@@ -26,10 +26,9 @@ export default function Petitions({ auth }: PageProps) {
         fetchPetitions()
     },[])
 
-    const clickCheck = () => {
-        console.log(petition)
+    const handleEditButton = () => {
+        router.get('/petitions/edit', {id: petition?.id})
     }
-
 
     return (
         <AuthenticatedLayout
@@ -47,7 +46,7 @@ export default function Petitions({ auth }: PageProps) {
                     <div className={style.infoBox}>
                         <span className={style.descriptionText}>
                             Created by: {  petition?.user_creator?.name || 'loading' } {' '} at: {petition ? (moment(Number(petition.created_at) * 1000)).format(dateFormat) : 'loading'} 
-                            <br/> Approved by: { petition?.user_administrator.name? petition.user_administrator.name : 'Has not yet been approved' }
+                            <br/> Approved by: { petition?.user_moderator?.name || 'Has not yet been approved' }
                             {' '} at: { petition?.activated_at ? (moment(Number(petition.activated_at) * 1000)).format(dateFormat):' '} 
                             <br/> Supported at: { petition?.supported_at ? (moment(Number(petition.supported_at) * 1000)).format(dateFormat):' '} 
                             <br/> Signs finished at: { petition?.answering_started_at ? (moment(Number(petition.answering_started_at) * 1000)).format(dateFormat):' '} 
@@ -57,27 +56,25 @@ export default function Petitions({ auth }: PageProps) {
                     </div>
                 </div>
 
+                <button className={style.editButton} onClick={handleEditButton}>Edit description</button>
+
                 <div className={style.signBox}>
                     <h1 className={style.signHeader}>Petition signed by:</h1>
                     <div>
                         { petition?.user_petitions?.map((item) => 
-                            <h3 key={item.id}>
-                                <span className={style.signName}>
-                                    {item.user.id}. {item.user.name}
-                                </span>
+                            <div className={style.signInnerBox} key={item.id}>
+                                <div>
+                                    <span className={style.signName}>
+                                        {item.user.id}. {item.user.name}
+                                    </span>
+                                </div>
                                 at: {(moment(Number(item.created_at) * 1000)).format(dateFormat)}
-                            </h3>
+                            </div>
                         )}
                     </div>
                 </div>
                 
             </div>
-            
-
-            <button onClick={()=> clickCheck()}>
-                console check
-            </button>
-
 
         </AuthenticatedLayout>
     );

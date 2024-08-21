@@ -50,14 +50,24 @@ class User extends Authenticatable
         ];
     }
 
-    public function comments(): HasMany
+    public function createdPetitions(): HasMany
     {
-        return $this->hasMany(Petition::class);
+        return $this->hasMany(Petition::class, 'created_by', 'id');
     }
 
-    public function deployments(): HasManyThrough
+    public function moderatedPetitions(): HasMany
     {
-        return $this->hasManyThrough(Petition::class, UserPetition::class);
+        return $this->hasMany(Petition::class, 'moderated_by', 'id');
+    }
+
+    public function answeredPetitions(): HasMany
+    {
+        return $this->hasMany(Petition::class, 'answered_by', 'id');
+    }
+
+    public function userPetitions()
+    {
+        return $this->hasMany(UserPetition::class, 'user_id', 'id');
     }
 
 }

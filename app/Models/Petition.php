@@ -14,6 +14,13 @@ class Petition extends Model
 {
     use HasFactory, Notifiable;
 
+
+
+
+
+
+
+    
     /**
      * The attributes that are mass assignable.
      *
@@ -69,7 +76,7 @@ class Petition extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    public function userAdministrator(): BelongsTo
+    public function userModerator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'moderated_by');
     }
@@ -93,10 +100,5 @@ class Petition extends Model
         return $this->hasMany(UserPetition::class, 'petition_id', 'id');
     }
 
-
-
-
-    //hasManyThrough($related, $through,      $firstKey = null,        $secondKey = null,       $localKey = null, $secondLocalKey = null                  )
-    //belongsToMany ($related, $table = null, $foreignPivotKey = null, $relatedPivotKey = null, $parentKey = null, $relatedKey = null,    $relation = null)
 
 }
