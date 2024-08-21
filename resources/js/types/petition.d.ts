@@ -16,6 +16,9 @@ interface IPetition {
     answering_started_at: Date;
     answered_at: Date;
     userName: string;
+    userMail: string;
+    adminName: string;
+    politicianName: string;
 }
 interface IPetitionOptions {
     status?: number[];

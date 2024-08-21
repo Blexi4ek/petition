@@ -1,6 +1,14 @@
+.outerBox {
+    margin: 30px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
 .descriptionBox {
     display: flex;
     justify-content: space-between;
+    width: 60%;
     padding-top: 10px;
     padding-bottom: 10px;
     background: white;
@@ -15,4 +23,30 @@
     padding: 25px;
     --tw-text-opacity: 1;
     color: rgb(17 24 39 / var(--tw-text-opacity))
+}
+
+.infoBox {
+    display: flex;
+    justify-content: space-between;
+    width: 30%;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    background: white;
+    overflow: hidden;
+    --tw-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --tw-shadow-colored: 0 1px 2px 0 var(--tw-shadow-color);
+    box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+    border-radius: 0.5rem
+}
+
+.signHeader {
+    font-size: 20px;
+    margin-bottom: 25px;
+}
+
+.signBox {
+    margin: 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }

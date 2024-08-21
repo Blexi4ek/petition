@@ -38,8 +38,7 @@ export const PetitionItem: FC<IPetition> = ({name, author, created_at, updated_a
     
 
     const time = moment(Number(created_at) * 1000)
-    let statusName = ''
-    let statusClass = ''
+
     return (
         <div className="py-3">
             <div className="mx-auto sm:px-6 lg:px-8">

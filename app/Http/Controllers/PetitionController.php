@@ -84,15 +84,18 @@ class PetitionController extends Controller
 
     public function view(Request $request)
     { 
-        $query = Petition::where(['id' => $request->get('id')])
-        
+        $query = Petition::where(['petitions.id' => $request->get('id')])
+            ->select(['petitions.*', 'creator.name as userName', 'creator.email as userMail', 'admin.name as adminName', 'politician.name as politicianName'])
+            ->join('users as creator', 'creator.id', '=', 'petitions.created_by')
+            ->leftJoin('users as admin', 'admin.id', '=', 'petitions.moderated_by')
+            ->leftJoin('users as politician', 'politician.id', '=', 'petitions.answered_by')
             ->get()->first();
-
+        //$signed = UserPetition::where(['user_petition.petition_id' => $request->get('id')])->join('users', 'users.id', '=', 'user_petition.user_id')
+        //->get()->all();
         
-        
 
 
-        return response()->json($query);
+        return response()->json(['data' => $query]);
     }
 
     public function delete(Request $request)
