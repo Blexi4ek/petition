@@ -10,11 +10,41 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
-class Petition extends Model
+class Petition extends Base
 {
     use HasFactory, Notifiable;
 
+    public $createUpdateValidation = [
+        'name' => 'required|min:3|max:100',
+        'description' => 'required|min:3|max:500'
+    ];
 
+    const PAYMENT = 'payment';
+
+    const STATUS = 'status';
+    const STATUS_DRAFT = 1;
+    
+
+
+
+    public $_items = [
+        self::STATUS => [
+            self::STATUS_DRAFT => [ 'label' => 'Draft', 'value' => self::STATUS_DRAFT, 'statusClass' => 'style.gray' ],
+            [ 'label' => 'Unmoderated', 'value' => 2, 'statusClass' => 'style.yellow' ],
+            [ 'label' => 'Active', 'value' => 3, 'statusClass' => 'style.blue'  ],
+            [ 'label' => 'Declined', 'value' => 4 , 'statusClass' => 'style.red' ],
+            [ 'label' => 'Supported', 'value' => 5, 'statusClass' => 'style.green' ],
+            [ 'label' => 'Unsupported', 'value' => 6, 'statusClass' => 'style.red' ],
+            [ 'label' => 'Awaiting Answer', 'value' => 7, 'statusClass' => 'style.yellow' ],
+            [ 'label' => 'Positive Answer', 'value' => 8, 'statusClass' => 'style.green' ],
+            [ 'label' => 'Negative Answer', 'value' => 9, 'statusClass' => 'style.red' ],
+        ],
+        self::PAYMENT => [
+
+
+        ],
+
+    ];
 
 
 
@@ -28,7 +58,7 @@ class Petition extends Model
      */
     protected $fillable = [
         'name',
-        'decription',
+        'description',
         'status',
         'created_by',
         'moderated_by',

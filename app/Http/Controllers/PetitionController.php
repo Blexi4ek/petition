@@ -9,6 +9,7 @@ use Auth;
 use Illuminate\Http\Response;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class PetitionController extends Controller 
 {
@@ -72,24 +73,26 @@ class PetitionController extends Controller
         return response()->json($result);
     }
 
-
     public function edit(Request $request) 
-    {
-        if($request->get('id')) {
-            $petition = Petition::where(['id' => $request->get('id')])->get()->first();
-
-            if ($request->isMethod('GET')) return response()->json($petition);
-                
-            if(!$petition) return abort(404);
-
-        } else return abort(404);
-
+    {     
+        $petition = new Petition();
+        if ($id = $request->get('id')) {
+            $petition = Petition::where(['id' => $id])->get()->first();
+            //404
+        }
         if ($request->isMethod('POST')) {
-
-            Petition::where(['id' => $request->get('id')])
-                ->update(['name' => $request->get('name'), 'description' => $request->get('description')]);
-
+            $data = $request->all();
+            $validatedData = $request->validate($petition->createUpdateValidation);
+            if($id && $petition) {
+                $petition->update($data);
+            } else if (empty($id)) {
+                $petition = $petition->create($data + ['created_by' => Auth::id(), 'status' => Petition::STATUS_DRAFT]);
+            }
         } 
+
+
+        // return response()->json(Petition::itemAlias(Petition::STATUS, Petition::STATUS_DRAFT));
+        return response()->json($petition);
     }
 
 }

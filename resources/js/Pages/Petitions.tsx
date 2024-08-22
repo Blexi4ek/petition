@@ -141,9 +141,11 @@ export default function Petitions({ auth }: PageProps) {
     return (
         <AuthenticatedLayout
             user={auth.user}
-            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Petitions</h2>}
+            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Petitions </h2>}
         >
             <Head title="Petitions" />
+
+            <div className={style.topBox}>
 
             <button onClick={()=> clickCheck()}>
                 console check
@@ -187,8 +189,14 @@ export default function Petitions({ auth }: PageProps) {
                     {' to '}
                     <input type='datetime-local' value={petitionOptions.answeredTo} onChange={e => handleAnsweredToChange (e)}/>
                 </div>
+
             </div>
             
+            <button className={style.createButton} onClick={() => router.get('/petitions/edit')}>
+                Create new petition
+            </button>
+
+            </div>
 
             {petitions.map((item) => <PetitionItem petition={item}
             key={item.id} refresh={() => handleRefresh()}/>)}

@@ -3,7 +3,7 @@
 }
 
 .editName {
-    width: 50%;
+    width: 65%;
     margin-bottom: 15px;
 }
 
@@ -12,6 +12,11 @@
     height: 300px;
     vertical-align: top;
     text-align: left;
+}
+
+.editBox {
+    display: flex;
+    justify-content: space-between;
 }
 
 .editButton{

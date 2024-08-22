@@ -19,13 +19,15 @@ export default function PetitionEdit({ auth }: PageProps) {
     
 
     useEffect(() => {
-        const fetchPetitions = async () => {
-            const {data:response} = await axios('/api/v1/petitions/edit', {params: {id: queryId}})
-            setPetition(response)
-            setName(response.name)
-            setDescription(response.description)
-        }   
-        fetchPetitions()
+        if (queryId) {
+            const fetchPetitions = async () => {
+                const {data:response} = await axios('/api/v1/petitions/edit', {params: {id: queryId}})
+                setPetition(response)
+                setName(response.name)
+                setDescription(response.description)
+            }   
+            fetchPetitions()
+    }
     },[])
 
     const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -36,26 +38,30 @@ export default function PetitionEdit({ auth }: PageProps) {
         setDescription(e.target.value)
     }
 
-    const handleEditClick = () => {
-        axios({method: 'post', url: '/api/v1/petitions/edit', params: { id: petition?.id, name, description }})
-        router.get('/petitions/view', {id: petition?.id})
+    const handleEditClick = async (status:number) => {
+        const {data:response} = await axios({method: 'post', url: '/api/v1/petitions/edit', params: { id: petition?.id, name, description, status }})
+        router.get('/petitions/view', {id: response.id})
     }
 
 
     return (
         <AuthenticatedLayout
             user={auth.user}
-            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Edit "{petition?.name}"</h2>}>
+            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">{petition? `Edit "${petition.name}"` : 'Create new petition'}     </h2>}>
                 
             <Head title="Petition" />
 
             <div className={style.outerBox}>
 
-                <input className={style.editName} value={name} onChange={e => handleNameChange(e)}/>
+                <input className={style.editName} value={name} maxLength={100} onChange={e => handleNameChange(e) }/>
 
-                <textarea className={style.editDescription} value={description} onChange={e => handleDescriptionChange(e)} />
+                <textarea className={style.editDescription} maxLength={500} value={description} onChange={e => handleDescriptionChange(e)} />
 
-                <button className={style.editButton} onClick={() => handleEditClick()}>Finish editing</button>
+                <div className={style.editBox}>
+                    <button className={style.editButton} onClick={() => handleEditClick(1)}>Save changes</button>
+                    <button className={style.editButton} onClick={() => handleEditClick(2)}>Finish {queryId? 'Editing' : 'Creating'}</button>
+                </div>
+                
             </div>
             
 

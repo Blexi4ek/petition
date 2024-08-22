@@ -22,6 +22,7 @@ export default function Petitions({ auth }: PageProps) {
         const fetchPetitions = async () => {
             const {data:response} = await axios('/api/v1/petitions/view', {params: {id: queryId}})
             setPetition(response.data)
+            console.log(response)
         }   
         fetchPetitions()
     },[])
@@ -46,12 +47,12 @@ export default function Petitions({ auth }: PageProps) {
                     <div className={style.infoBox}>
                         <span className={style.descriptionText}>
                             Created by: {  petition?.user_creator?.name || 'loading' } {' '} at: {petition ? (moment(Number(petition.created_at) * 1000)).format(dateFormat) : 'loading'} 
-                            <br/> Approved by: { petition?.user_moderator?.name || 'Has not yet been approved' }
-                            {' '} at: { petition?.activated_at ? (moment(Number(petition.activated_at) * 1000)).format(dateFormat):' '} 
-                            <br/> Supported at: { petition?.supported_at ? (moment(Number(petition.supported_at) * 1000)).format(dateFormat):' '} 
-                            <br/> Signs finished at: { petition?.answering_started_at ? (moment(Number(petition.answering_started_at) * 1000)).format(dateFormat):' '} 
-                            <br/> Answered by: { petition?.user_politician.name? petition.user_politician.name : 'Has not yet been answered' }
-                            {' '} at: {petition?.answered_at ? (moment(Number(petition.answered_at) * 1000)).format(dateFormat):' '} 
+                            <br/> { petition?.user_moderator?  `Approved by: ${petition.user_moderator.name} at:` : 'Has not yet been approved'}
+                            { petition?.activated_at ? (moment(Number(petition.activated_at) * 1000)).format(dateFormat):' '} 
+                            <br/> { petition?.supported_at ? `Supported at: ${(moment(Number(petition.supported_at) * 1000)).format(dateFormat)}`: 'Has not yet been supported'} 
+                            <br/> { petition?.answering_started_at ? `Signs finished at: ${(moment(Number(petition.answering_started_at) * 1000)).format(dateFormat)}`:'Signing is not yet finished'} 
+                            <br/> { petition?.user_politician ?  `Answered by: ${petition.user_politician.name} at:`  : 'Has not yet been answered' }
+                            {petition?.answered_at ? (moment(Number(petition.answered_at) * 1000)).format(dateFormat):' '} 
                         </span> 
                     </div>
                 </div>
@@ -63,11 +64,12 @@ export default function Petitions({ auth }: PageProps) {
                     <div>
                         { petition?.user_petitions?.map((item) => 
                             <div className={style.signInnerBox} key={item.id}>
-                                <div>
+                                
+                                <span>{item.user.id}. </span>
                                     <span className={style.signName}>
-                                        {item.user.id}. {item.user.name}
+                                        {item.user.name}
                                     </span>
-                                </div>
+                                    
                                 at: {(moment(Number(item.created_at) * 1000)).format(dateFormat)}
                             </div>
                         )}
