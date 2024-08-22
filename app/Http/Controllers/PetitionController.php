@@ -78,11 +78,10 @@ class PetitionController extends Controller
         $petition = new Petition();
         if ($id = $request->get('id')) {
             $petition = Petition::where(['id' => $id])->get()->first();
-            //404
         }
         if ($request->isMethod('POST')) {
             $data = $request->all();
-            $validatedData = $request->validate($petition->createUpdateValidation);
+            $request->validate($petition->createUpdateValidation);
             if($id && $petition) {
                 $petition->update($data);
             } else if (empty($id)) {
@@ -90,9 +89,12 @@ class PetitionController extends Controller
             }
         } 
 
-
-        // return response()->json(Petition::itemAlias(Petition::STATUS, Petition::STATUS_DRAFT));
         return response()->json($petition);
+    }
+
+    public function staticProperties()
+    {
+        return response()->json(Petition::itemAlias());
     }
 
 }

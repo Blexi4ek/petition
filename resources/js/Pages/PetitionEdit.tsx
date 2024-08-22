@@ -22,6 +22,9 @@ export default function PetitionEdit({ auth }: PageProps) {
         if (queryId) {
             const fetchPetitions = async () => {
                 const {data:response} = await axios('/api/v1/petitions/edit', {params: {id: queryId}})
+                if(!response.name) { 
+                    router.get('/petitions')
+                }
                 setPetition(response)
                 setName(response.name)
                 setDescription(response.description)
@@ -39,8 +42,13 @@ export default function PetitionEdit({ auth }: PageProps) {
     }
 
     const handleEditClick = async (status:number) => {
-        const {data:response} = await axios({method: 'post', url: '/api/v1/petitions/edit', params: { id: petition?.id, name, description, status }})
-        router.get('/petitions/view', {id: response.id})
+        try {
+            const {data:response} = await axios({method: 'post', url: '/api/v1/petitions/edit', params: { id: petition?.id, name, description, status }})
+            router.get('/petitions/view', {id: response.id})
+        } catch (e : any) {
+            let error = JSON.parse(e.request.response)
+            alert(error.message)
+        }
     }
 
 

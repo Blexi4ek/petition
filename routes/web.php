@@ -36,6 +36,7 @@ Route::get('/api/v1/petitions/view', [PetitionController::class, 'view'])->name(
 Route::delete('/api/v1/petitions/delete', [PetitionController::class, 'delete'])->name('petition.delete');
 Route::get('/api/v1/petitions/edit', [PetitionController::class, 'edit'])->name('petition.edit');
 Route::post('/api/v1/petitions/edit', [PetitionController::class, 'edit'])->name('petition.edit');
+Route::get('/api/v1/petitions/staticProperties', [PetitionController::class, 'staticProperties'])->name('petition.staticProperties');
 
 Route::get('/petitions', function () {
     return Inertia::render('Petitions');

@@ -16,8 +16,9 @@ class Base extends Model
     public $createUpdateValidation;
 
 
-    public $_items;
+    public static $_items;
 
+ 
     public static function itemAlias($type = null, $code = null)
     {
         if (isset($type) && isset($code)) {

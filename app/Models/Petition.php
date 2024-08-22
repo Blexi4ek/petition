@@ -20,30 +20,37 @@ class Petition extends Base
     ];
 
     const PAYMENT = 'payment';
+    const PAYMENT_ACTIVE = 1;
+    const PAYMENT_INACTIVE = 0;
 
     const STATUS = 'status';
     const STATUS_DRAFT = 1;
-    
+    const STATUS_UNMODERATED = 2;
+    const STATUS_ACTIVE = 3;
+    const STATUS_DECLINED = 4;
+    const STATUS_SUPPORTED = 5;
+    const STATUS_UNSUPPORTED = 6;
+    const STATUS_AWAITING_ANSWER = 7;
+    const STATUS_POSITIVE_ANSWER = 8;
+    const STATUS_NEGATIVE_ANSWER = 9;
 
 
-
-    public $_items = [
+    public static $_items = [
         self::STATUS => [
             self::STATUS_DRAFT => [ 'label' => 'Draft', 'value' => self::STATUS_DRAFT, 'statusClass' => 'style.gray' ],
-            [ 'label' => 'Unmoderated', 'value' => 2, 'statusClass' => 'style.yellow' ],
-            [ 'label' => 'Active', 'value' => 3, 'statusClass' => 'style.blue'  ],
-            [ 'label' => 'Declined', 'value' => 4 , 'statusClass' => 'style.red' ],
-            [ 'label' => 'Supported', 'value' => 5, 'statusClass' => 'style.green' ],
-            [ 'label' => 'Unsupported', 'value' => 6, 'statusClass' => 'style.red' ],
-            [ 'label' => 'Awaiting Answer', 'value' => 7, 'statusClass' => 'style.yellow' ],
-            [ 'label' => 'Positive Answer', 'value' => 8, 'statusClass' => 'style.green' ],
-            [ 'label' => 'Negative Answer', 'value' => 9, 'statusClass' => 'style.red' ],
+            self::STATUS_UNMODERATED => [ 'label' => 'Unmoderated', 'value' => self::STATUS_UNMODERATED, 'statusClass' => 'style.yellow' ],
+            self::STATUS_ACTIVE => [ 'label' => 'Active', 'value' => self::STATUS_ACTIVE, 'statusClass' => 'style.blue' ],
+            self::STATUS_DECLINED => [ 'label' => 'Declined', 'value' => self::STATUS_DECLINED , 'statusClass' => 'style.red' ],
+            self::STATUS_SUPPORTED => [ 'label' => 'Supported', 'value' => self::STATUS_SUPPORTED, 'statusClass' => 'style.green' ],
+            self::STATUS_UNSUPPORTED => [ 'label' => 'Unsupported', 'value' => self::STATUS_UNSUPPORTED, 'statusClass' => 'style.red' ],
+            self::STATUS_AWAITING_ANSWER => [ 'label' => 'Awaiting Answer', 'value' => self::STATUS_AWAITING_ANSWER, 'statusClass' => 'style.yellow' ],
+            self::STATUS_POSITIVE_ANSWER => [ 'label' => 'Positive Answer', 'value' => self::STATUS_POSITIVE_ANSWER, 'statusClass' => 'style.green' ],
+            self::STATUS_NEGATIVE_ANSWER => [ 'label' => 'Negative Answer', 'value' => self::STATUS_NEGATIVE_ANSWER, 'statusClass' => 'style.red' ],
         ],
         self::PAYMENT => [
-
-
+            self::PAYMENT_ACTIVE => [ 'label' => 'Active', 'value' => self::PAYMENT_ACTIVE ],
+            self::PAYMENT_INACTIVE => [ 'label' => 'Inactive', 'value' => self::PAYMENT_INACTIVE ],
         ],
-
     ];
 
 
