@@ -18,7 +18,8 @@ interface IPetition {
     user_creator: IUser;
     user_moderator: IUser;
     user_politician: IUser;
-    user_petitions : IUserPetition[]
+    user_petitions: IUserPetition[];
+    answer: string;
 }
 interface IPetitionOptions {
     status?: number[];

@@ -26,26 +26,128 @@ class Petition extends Base
     const STATUS = 'status';
     const STATUS_DRAFT = 1;
     const STATUS_UNMODERATED = 2;
-    const STATUS_ACTIVE = 3;
-    const STATUS_DECLINED = 4;
+    const STATUS_DECLINED = 3;
+    const STATUS_ACTIVE = 4;
     const STATUS_SUPPORTED = 5;
     const STATUS_UNSUPPORTED = 6;
-    const STATUS_AWAITING_ANSWER = 7;
-    const STATUS_POSITIVE_ANSWER = 8;
-    const STATUS_NEGATIVE_ANSWER = 9;
+    const STATUS_WAITING_ANSWER = 7;
+    const STATUS_ANSWER_YES = 8;
+    const STATUS_ANSWER_NO = 9;
+
+
+    const PAGE = 'page';
+    const PAGE_ALL = 'status_all';
+    const PAGE_MY = '';
 
 
     public static $_items = [
         self::STATUS => [
-            self::STATUS_DRAFT => [ 'label' => 'Draft', 'value' => self::STATUS_DRAFT, 'statusClass' => 'style.gray' ],
-            self::STATUS_UNMODERATED => [ 'label' => 'Unmoderated', 'value' => self::STATUS_UNMODERATED, 'statusClass' => 'style.yellow' ],
-            self::STATUS_ACTIVE => [ 'label' => 'Active', 'value' => self::STATUS_ACTIVE, 'statusClass' => 'style.blue' ],
-            self::STATUS_DECLINED => [ 'label' => 'Declined', 'value' => self::STATUS_DECLINED , 'statusClass' => 'style.red' ],
-            self::STATUS_SUPPORTED => [ 'label' => 'Supported', 'value' => self::STATUS_SUPPORTED, 'statusClass' => 'style.green' ],
-            self::STATUS_UNSUPPORTED => [ 'label' => 'Unsupported', 'value' => self::STATUS_UNSUPPORTED, 'statusClass' => 'style.red' ],
-            self::STATUS_AWAITING_ANSWER => [ 'label' => 'Awaiting Answer', 'value' => self::STATUS_AWAITING_ANSWER, 'statusClass' => 'style.yellow' ],
-            self::STATUS_POSITIVE_ANSWER => [ 'label' => 'Positive Answer', 'value' => self::STATUS_POSITIVE_ANSWER, 'statusClass' => 'style.green' ],
-            self::STATUS_NEGATIVE_ANSWER => [ 'label' => 'Negative Answer', 'value' => self::STATUS_NEGATIVE_ANSWER, 'statusClass' => 'style.red' ],
+            self::STATUS_DRAFT => [ 
+                'label' => 'Draft', 
+                'value' => self::STATUS_DRAFT, 
+                'statusClass' => 'style.gray',
+                'children' => [self::STATUS_UNMODERATED], 
+                'childrenAdmin' => [self::STATUS_UNMODERATED, self::STATUS_ACTIVE],
+            ],
+            self::STATUS_UNMODERATED => [ 
+                'label' => 'Unmoderated', 
+                'value' => self::STATUS_UNMODERATED, 
+                'statusClass' => 'style.yellow',
+                'children' => [self::STATUS_DRAFT], 
+                'childrenAdmin' => [self::STATUS_DRAFT, self::STATUS_DECLINED, self::STATUS_ACTIVE],
+            ],
+            self::STATUS_DECLINED => [
+                'label' => 'Declined', 
+                'value' => self::STATUS_DECLINED, 
+                'statusClass' => 'style.red',
+                'children' => [self::STATUS_DRAFT], 
+                'childrenAdmin' => [self::STATUS_DRAFT, self::STATUS_ACTIVE],
+            ],
+
+            self::STATUS_ACTIVE => [ 
+                'label' => 'Active', 
+                'value' => self::STATUS_ACTIVE, 
+                'statusClass' => 'style.blue',
+                'childrenCron' => [self::STATUS_SUPPORTED, self::STATUS_UNSUPPORTED, self::STATUS_WAITING_ANSWER],
+            ],
+
+            self::STATUS_SUPPORTED => [ 
+                'label' => 'Supported', 
+                'value' => self::STATUS_SUPPORTED, 
+                'statusClass' => 'style.green',
+                'childrenAdmin' => [self::STATUS_WAITING_ANSWER],
+            ],
+
+            self::STATUS_UNSUPPORTED => [ 
+                'label' => 'Unsupported', 
+                'value' => self::STATUS_UNSUPPORTED, 
+                'statusClass' => 'style.red'
+            ],
+
+            self::STATUS_WAITING_ANSWER => [ 
+                'label' => 'Awaiting Answer', 
+                'value' => self::STATUS_WAITING_ANSWER, 
+                'statusClass' => 'style.yellow',
+                'childrenAdmin' => [self::STATUS_ANSWER_YES, self::STATUS_ANSWER_NO],
+            ],
+
+            self::STATUS_ANSWER_YES => [ 
+                'label' => 'Positive Answer', 
+                'value' => self::STATUS_ANSWER_YES, 
+                'statusClass' => 'style.green'
+            ],
+
+            self::STATUS_ANSWER_NO => [ 
+                'label' => 'Negative Answer', 
+                'value' => self::STATUS_ANSWER_NO, 
+                'statusClass' => 'style.red'
+            ],
+        ],
+        'answer' => [self::STATUS_ANSWER_YES, self::STATUS_ANSWER_NO],
+
+        'pages_dropdown' => [
+            User::ROLE_GUEST => [
+                self::PAGE_ALL => [self::STATUS_ACTIVE, self::STATUS_SUPPORTED, self::STATUS_UNSUPPORTED, self::STATUS_WAITING_ANSWER, self::STATUS_ANSWER_YES, self::STATUS_ANSWER_NO ],
+            ],
+            User::ROLE_USER => [
+                'status_all' => [],
+                'status_my' => [],
+                'status_signs' => [],
+            ],
+            User::ROLE_ADMIN => [
+                'status_all' => [],
+                'status_my' => [],
+                'status_signs' => [],
+                'status_mod' => [],
+                'status_response' => [],
+            ],
+
+            self::PAGE_ALL => [
+                User::ROLE_GUEST => [self::STATUS_ACTIVE, self::STATUS_SUPPORTED, self::STATUS_UNSUPPORTED, self::STATUS_WAITING_ANSWER, self::STATUS_ANSWER_YES, self::STATUS_ANSWER_NO ],
+                User::ROLE_USER => [self::STATUS_ACTIVE, self::STATUS_SUPPORTED, self::STATUS_UNSUPPORTED, self::STATUS_WAITING_ANSWER, self::STATUS_ANSWER_YES, self::STATUS_ANSWER_NO ],
+                User::ROLE_ADMIN => [self::STATUS_UNMODERATED, self::STATUS_DECLINED, self::STATUS_ACTIVE, self::STATUS_SUPPORTED, self::STATUS_UNSUPPORTED, self::STATUS_WAITING_ANSWER, self::STATUS_ANSWER_YES, self::STATUS_ANSWER_NO ],
+            ],    
+            'status_my' => [
+                User::ROLE_USER => [self::STATUS_DRAFT, self::STATUS_UNMODERATED, self::STATUS_DECLINED, self::STATUS_ACTIVE, self::STATUS_SUPPORTED, self::STATUS_UNSUPPORTED, self::STATUS_WAITING_ANSWER, self::STATUS_ANSWER_YES, self::STATUS_ANSWER_NO ],
+                User::ROLE_ADMIN => [self::STATUS_DRAFT, self::STATUS_UNMODERATED, self::STATUS_DECLINED, self::STATUS_ACTIVE, self::STATUS_SUPPORTED, self::STATUS_UNSUPPORTED, self::STATUS_WAITING_ANSWER, self::STATUS_ANSWER_YES, self::STATUS_ANSWER_NO ],
+            ],    
+            'status_signs' => [
+                User::ROLE_USER => [self::STATUS_ACTIVE, self::STATUS_SUPPORTED, self::STATUS_UNSUPPORTED, self::STATUS_WAITING_ANSWER, self::STATUS_ANSWER_YES, self::STATUS_ANSWER_NO ],
+                User::ROLE_ADMIN => [self::STATUS_ACTIVE, self::STATUS_SUPPORTED, self::STATUS_UNSUPPORTED, self::STATUS_WAITING_ANSWER, self::STATUS_ANSWER_YES, self::STATUS_ANSWER_NO ],
+            ],
+            'status_mod' => [
+                User::ROLE_ADMIN => [self::STATUS_UNMODERATED, self::STATUS_DECLINED, self::STATUS_ACTIVE, self::STATUS_SUPPORTED, self::STATUS_UNSUPPORTED, self::STATUS_WAITING_ANSWER, self::STATUS_ANSWER_YES, self::STATUS_ANSWER_NO ],
+            ],
+            'status_response' => [
+                User::ROLE_ADMIN => [self::STATUS_WAITING_ANSWER, self::STATUS_ANSWER_YES, self::STATUS_ANSWER_NO ],
+            ],
+        ], 
+        self::PAGES => [
+            self::PAGE_ALL => [ 
+                'label' => 'Petitions', 
+                'value' => self::PAGE_ALL, 
+                'url' => '',
+            ],
         ],
         self::PAYMENT => [
             self::PAYMENT_ACTIVE => [ 'label' => 'Active', 'value' => self::PAYMENT_ACTIVE ],

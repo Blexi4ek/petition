@@ -19,9 +19,11 @@ class Base extends Model
     public static $_items;
 
  
-    public static function itemAlias($type = null, $code = null)
+    public static function itemAlias($type = null, $code = null, $sub_code = null)
     {
-        if (isset($type) && isset($code)) {
+        if (isset($type) && isset($code) && isset($sub_code)) {
+            return isset(static::$_items[$type][$code][$sub_code]) ? static::$_items[$type][$code][$sub_code] : false;
+        } else if (isset($type) && isset($code)) {
             return isset(static::$_items[$type][$code]) ? static::$_items[$type][$code] : false;
         } else if (isset($type)) {
             return isset(static::$_items[$type]) ? static::$_items[$type] : false;
@@ -29,6 +31,4 @@ class Base extends Model
             return static::$_items;
         }
     }
-
-
 }

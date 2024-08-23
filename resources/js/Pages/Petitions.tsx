@@ -8,7 +8,7 @@ import ReactPaginate from 'react-paginate';
 
 import { PetitionItem } from '@/Components/PetitionItem';
 import style from '../../css/Petition.module.css'
-import optionsStatus from '../consts/petitionStatuses'
+import usePetitionStaticProperties, { getStatusOptions } from '@/api/usePetitionStaticProperties';
 
 
 export default function Petitions({ auth }: PageProps) {
@@ -38,6 +38,11 @@ export default function Petitions({ auth }: PageProps) {
         activatedTo: '',
         answeredFrom: '',
         answeredTo: ''})
+
+    const properties = usePetitionStaticProperties()
+
+ 
+
 
     useEffect(()=> {
         if (queryPage) setPage(Number(queryPage))
@@ -129,7 +134,7 @@ export default function Petitions({ auth }: PageProps) {
         }
 
         const clickCheck = () => {
-            refreshPage()
+            console.log();
         }
 
         const handleRefresh = () => {
@@ -160,8 +165,9 @@ export default function Petitions({ auth }: PageProps) {
                     <option value="3">Signed</option>
                 </select>
 
-                <MultiSelect value={petitionOptions.status} options={optionsStatus} optionLabel="label" onChange={(e) => handleStatusChange(e)}
-                fixedPlaceholder={true} placeholder="Select Status" maxSelectedLabels={3} className={style.multiSelect}
+
+                <MultiSelect value={petitionOptions.status} options={getStatusOptions()} optionLabel="label" onChange={(e) => handleStatusChange(e)}
+                fixedPlaceholder={true} placeholder="Select Status" className={style.multiSelect}
                 panelClassName={style.multiSelect} itemClassName={style.multiSelectItem} checkboxIcon={'a'} />
             
                 <input value={petitionOptions.name} onChange={e => handleinputPetitionQChange(e)} placeholder='Search by name'/>
@@ -198,7 +204,7 @@ export default function Petitions({ auth }: PageProps) {
 
             </div>
 
-            {petitions.map((item) => <PetitionItem petition={item}
+            {petitions.map((item) => <PetitionItem petition={item} status={properties?.status}
             key={item.id} refresh={() => handleRefresh()}/>)}
 
             <div

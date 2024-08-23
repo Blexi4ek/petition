@@ -1,18 +1,18 @@
-import React, { FC, useEffect, useState } from 'react'
+import React, { FC, useState } from 'react'
 import style from '../../css/PetitionItem.module.css'
 import axios from 'axios';
 import moment from 'moment';
 import dateFormat from '@/consts/dateFormat';
-import cn from 'classnames';
-import petitionStatuses from '../consts/petitionStatuses';
 import { router } from '@inertiajs/react';
+import { IPetitionStatus } from '@/api/usePetitionStaticProperties';
 
 interface IPetitionProp {
     petition: IPetition
     refresh: () => void;
+    status?: IPetitionStatus;
 }
 
-export const PetitionItem: FC<IPetitionProp> = ({petition, refresh}) => {
+export const PetitionItem: FC<IPetitionProp> = ({petition, refresh, status}) => {
 
     const openPetition = () => {
         router.get('petitions/view', {id: petition.id})
@@ -39,7 +39,7 @@ export const PetitionItem: FC<IPetitionProp> = ({petition, refresh}) => {
 
                     <div className={style.petitionInnerBox}>
                         <span className={style.petitionText}>{petition.name}</span>
-                        <span className={eval(petitionStatuses.find(o => o.value === petition.status)?.statusClass || '')}>{petitionStatuses.find(o => o.value === petition.status)?.label}</span>
+                        <span className={eval(status?.[petition.status]?.statusClass || '')}>{status?.[petition.status]?.label}</span>
                     </div>                        
                         
                     <div className={style.petitionInnerBox}>
@@ -48,8 +48,6 @@ export const PetitionItem: FC<IPetitionProp> = ({petition, refresh}) => {
                         <button className={style.petitionButton} onClick={e => openPetition()}>Open</button>
                         <button className={style.petitionButtonRed} onClick={e => deletePetition()}>Delete</button>
                     </div>
-
-                    
 
                 </div>
             </div>

@@ -95,6 +95,9 @@ class PetitionController extends Controller
     public function staticProperties()
     {
         return response()->json(Petition::itemAlias());
+        //return response()->json(Petition::itemAlias(Petition::STATUS));
+       //return response()->json(Petition::itemAlias(Petition::STATUS, Petition::STATUS_DRAFT));
+        //return response()->json(Petition::itemAlias(Petition::STATUS, Petition::STATUS_DRAFT, 'children'));
     }
 
 }
