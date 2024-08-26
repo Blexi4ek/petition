@@ -24,13 +24,12 @@ export default function Petitions({ auth }: PageProps) {
     const queryAnsweredTo = queryParams.get('answeredTo')
 
     const [petitions, setPetitions] = useState<IPetition[]>([])
-    const [selectedSort, setSelectedSort] = useState('1')
     const [page, setPage] = useState(1)
     const [totalPages, setTotalPages] = useState(0)
     const [refresh, setRefresh] = useState(false)
 
     const [petitionOptions, setPetitionOptions] = useState<IPetitionOptions>({
-        status: [2,3,4],
+        status: [2, 3 ,4],
         name: '',
         createdFrom: '',
         createdTo: '',
@@ -40,8 +39,6 @@ export default function Petitions({ auth }: PageProps) {
         answeredTo: ''})
 
     const properties = usePetitionStaticProperties()
-
- 
 
 
     useEffect(()=> {
@@ -54,6 +51,7 @@ export default function Petitions({ auth }: PageProps) {
                 if (key.includes('status')) queryStatus.push(Number(value))
             })
         }
+        
         setPetitionOptions({status: queryStatus, name: queryName || '', createdFrom:queryCreatedFrom || '',
             createdTo:queryCreatedTo || '', activatedFrom:queryActivatedFrom || '', activatedTo:queryActivatedTo || '',
             answeredFrom: queryAnsweredFrom || '', answeredTo: queryAnsweredTo || ''
@@ -62,8 +60,10 @@ export default function Petitions({ auth }: PageProps) {
     },[])
 
     useEffect(()=> {
-        const fetchPetitions = async () => {   
-            const {data: response} = await axios(`/api/v1/petitions`, {params: {
+        const fetchPetitions = async () => {
+
+
+            const {data: response} = await axios(`/api/v1${window.location.pathname}`, {params: {
                 page, 
                 petitionStatus:petitionOptions.status, 
                 petitionQ:petitionOptions.name,
@@ -79,19 +79,13 @@ export default function Petitions({ auth }: PageProps) {
         }
         fetchPetitions()
     }, [page,refresh])
-
-
-        const selectSort = (e: React.ChangeEvent<HTMLSelectElement>) => {
-            setSelectedSort(e.target.value)
-        }
         
-
         const refreshPage = (options = petitionOptions, newPage: number = 1  ) => {
             setPage(newPage)
             if (newPage === 1) setRefresh(!refresh)
             setPetitionOptions(options)
 
-            router.get('petitions', {page: newPage, status:options.status, name:options.name,
+            router.get(window.location.pathname, {page: newPage, status:options.status, name:options.name,
                 createdFrom:options.createdFrom, createdTo:options.createdTo, activatedFrom:options.activatedFrom,
                 activatedTo:options.activatedTo, answeredFrom:options.answeredFrom, answeredTo:options.answeredTo},
                 {preserveState: true, preserveScroll: true})
@@ -134,7 +128,7 @@ export default function Petitions({ auth }: PageProps) {
         }
 
         const clickCheck = () => {
-            console.log();
+            console.log(petitions);
         }
 
         const handleRefresh = () => {
@@ -157,16 +151,8 @@ export default function Petitions({ auth }: PageProps) {
             </button>
 
             <div className={style.optionsBox}>
-                
 
-                <select name="selectedSort" defaultValue={'1'} onChange={e => selectSort(e)}>
-                    <option value="1">All</option>
-                    <option value="2">My</option>
-                    <option value="3">Signed</option>
-                </select>
-
-
-                <MultiSelect value={petitionOptions.status} options={getStatusOptions()} optionLabel="label" onChange={(e) => handleStatusChange(e)}
+                <MultiSelect value={petitionOptions.status} options={getStatusOptions(2, window.location.pathname)} optionLabel="label" onChange={(e) => handleStatusChange(e)}
                 fixedPlaceholder={true} placeholder="Select Status" className={style.multiSelect}
                 panelClassName={style.multiSelect} itemClassName={style.multiSelectItem} checkboxIcon={'a'} />
             

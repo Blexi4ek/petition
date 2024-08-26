@@ -14,51 +14,103 @@ use Carbon\Carbon;
 class PetitionController extends Controller 
 {
 
+    private function base($request, $query) 
+    {
+        if (!empty($request->get('petitionStatus'))) {
+            $query->whereIn('status', $request->get('petitionStatus'));
+        }
+        if (!empty($request->get('petitionQ'))) {
+            #(
+                        $query->where('petitions.name', 'like', "%{$request->get('petitionQ')}%");
+            #OR
+                       # $query->where('petitions.name', 'like', "%{$request->get('petition.q')}%");
+            #)
+            
+           }            
+        if (!empty($request->get('petitionCreatedAtFrom'))) {
+            $query->where('petitions.created_at',  '>=' , $request->get('petitionCreatedAtFrom'));
+        }
+        if (!empty($request->get('petitionCreatedAtTo'))) {
+            $query->where('petitions.created_at',  '<=' , $request->get('petitionCreatedAtTo'));
+        }
+        if (!empty($request->get('petitionActivatedAtFrom'))) {
+            $query->where('petitions.activated_at',  '>=' , $request->get('petitionActivatedAtFrom'));
+        }
+        if (!empty($request->get('petitionActivatedAtTo'))) {
+            $query->where('petitions.activated_at',  '<=' , $request->get('petitionActivatedAtTo'));
+        }
+        if (!empty($request->get('petitionAnsweredAtFrom'))) {
+            $query->where('petitions.answered_at',  '>=' , $request->get('petitionAnsweredAtFrom'));
+        }
+        if (!empty($request->get('petitionAnsweredAtTo'))) {
+            $query->where('petitions.answered_at',  '<=' , $request->get('petitionAnsweredAtTo'));
+        }
+        
+        return $query;
+    }
+
     
     public function index(Request $request)
     { 
         $query = Petition::with(['userCreator']);
-       
-        if (!empty($request->get('petitionStatus'))) {
-            $query->whereIn('status', $request->get('petitionStatus'));
+    
+        if (Auth::id()) {
+            $query->whereIn('status', Petition::itemAlias('pages_dropdown', User::ROLE_USER, Petition::PAGE_ALL));
+        } else {
+            $query->whereIn('status', Petition::itemAlias('pages_dropdown', User::ROLE_GUEST, Petition::PAGE_ALL));
         }
 
-        if (!empty($request->get('petitionQ'))) {
-#(
-            $query->where('petitions.name', 'like', "%{$request->get('petitionQ')}%");
-#OR
-           # $query->where('petitions.name', 'like', "%{$request->get('petition.q')}%");
-#)
+        $query = $this->base($request, $query);
+        $petitions = $query->paginate(Petition::PER_PAGE);  
+        return response()->json($petitions);
 
-        }
+    }
 
-        if (!empty($request->get('petitionCreatedAtFrom'))) {
-            $query->where('petitions.created_at',  '>=' , $request->get('petitionCreatedAtFrom'));
-        }
+    public function my(Request $request)
+    { 
+        $query = Petition::with(['userCreator']);
+        $query->where(['created_by' => Auth::id()]);
+        $query->whereIn('status', Petition::itemAlias('pages_dropdown', User::ROLE_USER, Petition::PAGE_MY));
 
-        if (!empty($request->get('petitionCreatedAtTo'))) {
-            $query->where('petitions.created_at',  '<=' , $request->get('petitionCreatedAtTo'));
-        }
+        $query = $this->base($request, $query);
+        $petitions = $query->paginate(Petition::PER_PAGE);  
+        return response()->json($petitions);
+    }
 
-        if (!empty($request->get('petitionActivatedAtFrom'))) {
-            $query->where('petitions.activated_at',  '>=' , $request->get('petitionActivatedAtFrom'));
-        }
+    public function signs(Request $request)
+    { 
+        $query = Petition::with(['userCreator']);
+        $query->join('user_petition', 'petitions.id', '=', 'user_petition.petition_id')
+        ->select('petitions.*', 'user_petition.user_id', 'user_petition.petition_id', 'user_petition.id as signId');
+        $query->where(['user_petition.user_id' => Auth::id()]);
+        $query->whereIn('status', Petition::itemAlias('pages_dropdown', User::ROLE_USER, Petition::PAGE_SIGNS));
 
-        if (!empty($request->get('petitionActivatedAtTo'))) {
-            $query->where('petitions.activated_at',  '<=' , $request->get('petitionActivatedAtTo'));
-        }
+        $query = $this->base($request, $query);
+        $petitions = $query->paginate(Petition::PER_PAGE);  
+        return response()->json($petitions);
+    }
 
-        if (!empty($request->get('petitionAnsweredAtFrom'))) {
-            $query->where('petitions.answered_at',  '>=' , $request->get('petitionAnsweredAtFrom'));
-        }
 
-        if (!empty($request->get('petitionAnsweredAtTo'))) {
-            $query->where('petitions.answered_at',  '<=' , $request->get('petitionAnsweredAtTo'));
-        }
+    public function moderated(Request $request)
+    { 
+        $query = Petition::with(['userCreator']);
+        $query->where(['moderated_by' => Auth::id()]);
+        $query->whereIn('status', Petition::itemAlias('pages_dropdown', User::ROLE_ADMIN, Petition::PAGE_MODERATED));
 
-        $petitions = $query->paginate(10);  
-        
-        return response()-> json($petitions);
+        $query = $this->base($request, $query);
+        $petitions = $query->paginate(Petition::PER_PAGE);  
+        return response()->json($petitions);
+    }
+
+    public function response(Request $request)
+    { 
+        $query = Petition::with(['userCreator']);
+        $query->where(['answered_by' => Auth::id()]);
+        $query->whereIn('status', Petition::itemAlias('pages_dropdown', User::ROLE_ADMIN, Petition::PAGE_RESPONSE));
+
+        $query = $this->base($request, $query);
+        $petitions = $query->paginate(Petition::PER_PAGE);  
+        return response()->json($petitions);
     }
 
     public function view(Request $request)

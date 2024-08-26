@@ -12,8 +12,8 @@ export interface IPetitionStatus {
 export interface IPetitionStaticProperties {
     status: IPetitionStatus,
     pages_dropdown: {
-        [key: string]: {
-            [key: number]: number[];
+        [key: number]: {
+            [key: string]: number[];
         }
     }
     answer: number[],
@@ -34,13 +34,20 @@ function usePetitionStaticProperties() {
         }
         fetchProperties()
     },[])
-
+    
     return properties
 }
 
-export const getStatusOptions = () => {
+export const getStatusOptions = (role: number, statusPath: string) => {
+    let statusMode
+    if (statusPath === '/petitions/my') statusMode = 'status_my'
+    else if (statusPath === '/petitions/signs') statusMode = 'status_signs'
+    else if (statusPath === '/petitions/moderated') statusMode = 'status_moderated'
+    else if (statusPath === '/petitions/response') statusMode = 'status_response'
+    else statusMode = 'status_all'
+
     const properties = usePetitionStaticProperties()
-    const options = properties?.pages_dropdown?.status_all[1];
+    const options = properties?.pages_dropdown[role][statusMode];
     const statusArray = properties?.status ? Object.values(properties?.status) : [];
     const statusOptions = statusArray.filter(status => options?.includes(status.value));
 

@@ -29,8 +29,10 @@ Route::middleware('auth')->group(function () {
 
 require __DIR__.'/auth.php';
 
-Route::get('/api/v1/petitions/my', [PetitionController::class,'indexMy'])->name('petition.list.my');
-Route::get('/api/v1/petitions/signed', [PetitionController::class, 'indexSigned'])->name('petition.list.signed');
+Route::get('/api/v1/petitions/my', [PetitionController::class,'my'])->name('petition.list.my');
+Route::get('/api/v1/petitions/signs', [PetitionController::class, 'signs'])->name('petition.list.signs');
+Route::get('/api/v1/petitions/moderated', [PetitionController::class, 'moderated'])->name('petition.list.moderated');
+Route::get('/api/v1/petitions/response', [PetitionController::class, 'response'])->name('petition.list.response');
 Route::get('/api/v1/petitions', [PetitionController::class, 'index'])->name('petition.list');
 Route::get('/api/v1/petitions/view', [PetitionController::class, 'view'])->name('petition.view');
 Route::delete('/api/v1/petitions/delete', [PetitionController::class, 'delete'])->name('petition.delete');
@@ -42,10 +44,26 @@ Route::get('/petitions', function () {
     return Inertia::render('Petitions');
 })->middleware(['auth', 'verified'])->name('petitions');
 
+Route::get('/petitions/my', function () {
+    return Inertia::render('Petitions');
+})->middleware(['auth', 'verified'])->name('petitions/my');
+
+Route::get('/petitions/signs', function () {
+    return Inertia::render('Petitions');
+})->middleware(['auth', 'verified'])->name('petitions/signs');
+
+Route::get('/petitions/moderated', function () {
+    return Inertia::render('Petitions');
+})->middleware(['auth', 'verified'])->name('petitions/moderated');
+
+Route::get('/petitions/response', function () {
+    return Inertia::render('Petitions');
+})->middleware(['auth', 'verified'])->name('petitions/response');
+
 Route::get('/petitions/view', function () {
     return Inertia::render('PetitionId');
-})->middleware(['auth', 'verified'])->name('petition');
+})->middleware(['auth', 'verified'])->name('petition/view');
 
 Route::get('/petitions/edit', function () {
     return Inertia::render('PetitionEdit');
-})->middleware(['auth', 'verified'])->name('petition');
+})->middleware(['auth', 'verified'])->name('petition/edit');

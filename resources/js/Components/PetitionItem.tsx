@@ -15,7 +15,8 @@ interface IPetitionProp {
 export const PetitionItem: FC<IPetitionProp> = ({petition, refresh, status}) => {
 
     const openPetition = () => {
-        router.get('petitions/view', {id: petition.id})
+        if (window.location.pathname.length <= 10) router.get('/petitions/view', {id: petition.id})
+        else router.get('view', {id: petition.id})
     }
 
     const deletePetition = async () => {

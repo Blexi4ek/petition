@@ -33,6 +33,30 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                                 </NavLink>
                             </div>
 
+                            <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                                <NavLink href={route('petitions/my')} active={route().current('petitions/my')}>
+                                    My petitions
+                                </NavLink>
+                            </div>
+
+                            <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                                <NavLink href={route('petitions/signs')} active={route().current('petitions/signs')}>
+                                    Signed petitions
+                                </NavLink>
+                            </div>
+
+                            <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                                <NavLink href={route('petitions/moderated')} active={route().current('petitions/moderated')}>
+                                    Moderated petitions
+                                </NavLink>
+                            </div>
+
+                            <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                                <NavLink href={route('petitions/response')} active={route().current('petitions/response')}>
+                                    Responded petitions
+                                </NavLink>
+                            </div>
+
                         </div>
 
                         <div className="hidden sm:flex sm:items-center sm:ms-6">

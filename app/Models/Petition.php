@@ -37,7 +37,12 @@ class Petition extends Base
 
     const PAGE = 'page';
     const PAGE_ALL = 'status_all';
-    const PAGE_MY = '';
+    const PAGE_MY = 'status_my';
+    const PAGE_SIGNS = 'status_signs';
+    const PAGE_MODERATED = 'status_moderated';
+    const PAGE_RESPONSE = 'status_response';
+
+    const PER_PAGE = 10;
 
 
     public static $_items = [
@@ -110,43 +115,63 @@ class Petition extends Base
                 self::PAGE_ALL => [self::STATUS_ACTIVE, self::STATUS_SUPPORTED, self::STATUS_UNSUPPORTED, self::STATUS_WAITING_ANSWER, self::STATUS_ANSWER_YES, self::STATUS_ANSWER_NO ],
             ],
             User::ROLE_USER => [
-                'status_all' => [],
-                'status_my' => [],
-                'status_signs' => [],
+                self::PAGE_ALL => [self::STATUS_ACTIVE, self::STATUS_SUPPORTED, self::STATUS_UNSUPPORTED, self::STATUS_WAITING_ANSWER, self::STATUS_ANSWER_YES, self::STATUS_ANSWER_NO ],
+                self::PAGE_MY => [self::STATUS_DRAFT, self::STATUS_UNMODERATED, self::STATUS_DECLINED, self::STATUS_ACTIVE, self::STATUS_SUPPORTED, self::STATUS_UNSUPPORTED, self::STATUS_WAITING_ANSWER, self::STATUS_ANSWER_YES, self::STATUS_ANSWER_NO ],
+                self::PAGE_SIGNS => [self::STATUS_ACTIVE, self::STATUS_SUPPORTED, self::STATUS_UNSUPPORTED, self::STATUS_WAITING_ANSWER, self::STATUS_ANSWER_YES, self::STATUS_ANSWER_NO ],
             ],
             User::ROLE_ADMIN => [
-                'status_all' => [],
-                'status_my' => [],
-                'status_signs' => [],
-                'status_mod' => [],
-                'status_response' => [],
+                self::PAGE_ALL => [self::STATUS_UNMODERATED, self::STATUS_DECLINED, self::STATUS_ACTIVE, self::STATUS_SUPPORTED, self::STATUS_UNSUPPORTED, self::STATUS_WAITING_ANSWER, self::STATUS_ANSWER_YES, self::STATUS_ANSWER_NO ],
+                self::PAGE_MY => [self::STATUS_DRAFT, self::STATUS_UNMODERATED, self::STATUS_DECLINED, self::STATUS_ACTIVE, self::STATUS_SUPPORTED, self::STATUS_UNSUPPORTED, self::STATUS_WAITING_ANSWER, self::STATUS_ANSWER_YES, self::STATUS_ANSWER_NO ],
+                self::PAGE_SIGNS => [self::STATUS_ACTIVE, self::STATUS_SUPPORTED, self::STATUS_UNSUPPORTED, self::STATUS_WAITING_ANSWER, self::STATUS_ANSWER_YES, self::STATUS_ANSWER_NO ],
+                self::PAGE_MODERATED => [self::STATUS_UNMODERATED, self::STATUS_DECLINED, self::STATUS_ACTIVE, self::STATUS_SUPPORTED, self::STATUS_UNSUPPORTED, self::STATUS_WAITING_ANSWER, self::STATUS_ANSWER_YES, self::STATUS_ANSWER_NO ],
+                self::PAGE_RESPONSE => [self::STATUS_WAITING_ANSWER, self::STATUS_ANSWER_YES, self::STATUS_ANSWER_NO ],
             ],
 
-            self::PAGE_ALL => [
-                User::ROLE_GUEST => [self::STATUS_ACTIVE, self::STATUS_SUPPORTED, self::STATUS_UNSUPPORTED, self::STATUS_WAITING_ANSWER, self::STATUS_ANSWER_YES, self::STATUS_ANSWER_NO ],
-                User::ROLE_USER => [self::STATUS_ACTIVE, self::STATUS_SUPPORTED, self::STATUS_UNSUPPORTED, self::STATUS_WAITING_ANSWER, self::STATUS_ANSWER_YES, self::STATUS_ANSWER_NO ],
-                User::ROLE_ADMIN => [self::STATUS_UNMODERATED, self::STATUS_DECLINED, self::STATUS_ACTIVE, self::STATUS_SUPPORTED, self::STATUS_UNSUPPORTED, self::STATUS_WAITING_ANSWER, self::STATUS_ANSWER_YES, self::STATUS_ANSWER_NO ],
-            ],    
-            'status_my' => [
-                User::ROLE_USER => [self::STATUS_DRAFT, self::STATUS_UNMODERATED, self::STATUS_DECLINED, self::STATUS_ACTIVE, self::STATUS_SUPPORTED, self::STATUS_UNSUPPORTED, self::STATUS_WAITING_ANSWER, self::STATUS_ANSWER_YES, self::STATUS_ANSWER_NO ],
-                User::ROLE_ADMIN => [self::STATUS_DRAFT, self::STATUS_UNMODERATED, self::STATUS_DECLINED, self::STATUS_ACTIVE, self::STATUS_SUPPORTED, self::STATUS_UNSUPPORTED, self::STATUS_WAITING_ANSWER, self::STATUS_ANSWER_YES, self::STATUS_ANSWER_NO ],
-            ],    
-            'status_signs' => [
-                User::ROLE_USER => [self::STATUS_ACTIVE, self::STATUS_SUPPORTED, self::STATUS_UNSUPPORTED, self::STATUS_WAITING_ANSWER, self::STATUS_ANSWER_YES, self::STATUS_ANSWER_NO ],
-                User::ROLE_ADMIN => [self::STATUS_ACTIVE, self::STATUS_SUPPORTED, self::STATUS_UNSUPPORTED, self::STATUS_WAITING_ANSWER, self::STATUS_ANSWER_YES, self::STATUS_ANSWER_NO ],
-            ],
-            'status_mod' => [
-                User::ROLE_ADMIN => [self::STATUS_UNMODERATED, self::STATUS_DECLINED, self::STATUS_ACTIVE, self::STATUS_SUPPORTED, self::STATUS_UNSUPPORTED, self::STATUS_WAITING_ANSWER, self::STATUS_ANSWER_YES, self::STATUS_ANSWER_NO ],
-            ],
-            'status_response' => [
-                User::ROLE_ADMIN => [self::STATUS_WAITING_ANSWER, self::STATUS_ANSWER_YES, self::STATUS_ANSWER_NO ],
-            ],
+            // self::PAGE_ALL => [
+            //     User::ROLE_GUEST => [self::STATUS_ACTIVE, self::STATUS_SUPPORTED, self::STATUS_UNSUPPORTED, self::STATUS_WAITING_ANSWER, self::STATUS_ANSWER_YES, self::STATUS_ANSWER_NO ],
+            //     User::ROLE_USER => [self::STATUS_ACTIVE, self::STATUS_SUPPORTED, self::STATUS_UNSUPPORTED, self::STATUS_WAITING_ANSWER, self::STATUS_ANSWER_YES, self::STATUS_ANSWER_NO ],
+            //     User::ROLE_ADMIN => [self::STATUS_UNMODERATED, self::STATUS_DECLINED, self::STATUS_ACTIVE, self::STATUS_SUPPORTED, self::STATUS_UNSUPPORTED, self::STATUS_WAITING_ANSWER, self::STATUS_ANSWER_YES, self::STATUS_ANSWER_NO ],
+            // ],    
+            // self::PAGE_MY => [
+            //     User::ROLE_USER => [self::STATUS_DRAFT, self::STATUS_UNMODERATED, self::STATUS_DECLINED, self::STATUS_ACTIVE, self::STATUS_SUPPORTED, self::STATUS_UNSUPPORTED, self::STATUS_WAITING_ANSWER, self::STATUS_ANSWER_YES, self::STATUS_ANSWER_NO ],
+            //     User::ROLE_ADMIN => [self::STATUS_DRAFT, self::STATUS_UNMODERATED, self::STATUS_DECLINED, self::STATUS_ACTIVE, self::STATUS_SUPPORTED, self::STATUS_UNSUPPORTED, self::STATUS_WAITING_ANSWER, self::STATUS_ANSWER_YES, self::STATUS_ANSWER_NO ],
+            // ],    
+            // self::PAGE_SIGNS => [
+            //     User::ROLE_USER => [self::STATUS_ACTIVE, self::STATUS_SUPPORTED, self::STATUS_UNSUPPORTED, self::STATUS_WAITING_ANSWER, self::STATUS_ANSWER_YES, self::STATUS_ANSWER_NO ],
+            //     User::ROLE_ADMIN => [self::STATUS_ACTIVE, self::STATUS_SUPPORTED, self::STATUS_UNSUPPORTED, self::STATUS_WAITING_ANSWER, self::STATUS_ANSWER_YES, self::STATUS_ANSWER_NO ],
+            // ],
+            // self::PAGE_MOD => [
+            //     User::ROLE_ADMIN => [self::STATUS_UNMODERATED, self::STATUS_DECLINED, self::STATUS_ACTIVE, self::STATUS_SUPPORTED, self::STATUS_UNSUPPORTED, self::STATUS_WAITING_ANSWER, self::STATUS_ANSWER_YES, self::STATUS_ANSWER_NO ],
+            // ],
+            // self::PAGE_RESPONSE => [
+            //     User::ROLE_ADMIN => [self::STATUS_WAITING_ANSWER, self::STATUS_ANSWER_YES, self::STATUS_ANSWER_NO ],
+            // ],
         ], 
-        self::PAGES => [
+        self::PAGE => [
             self::PAGE_ALL => [ 
                 'label' => 'Petitions', 
                 'value' => self::PAGE_ALL, 
-                'url' => '',
+                'url' => '/',
+            ],
+            self::PAGE_MY => [ 
+                'label' => 'My petitions', 
+                'value' => self::PAGE_MY, 
+                'url' => '/my',
+            ],
+            self::PAGE_SIGNS => [ 
+                'label' => 'Signed petitions', 
+                'value' => self::PAGE_SIGNS, 
+                'url' => '/signs',
+            ],
+            self::PAGE_MODERATED => [ 
+                'label' => 'Moderated petitions', 
+                'value' => self::PAGE_MODERATED, 
+                'url' => '/moderated',
+            ],
+            self::PAGE_RESPONSE => [ 
+                'label' => 'Responded petitions', 
+                'value' => self::PAGE_RESPONSE, 
+                'url' => '/response',
             ],
         ],
         self::PAYMENT => [
