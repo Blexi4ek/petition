@@ -4,7 +4,7 @@ import axios from 'axios';
 import moment from 'moment';
 import dateFormat from '@/consts/dateFormat';
 import { router } from '@inertiajs/react';
-import { IPetitionStatus } from '@/api/usePetitionStaticProperties';
+import usePetitionStaticProperties, { IPetitionStatus } from '@/api/usePetitionStaticProperties';
 
 interface IPetitionProp {
     petition: IPetition
@@ -13,6 +13,8 @@ interface IPetitionProp {
 }
 
 export const PetitionItem: FC<IPetitionProp> = ({petition, refresh, status}) => {
+
+    const properties = usePetitionStaticProperties()
 
     const openPetition = () => {
         if (window.location.pathname.length <= 10) router.get('/petitions/view', {id: petition.id})
@@ -28,6 +30,11 @@ export const PetitionItem: FC<IPetitionProp> = ({petition, refresh, status}) => 
             alert('petition was deleted')
             refresh()
         }
+    }
+
+    const handleSignButton = () => {
+        axios('/api/v1/petitions/sign', {method:'post' ,params: {petition_id: petition.id}})
+        refresh()
     }
     
 
@@ -46,6 +53,20 @@ export const PetitionItem: FC<IPetitionProp> = ({petition, refresh, status}) => 
                     <div className={style.petitionInnerBox}>
                         <span className={style.petitionText}>{time.format(dateFormat)}</span>
                         <span className={style.petitionText}>Author: {petition.user_creator.name}</span>
+
+                        {petition? (petition.signId) ?
+                            <button disabled className={style.petitionButtonLightGreen}>
+                                Signed
+                            </button> :
+
+                            (properties?.signButton.includes(petition.status)) ?
+                            <button className={style.petitionButtonBlue} onClick={handleSignButton}>
+                                Sign
+                            </button>                 
+                            : '' 
+                            : ''
+                        }
+
                         <button className={style.petitionButton} onClick={e => openPetition()}>Open</button>
                         <button className={style.petitionButtonRed} onClick={e => deletePetition()}>Delete</button>
                     </div>

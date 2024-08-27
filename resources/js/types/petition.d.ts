@@ -20,6 +20,7 @@ interface IPetition {
     user_politician: IUser;
     user_petitions: IUserPetition[];
     answer: string;
+    signId: number;
 }
 interface IPetitionOptions {
     status?: number[];

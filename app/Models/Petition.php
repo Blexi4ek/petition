@@ -49,6 +49,7 @@ class Petition extends Base
         self::STATUS => [
             self::STATUS_DRAFT => [ 
                 'label' => 'Draft', 
+                'button' => 'Save as draft', 
                 'value' => self::STATUS_DRAFT, 
                 'statusClass' => 'style.gray',
                 'children' => [self::STATUS_UNMODERATED], 
@@ -56,6 +57,7 @@ class Petition extends Base
             ],
             self::STATUS_UNMODERATED => [ 
                 'label' => 'Unmoderated', 
+                'button' => 'Send to moderator',
                 'value' => self::STATUS_UNMODERATED, 
                 'statusClass' => 'style.yellow',
                 'children' => [self::STATUS_DRAFT], 
@@ -108,6 +110,7 @@ class Petition extends Base
                 'statusClass' => 'style.red'
             ],
         ],
+        'signButton' => [self::STATUS_ACTIVE, self::STATUS_SUPPORTED],
         'answer' => [self::STATUS_ANSWER_YES, self::STATUS_ANSWER_NO],
 
         'pages_dropdown' => [

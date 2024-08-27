@@ -1,3 +1,8 @@
+.statusBox {
+    display: flex;
+    justify-content: center;
+}
+
 .optionsBox {
     display: flex;
     justify-content: space-between;

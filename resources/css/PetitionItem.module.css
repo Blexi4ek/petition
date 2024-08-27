@@ -83,3 +83,18 @@
     padding: 2px;
     margin-right: 10px;
 }
+
+.petitionButtonBlue{
+    border: 2px lightskyblue solid;
+    border-radius: 15px;
+    padding: 2px;
+    margin-right: 10px;
+}
+
+.petitionButtonLightGreen{
+    background-color: green;
+    color:white;
+    border-radius: 15px;
+    padding: 3px;
+    margin-right: 10px;
+}

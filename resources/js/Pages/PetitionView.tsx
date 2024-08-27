@@ -3,13 +3,13 @@ import { Head, router} from '@inertiajs/react';
 import { PageProps } from '@/types';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import style from '../../css/PetitionId.module.css'
+import style from '../../css/PetitionView.module.css'
 import moment from 'moment';
 import dateFormat from '@/consts/dateFormat';
 import usePetitionStaticProperties from '@/api/usePetitionStaticProperties';
 
 
-export default function Petitions({ auth }: PageProps) {
+export default function PetitionView({ auth }: PageProps) {
 
     const queryParams = new URLSearchParams(window.location.search)
     const queryId = queryParams.get('id')
@@ -17,7 +17,7 @@ export default function Petitions({ auth }: PageProps) {
     
 
     const [petition,setPetition] = useState<IPetition>()
-
+    const [refresh, setRefresh] = useState(false)
     
 
     useEffect(() => {
@@ -26,10 +26,15 @@ export default function Petitions({ auth }: PageProps) {
             setPetition(response.data)
         }   
         fetchPetitions()
-    },[])
+    },[refresh])
 
     const handleEditButton = () => {
         router.get('/petitions/edit', {id: petition?.id})
+    }
+
+    const handleSignButton = () => {
+        axios('/api/v1/petitions/sign', {method:'post' ,params: {petition_id: petition?.id}})
+        setRefresh(!refresh)
     }
 
     return (
@@ -59,13 +64,28 @@ export default function Petitions({ auth }: PageProps) {
                     </div>
                 </div>
 
-                <button className={style.editButton} onClick={handleEditButton}>Edit description</button>
+                <div>
+                    <button className={style.editButton} onClick={handleEditButton}>Edit description</button>
+
+                    {petition? (properties?.signButton.includes(petition.status)) ?
+                        (petition.user_petitions.filter(item => item.user.id === auth.user.id).length !== 0)?
+
+                        <button disabled className={style.signedButton}>
+                            Signed
+                        </button>
+                        : 
+                        <button className={style.editButton} onClick={handleSignButton}>
+                            Sign
+                        </button>
+                        : '' : ''
+                    } 
+                </div>
+                
 
                 {petition? (properties?.answer.includes(petition.status)) ?
                     <div className={style.answerBox}>
                         Answer 
                     </div> : '' : ''
-                      // 
                 }
 
                 <div className={style.signBox}>

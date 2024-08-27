@@ -39,6 +39,7 @@ Route::delete('/api/v1/petitions/delete', [PetitionController::class, 'delete'])
 Route::get('/api/v1/petitions/edit', [PetitionController::class, 'edit'])->name('petition.edit');
 Route::post('/api/v1/petitions/edit', [PetitionController::class, 'edit'])->name('petition.edit');
 Route::get('/api/v1/petitions/staticProperties', [PetitionController::class, 'staticProperties'])->name('petition.staticProperties');
+Route::post('/api/v1/petitions/sign', [PetitionController::class, 'sign'])->name('petition.sign');
 
 Route::get('/petitions', function () {
     return Inertia::render('Petitions');
@@ -61,7 +62,7 @@ Route::get('/petitions/response', function () {
 })->middleware(['auth', 'verified'])->name('petitions/response');
 
 Route::get('/petitions/view', function () {
-    return Inertia::render('PetitionId');
+    return Inertia::render('PetitionView');
 })->middleware(['auth', 'verified'])->name('petition/view');
 
 Route::get('/petitions/edit', function () {

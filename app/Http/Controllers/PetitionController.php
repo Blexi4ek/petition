@@ -10,6 +10,7 @@ use Illuminate\Http\Response;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Database\Query\JoinClause;    
 
 class PetitionController extends Controller 
 {
@@ -45,6 +46,16 @@ class PetitionController extends Controller
         if (!empty($request->get('petitionAnsweredAtTo'))) {
             $query->where('petitions.answered_at',  '<=' , $request->get('petitionAnsweredAtTo'));
         }
+
+        if (Auth::id()) {
+            $query->select('petitions.*', 'user_petition.id as signId')->leftJoin('user_petition', function (JoinClause $join) {
+                $join->on('petitions.id', '=' , 'user_petition.petition_id')->where('user_id', '=', Auth::id());
+            });
+        }
+
+        
+
+
         
         return $query;
     }
@@ -55,7 +66,7 @@ class PetitionController extends Controller
         $query = Petition::with(['userCreator']);
     
         if (Auth::id()) {
-            $query->whereIn('status', Petition::itemAlias('pages_dropdown', User::ROLE_USER, Petition::PAGE_ALL));
+            $query->whereIn('status', Petition::itemAlias('pages_dropdown', User::ROLE_ADMIN, Petition::PAGE_ALL));
         } else {
             $query->whereIn('status', Petition::itemAlias('pages_dropdown', User::ROLE_GUEST, Petition::PAGE_ALL));
         }
@@ -80,12 +91,13 @@ class PetitionController extends Controller
     public function signs(Request $request)
     { 
         $query = Petition::with(['userCreator']);
-        $query->join('user_petition', 'petitions.id', '=', 'user_petition.petition_id')
-        ->select('petitions.*', 'user_petition.user_id', 'user_petition.petition_id', 'user_petition.id as signId');
-        $query->where(['user_petition.user_id' => Auth::id()]);
+        // $query->join('user_petition', 'petitions.id', '=', 'user_petition.petition_id')
+        // ->select('petitions.*', 'user_petition.user_id', 'user_petition.petition_id', 'user_petition.id as signId');
+        // $query->where(['user_petition.user_id' => Auth::id()]);
         $query->whereIn('status', Petition::itemAlias('pages_dropdown', User::ROLE_USER, Petition::PAGE_SIGNS));
 
         $query = $this->base($request, $query);
+        $query-> where(['user_petition.user_id' => Auth::id()]);
         $petitions = $query->paginate(Petition::PER_PAGE);  
         return response()->json($petitions);
     }
@@ -142,6 +154,13 @@ class PetitionController extends Controller
         } 
 
         return response()->json($petition);
+    }
+
+    public function sign(Request $request)
+    {
+        $sign = new UserPetition();
+        $sign = $sign->create(['user_id' => Auth::id(), 'petition_id' => $request->get('petition_id')]);
+        return response()->json($request);
     }
 
     public function staticProperties()

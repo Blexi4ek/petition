@@ -21,9 +21,11 @@ class UserPetition extends Model
      *
      * @var array<int, string>
      */
-     protected $fillable = [
-         'notified_at'
-     ];
+    protected $fillable = [
+        'user_id',
+        'petition_id',
+        'notified_at'
+    ];
 
 
     /**

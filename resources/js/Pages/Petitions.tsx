@@ -9,6 +9,7 @@ import ReactPaginate from 'react-paginate';
 import { PetitionItem } from '@/Components/PetitionItem';
 import style from '../../css/Petition.module.css'
 import usePetitionStaticProperties, { getStatusOptions } from '@/api/usePetitionStaticProperties';
+import { StatusButton } from '@/Components/StatusButton';
 
 
 export default function Petitions({ auth }: PageProps) {
@@ -128,7 +129,7 @@ export default function Petitions({ auth }: PageProps) {
         }
 
         const clickCheck = () => {
-            console.log(petitions);
+            console.log(properties);
         }
 
         const handleRefresh = () => {
@@ -150,17 +151,20 @@ export default function Petitions({ auth }: PageProps) {
                 console check
             </button>
 
-            <div className={style.optionsBox}>
+            <div className={style.statusBox}>
 
-                <MultiSelect value={petitionOptions.status} options={getStatusOptions(2, window.location.pathname)} optionLabel="label" onChange={(e) => handleStatusChange(e)}
-                fixedPlaceholder={true} placeholder="Select Status" className={style.multiSelect}
-                panelClassName={style.multiSelect} itemClassName={style.multiSelectItem} checkboxIcon={'a'} />
-            
-                <input value={petitionOptions.name} onChange={e => handleinputPetitionQChange(e)} placeholder='Search by name'/>
-            
+                {/* <MultiSelect value={petitionOptions.status} options={getStatusOptions(2, window.location.pathname)} optionLabel="label" onChange={(e) => handleStatusChange(e)}
+                fixedPlaceholder={true} placeholder="Select Status" className={style.multiSelect} 
+                panelClassName={style.multiSelect} itemClassName={style.multiSelectItem} checkboxIcon={'a'} /> */}
+
+                {properties?.pages_dropdown[2/*role*/].status_all/*page*/.map(item => <StatusButton status={properties.status[item]}/>)}
+        
             </div>
 
             <div className={style.optionsBox}>
+
+                <input value={petitionOptions.name} onChange={e => handleinputPetitionQChange(e)} placeholder='Search by name'/>
+
                 <div>
                     Created {' '}
                     <input type='datetime-local' value={petitionOptions.createdFrom} onChange={e => handleCreatedFromChange(e)}/>

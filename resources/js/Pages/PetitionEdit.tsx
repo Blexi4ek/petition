@@ -5,7 +5,10 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import style from '../../css/PetitionEdit.module.css'
 
-
+interface IErrorMessage {
+    name: string[],
+    description: string[]
+}
 
 export default function PetitionEdit({ auth }: PageProps) {
 
@@ -15,6 +18,7 @@ export default function PetitionEdit({ auth }: PageProps) {
     const [petition,setPetition] = useState<IPetition>()
     const [name, setName] = useState('')
     const [description, setDescription] = useState('')
+    const [errorMessage, setErrorMessage] = useState<IErrorMessage>()
 
     
 
@@ -47,7 +51,7 @@ export default function PetitionEdit({ auth }: PageProps) {
             router.get('/petitions/view', {id: response.id})
         } catch (e : any) {
             let error = JSON.parse(e.request.response)
-            alert(error.message)
+            setErrorMessage(error.errors)
         }
     }
 
@@ -63,7 +67,21 @@ export default function PetitionEdit({ auth }: PageProps) {
 
                 <input className={style.editName} value={name} maxLength={100} onChange={e => handleNameChange(e) }/>
 
+                {errorMessage?.name ? 
+                <div>
+                    <span className={style.errorText}>{errorMessage.name}</span>
+                </div>     
+                : '' 
+                }
+
                 <textarea className={style.editDescription} maxLength={500} value={description} onChange={e => handleDescriptionChange(e)} />
+
+                {errorMessage?.description ? 
+                <div>
+                    <span className={style.errorText}>{errorMessage.description}</span>
+                </div>     
+                : '' 
+                }
 
                 <div className={style.editBox}>
                     <button className={style.editButton} onClick={() => handleEditClick(1)}>Save changes</button>
