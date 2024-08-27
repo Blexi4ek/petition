@@ -41,6 +41,9 @@ Route::post('/api/v1/petitions/edit', [PetitionController::class, 'edit'])->name
 Route::get('/api/v1/petitions/staticProperties', [PetitionController::class, 'staticProperties'])->name('petition.staticProperties');
 Route::post('/api/v1/petitions/sign', [PetitionController::class, 'sign'])->name('petition.sign');
 
+
+Route::get('/api/v1/profile/me', [ProfileController::class, 'me'])->name('profile.me');
+
 Route::get('/petitions', function () {
     return Inertia::render('Petitions');
 })->middleware(['auth', 'verified'])->name('petitions');
@@ -68,3 +71,6 @@ Route::get('/petitions/view', function () {
 Route::get('/petitions/edit', function () {
     return Inertia::render('PetitionEdit');
 })->middleware(['auth', 'verified'])->name('petition/edit');
+
+
+

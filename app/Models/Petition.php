@@ -52,6 +52,8 @@ class Petition extends Base
                 'button' => 'Save as draft', 
                 'value' => self::STATUS_DRAFT, 
                 'statusClass' => 'style.gray',
+                'buttonClass' => 'style.buttonGray',
+                'activeButtonClass' => 'style.activeButtonGray',
                 'children' => [self::STATUS_UNMODERATED], 
                 'childrenAdmin' => [self::STATUS_UNMODERATED, self::STATUS_ACTIVE],
             ],
@@ -60,6 +62,8 @@ class Petition extends Base
                 'button' => 'Send to moderator',
                 'value' => self::STATUS_UNMODERATED, 
                 'statusClass' => 'style.yellow',
+                'buttonClass' => 'style.buttonYellow',
+                'activeButtonClass' => 'style.activeButtonYellow',
                 'children' => [self::STATUS_DRAFT], 
                 'childrenAdmin' => [self::STATUS_DRAFT, self::STATUS_DECLINED, self::STATUS_ACTIVE],
             ],
@@ -67,6 +71,8 @@ class Petition extends Base
                 'label' => 'Declined', 
                 'value' => self::STATUS_DECLINED, 
                 'statusClass' => 'style.red',
+                'buttonClass' => 'style.buttonRed',
+                'activeButtonClass' => 'style.activeButtonRed',
                 'children' => [self::STATUS_DRAFT], 
                 'childrenAdmin' => [self::STATUS_DRAFT, self::STATUS_ACTIVE],
             ],
@@ -75,6 +81,8 @@ class Petition extends Base
                 'label' => 'Active', 
                 'value' => self::STATUS_ACTIVE, 
                 'statusClass' => 'style.blue',
+                'buttonClass' => 'style.buttonBlue',
+                'activeButtonClass' => 'style.activeButtonBlue',
                 'childrenCron' => [self::STATUS_SUPPORTED, self::STATUS_UNSUPPORTED, self::STATUS_WAITING_ANSWER],
             ],
 
@@ -82,32 +90,42 @@ class Petition extends Base
                 'label' => 'Supported', 
                 'value' => self::STATUS_SUPPORTED, 
                 'statusClass' => 'style.green',
+                'buttonClass' => 'style.buttonGreen',
+                'activeButtonClass' => 'style.activeButtonGreen',
                 'childrenAdmin' => [self::STATUS_WAITING_ANSWER],
             ],
 
             self::STATUS_UNSUPPORTED => [ 
                 'label' => 'Unsupported', 
                 'value' => self::STATUS_UNSUPPORTED, 
-                'statusClass' => 'style.red'
+                'statusClass' => 'style.red',
+                'buttonClass' => 'style.buttonRed',
+                'activeButtonClass' => 'style.activeButtonRed',
             ],
 
             self::STATUS_WAITING_ANSWER => [ 
                 'label' => 'Awaiting Answer', 
                 'value' => self::STATUS_WAITING_ANSWER, 
                 'statusClass' => 'style.yellow',
+                'buttonClass' => 'style.buttonYellow',
+                'activeButtonClass' => 'style.activeButtonYellow',
                 'childrenAdmin' => [self::STATUS_ANSWER_YES, self::STATUS_ANSWER_NO],
             ],
 
             self::STATUS_ANSWER_YES => [ 
                 'label' => 'Positive Answer', 
                 'value' => self::STATUS_ANSWER_YES, 
-                'statusClass' => 'style.green'
+                'statusClass' => 'style.green',
+                'buttonClass' => 'style.buttonGreen',
+                'activeButtonClass' => 'style.activeButtonGreen',
             ],
 
             self::STATUS_ANSWER_NO => [ 
                 'label' => 'Negative Answer', 
                 'value' => self::STATUS_ANSWER_NO, 
-                'statusClass' => 'style.red'
+                'statusClass' => 'style.red',
+                'buttonClass' => 'style.buttonRed',
+                'activeButtonClass' => 'style.activeButtonRed',
             ],
         ],
         'signButton' => [self::STATUS_ACTIVE, self::STATUS_SUPPORTED],
@@ -129,26 +147,6 @@ class Petition extends Base
                 self::PAGE_MODERATED => [self::STATUS_UNMODERATED, self::STATUS_DECLINED, self::STATUS_ACTIVE, self::STATUS_SUPPORTED, self::STATUS_UNSUPPORTED, self::STATUS_WAITING_ANSWER, self::STATUS_ANSWER_YES, self::STATUS_ANSWER_NO ],
                 self::PAGE_RESPONSE => [self::STATUS_WAITING_ANSWER, self::STATUS_ANSWER_YES, self::STATUS_ANSWER_NO ],
             ],
-
-            // self::PAGE_ALL => [
-            //     User::ROLE_GUEST => [self::STATUS_ACTIVE, self::STATUS_SUPPORTED, self::STATUS_UNSUPPORTED, self::STATUS_WAITING_ANSWER, self::STATUS_ANSWER_YES, self::STATUS_ANSWER_NO ],
-            //     User::ROLE_USER => [self::STATUS_ACTIVE, self::STATUS_SUPPORTED, self::STATUS_UNSUPPORTED, self::STATUS_WAITING_ANSWER, self::STATUS_ANSWER_YES, self::STATUS_ANSWER_NO ],
-            //     User::ROLE_ADMIN => [self::STATUS_UNMODERATED, self::STATUS_DECLINED, self::STATUS_ACTIVE, self::STATUS_SUPPORTED, self::STATUS_UNSUPPORTED, self::STATUS_WAITING_ANSWER, self::STATUS_ANSWER_YES, self::STATUS_ANSWER_NO ],
-            // ],    
-            // self::PAGE_MY => [
-            //     User::ROLE_USER => [self::STATUS_DRAFT, self::STATUS_UNMODERATED, self::STATUS_DECLINED, self::STATUS_ACTIVE, self::STATUS_SUPPORTED, self::STATUS_UNSUPPORTED, self::STATUS_WAITING_ANSWER, self::STATUS_ANSWER_YES, self::STATUS_ANSWER_NO ],
-            //     User::ROLE_ADMIN => [self::STATUS_DRAFT, self::STATUS_UNMODERATED, self::STATUS_DECLINED, self::STATUS_ACTIVE, self::STATUS_SUPPORTED, self::STATUS_UNSUPPORTED, self::STATUS_WAITING_ANSWER, self::STATUS_ANSWER_YES, self::STATUS_ANSWER_NO ],
-            // ],    
-            // self::PAGE_SIGNS => [
-            //     User::ROLE_USER => [self::STATUS_ACTIVE, self::STATUS_SUPPORTED, self::STATUS_UNSUPPORTED, self::STATUS_WAITING_ANSWER, self::STATUS_ANSWER_YES, self::STATUS_ANSWER_NO ],
-            //     User::ROLE_ADMIN => [self::STATUS_ACTIVE, self::STATUS_SUPPORTED, self::STATUS_UNSUPPORTED, self::STATUS_WAITING_ANSWER, self::STATUS_ANSWER_YES, self::STATUS_ANSWER_NO ],
-            // ],
-            // self::PAGE_MOD => [
-            //     User::ROLE_ADMIN => [self::STATUS_UNMODERATED, self::STATUS_DECLINED, self::STATUS_ACTIVE, self::STATUS_SUPPORTED, self::STATUS_UNSUPPORTED, self::STATUS_WAITING_ANSWER, self::STATUS_ANSWER_YES, self::STATUS_ANSWER_NO ],
-            // ],
-            // self::PAGE_RESPONSE => [
-            //     User::ROLE_ADMIN => [self::STATUS_WAITING_ANSWER, self::STATUS_ANSWER_YES, self::STATUS_ANSWER_NO ],
-            // ],
         ], 
         self::PAGE => [
             self::PAGE_ALL => [ 

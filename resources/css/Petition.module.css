@@ -1,12 +1,18 @@
 .statusBox {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
+    margin-bottom: 30px;
 }
 
-.optionsBox {
+.chronoBox {
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
+    flex-direction: column;
+}
+
+.chronoItem{
+    margin-bottom: 15px;
 }
 
 .topBox {
@@ -48,7 +54,8 @@
 }
 
 .createButton {
-    margin-top: 30px;
+    margin-left: 50px;
+    font-size: medium;
     padding: 10px;
     background: white;
     overflow: hidden;

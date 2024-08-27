@@ -84,8 +84,8 @@ export default function PetitionEdit({ auth }: PageProps) {
                 }
 
                 <div className={style.editBox}>
-                    <button className={style.editButton} onClick={() => handleEditClick(1)}>Save changes</button>
-                    <button className={style.editButton} onClick={() => handleEditClick(2)}>Finish {queryId? 'Editing' : 'Creating'}</button>
+                    <button className={style.editButton} onClick={() => handleEditClick(1)}>Save as draft</button>
+                    <button className={style.editButton} onClick={() => handleEditClick(2)}>Send to moderator</button>
                 </div>
                 
             </div>

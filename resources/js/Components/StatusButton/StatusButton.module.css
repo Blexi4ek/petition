@@ -1,0 +1,65 @@
+.box {
+
+}
+
+.button {
+    padding: 15px;
+}
+
+.buttonGray {
+    border: 2px solid gray;
+    background-color: white;
+}
+
+.buttonYellow {
+    border: 2px solid yellow;
+    background-color: white;
+}
+
+.buttonBlue {
+    border: 2px solid blue;
+    background-color: white;
+}
+
+.buttonGreen {
+    border: 2px solid green;
+    background-color: white;
+}
+
+.buttonRed {
+    border: 2px solid red;
+    background-color: white;
+}
+
+.activeButtonGray {
+    background-color: gray;
+}
+
+.activeButtonYellow {
+    background-color: yellow;
+}
+
+.activeButtonBlue {
+    background-color: blue;
+    color: white
+}
+
+.activeButtonGreen {
+    background-color: green;
+    color: white
+}
+
+.activeButtonRed {
+    background-color: red;
+    color: white;
+}
+
+.first {
+    border-top-left-radius: 20px;
+    border-bottom-left-radius: 20px;
+}
+
+.last {
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 20px;
+}

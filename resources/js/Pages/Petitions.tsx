@@ -9,7 +9,7 @@ import ReactPaginate from 'react-paginate';
 import { PetitionItem } from '@/Components/PetitionItem';
 import style from '../../css/Petition.module.css'
 import usePetitionStaticProperties, { getStatusOptions } from '@/api/usePetitionStaticProperties';
-import { StatusButton } from '@/Components/StatusButton';
+import { StatusButton } from '@/Components/StatusButton/StatusButton';
 
 
 export default function Petitions({ auth }: PageProps) {
@@ -23,6 +23,16 @@ export default function Petitions({ auth }: PageProps) {
     const queryActivatedTo = queryParams.get('activatedTo')
     const queryAnsweredFrom = queryParams.get('answeredFrom')
     const queryAnsweredTo = queryParams.get('answeredTo')
+    let pageName = ''
+   
+    switch(window.location.pathname) {
+        case '/petitions/my': pageName = 'status_my'; break
+        case '/petitions/signs': pageName = 'status_signs'; break
+        case '/petitions/moderated': pageName = 'status_moderated'; break
+        case '/petitions/response': pageName = 'status_response'; break
+        default: pageName = 'status_all'
+    }
+    
 
     const [petitions, setPetitions] = useState<IPetition[]>([])
     const [page, setPage] = useState(1)
@@ -40,7 +50,6 @@ export default function Petitions({ auth }: PageProps) {
         answeredTo: ''})
 
     const properties = usePetitionStaticProperties()
-
 
     useEffect(()=> {
         if (queryPage) setPage(Number(queryPage))
@@ -96,8 +105,11 @@ export default function Petitions({ auth }: PageProps) {
             refreshPage(petitionOptions, e.selected+1)  
         }
 
-        const handleStatusChange = (e: MultiSelectChangeEvent) => {        
-            refreshPage({...petitionOptions ,status: e.target.value})  
+        const handleStatusChange = (statusId: number) => {
+            let newArr = petitionOptions.status
+            if (petitionOptions.status?.includes(statusId)) newArr = newArr?.filter(item => item !== statusId)
+            else newArr?.push(statusId) 
+            refreshPage({...petitionOptions ,status: newArr})
         }
 
         const handleinputPetitionQChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -129,7 +141,7 @@ export default function Petitions({ auth }: PageProps) {
         }
 
         const clickCheck = () => {
-            console.log(properties);
+            console.log(window.location.pathname);
         }
 
         const handleRefresh = () => {
@@ -141,7 +153,13 @@ export default function Petitions({ auth }: PageProps) {
     return (
         <AuthenticatedLayout
             user={auth.user}
-            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Petitions </h2>}
+            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">
+                Petitions
+                    <button className={style.createButton} onClick={() => router.get('/petitions/edit')}>
+                        Create new petition
+                    </button>
+            </h2>
+            }
         >
             <Head title="Petitions" />
 
@@ -153,33 +171,35 @@ export default function Petitions({ auth }: PageProps) {
 
             <div className={style.statusBox}>
 
-                {/* <MultiSelect value={petitionOptions.status} options={getStatusOptions(2, window.location.pathname)} optionLabel="label" onChange={(e) => handleStatusChange(e)}
-                fixedPlaceholder={true} placeholder="Select Status" className={style.multiSelect} 
-                panelClassName={style.multiSelect} itemClassName={style.multiSelectItem} checkboxIcon={'a'} /> */}
-
-                {properties?.pages_dropdown[2/*role*/].status_all/*page*/.map(item => <StatusButton status={properties.status[item]}/>)}
-        
-            </div>
-
-            <div className={style.optionsBox}>
-
                 <input value={petitionOptions.name} onChange={e => handleinputPetitionQChange(e)} placeholder='Search by name'/>
 
                 <div>
+                    {properties?.pages_dropdown[2/*role*/][pageName].map((item, index, arr) => <StatusButton status={properties.status[item]} key={index}
+                    activeStatus={petitionOptions.status} clickEvent={(statusId) => handleStatusChange(statusId)} 
+                    first={index === 0 ? true : false} last={index === arr.length-1 ? true : false}/>)}
+                </div>
+                
+        
+            </div>
+
+            <div className={style.chronoBox}>
+
+                
+                <div className={style.chronoItem}>
                     Created {' '}
                     <input type='datetime-local' value={petitionOptions.createdFrom} onChange={e => handleCreatedFromChange(e)}/>
                     {' to '}
                     <input type='datetime-local' value={petitionOptions.createdTo} onChange={e => handleCreatedToChange(e)}/>
                 </div>
 
-                <div>
+                <div className={style.chronoItem}>
                     Activated {' '}
                     <input type='datetime-local' value={petitionOptions.activatedFrom} onChange={e => handleActivatedFromChange (e)}/>
                     {' to '}
                     <input type='datetime-local' value={petitionOptions.activatedTo} onChange={e => handleActivatedToChange (e)}/>
                 </div>
 
-                <div>
+                <div className={style.chronoItem}>
                     Answered {' '}
                     <input type='datetime-local' value={petitionOptions.answeredFrom} onChange={e => handleAnsweredFromChange (e)}/>
                     {' to '}
@@ -188,9 +208,7 @@ export default function Petitions({ auth }: PageProps) {
 
             </div>
             
-            <button className={style.createButton} onClick={() => router.get('/petitions/edit')}>
-                Create new petition
-            </button>
+            
 
             </div>
 

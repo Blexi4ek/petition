@@ -6,6 +6,8 @@ export interface IPetitionStatus {
         label: string,
         value: number,
         statusClass: string,
+        buttonClass: string,
+        activeButtonClass: string
     }
 }
 
