@@ -40,6 +40,7 @@ Route::get('/api/v1/petitions/edit', [PetitionController::class, 'edit'])->name(
 Route::post('/api/v1/petitions/edit', [PetitionController::class, 'edit'])->name('petition.edit');
 Route::get('/api/v1/petitions/staticProperties', [PetitionController::class, 'staticProperties'])->name('petition.staticProperties');
 Route::post('/api/v1/petitions/sign', [PetitionController::class, 'sign'])->name('petition.sign');
+Route::post('/api/v1/petitions/statusChange', [PetitionController::class, 'status'])->name('petition.status');
 
 
 Route::get('/api/v1/profile/me', [ProfileController::class, 'me'])->name('profile.me');

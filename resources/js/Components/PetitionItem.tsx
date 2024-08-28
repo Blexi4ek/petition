@@ -4,17 +4,16 @@ import axios from 'axios';
 import moment from 'moment';
 import dateFormat from '@/consts/dateFormat';
 import { router } from '@inertiajs/react';
-import usePetitionStaticProperties, { IPetitionStatus } from '@/api/usePetitionStaticProperties';
+import { IPetitionStaticProperties, IPetitionStatus } from '@/api/usePetitionStaticProperties';
 
 interface IPetitionProp {
     petition: IPetition
     refresh: () => void;
     status?: IPetitionStatus;
+    properties: IPetitionStaticProperties | undefined
 }
 
-export const PetitionItem: FC<IPetitionProp> = ({petition, refresh, status}) => {
-
-    const properties = usePetitionStaticProperties()
+export const PetitionItem: FC<IPetitionProp> = ({petition, refresh, status, properties}) => {
 
     const openPetition = () => {
         if (window.location.pathname.length <= 10) router.get('/petitions/view', {id: petition.id})
@@ -32,8 +31,8 @@ export const PetitionItem: FC<IPetitionProp> = ({petition, refresh, status}) => 
         }
     }
 
-    const handleSignButton = () => {
-        axios('/api/v1/petitions/sign', {method:'post' ,params: {petition_id: petition.id}})
+    const handleSignButton = async () => {
+        await axios('/api/v1/petitions/sign', {method:'post' ,params: {petition_id: petition.id}})
         refresh()
     }
     
@@ -41,7 +40,6 @@ export const PetitionItem: FC<IPetitionProp> = ({petition, refresh, status}) => 
     const time = moment(Number(petition.created_at) * 1000)
 
     return (
-        <div className="py-3">
             <div className="mx-auto sm:px-6 lg:px-8">
                 <div className={style.petitionBox}> 
 
@@ -73,6 +71,5 @@ export const PetitionItem: FC<IPetitionProp> = ({petition, refresh, status}) => 
 
                 </div>
             </div>
-        </div>
     )
 }

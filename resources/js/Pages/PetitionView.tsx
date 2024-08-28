@@ -7,6 +7,7 @@ import style from '../../css/PetitionView.module.css'
 import moment from 'moment';
 import dateFormat from '@/consts/dateFormat';
 import usePetitionStaticProperties from '@/api/usePetitionStaticProperties';
+import { PetitionButton } from '@/Components/Button/PetitionButton';
 
 
 export default function PetitionView({ auth }: PageProps) {
@@ -32,8 +33,13 @@ export default function PetitionView({ auth }: PageProps) {
         router.get('/petitions/edit', {id: petition?.id})
     }
 
-    const handleSignButton = () => {
-        axios('/api/v1/petitions/sign', {method:'post' ,params: {petition_id: petition?.id}})
+    const handleSignButton = async () => {
+        await axios('/api/v1/petitions/sign', {method:'post' ,params: {petition_id: petition?.id}})
+        setRefresh(!refresh)
+    }
+
+    const handleChangeStatusButton = async (statusId: number) => {
+        await axios('/api/v1/petitions/statusChange', {method:'post', params: {petition_id: petition?.id, status:statusId}})
         setRefresh(!refresh)
     }
 
@@ -64,8 +70,8 @@ export default function PetitionView({ auth }: PageProps) {
                     </div>
                 </div>
 
-                <div>
-                    <button className={style.editButton} onClick={handleEditButton}>Edit description</button>
+                <div className={style.buttonBox}>
+                    <PetitionButton text={'Edit description'} onClick={handleEditButton} />
 
                     {petition? (properties?.signButton.includes(petition.status)) ?
                         (petition.user_petitions.filter(item => item.user.id === auth.user.id).length !== 0)?
@@ -74,10 +80,18 @@ export default function PetitionView({ auth }: PageProps) {
                             Signed
                         </button>
                         : 
-                        <button className={style.editButton} onClick={handleSignButton}>
-                            Sign
-                        </button>
+                        <span style={{marginLeft: '30px',}}>
+                            <PetitionButton text={'Sign'} onClick={handleSignButton} />
+                        </span>
+                        
                         : '' : ''
+                    }
+
+                    {auth.user.role_id === 2 ? properties?.status[petition?.status || 1].childrenAdmin?.map((item,index) => 
+                        <div key={index} style={{marginLeft: '30px'}}>
+                            <PetitionButton text={properties.status[item].button} onClick={() => handleChangeStatusButton(item)} />
+                        </div>
+                    ) : ''
                     } 
                 </div>
                 

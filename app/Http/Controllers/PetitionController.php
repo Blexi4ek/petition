@@ -10,7 +10,8 @@ use Illuminate\Http\Response;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
-use Illuminate\Database\Query\JoinClause;    
+use Illuminate\Database\Query\JoinClause;
+use Illuminate\Database\Eloquent\Builder;     
 
 class PetitionController extends Controller 
 {
@@ -53,7 +54,7 @@ class PetitionController extends Controller
             });
         }
 
-        
+        $query->orderBy('id', 'asc');
 
 
         
@@ -63,10 +64,11 @@ class PetitionController extends Controller
     
     public function index(Request $request)
     { 
+        $user = $request->user()->getAttributes();
         $query = Petition::with(['userCreator']);
     
         if (Auth::id()) {
-            $query->whereIn('status', Petition::itemAlias('pages_dropdown', User::ROLE_ADMIN, Petition::PAGE_ALL));
+            $query->whereIn('status', Petition::itemAlias('pages_dropdown', $user['role_id'], Petition::PAGE_ALL));
         } else {
             $query->whereIn('status', Petition::itemAlias('pages_dropdown', User::ROLE_GUEST, Petition::PAGE_ALL));
         }
@@ -79,9 +81,10 @@ class PetitionController extends Controller
 
     public function my(Request $request)
     { 
+        $user = $request->user()->getAttributes();
         $query = Petition::with(['userCreator']);
-        $query->where(['created_by' => Auth::id()]);
-        $query->whereIn('status', Petition::itemAlias('pages_dropdown', User::ROLE_USER, Petition::PAGE_MY));
+        $query->where(['created_by' => Auth::id()])
+        ->whereIn('status', Petition::itemAlias('pages_dropdown', $user['role_id'], Petition::PAGE_MY));
 
         $query = $this->base($request, $query);
         $petitions = $query->paginate(Petition::PER_PAGE);  
@@ -90,14 +93,11 @@ class PetitionController extends Controller
 
     public function signs(Request $request)
     { 
+        $user = $request->user()->getAttributes();
         $query = Petition::with(['userCreator']);
-        // $query->join('user_petition', 'petitions.id', '=', 'user_petition.petition_id')
-        // ->select('petitions.*', 'user_petition.user_id', 'user_petition.petition_id', 'user_petition.id as signId');
-        // $query->where(['user_petition.user_id' => Auth::id()]);
-        $query->whereIn('status', Petition::itemAlias('pages_dropdown', User::ROLE_USER, Petition::PAGE_SIGNS));
-
+        $query->whereIn('status', Petition::itemAlias('pages_dropdown', $user['role_id'], Petition::PAGE_SIGNS));
         $query = $this->base($request, $query);
-        $query-> where(['user_petition.user_id' => Auth::id()]);
+        $query->where(['user_petition.user_id' => Auth::id()]);
         $petitions = $query->paginate(Petition::PER_PAGE);  
         return response()->json($petitions);
     }
@@ -105,9 +105,15 @@ class PetitionController extends Controller
 
     public function moderated(Request $request)
     { 
+        $user = $request->user()->getAttributes();
         $query = Petition::with(['userCreator']);
-        $query->where(['moderated_by' => Auth::id()]);
-        $query->whereIn('status', Petition::itemAlias('pages_dropdown', User::ROLE_ADMIN, Petition::PAGE_MODERATED));
+
+        $query->where(function(Builder $sub_query) use ($user) {
+            $sub_query->where(['status' => 2])
+            ->orWhere(['status' => 3])
+            ->orwhere(['moderated_by' => Auth::id()] )
+            ->whereIn('status', Petition::itemAlias('pages_dropdown', $user['role_id'], Petition::PAGE_MODERATED));
+        });
 
         $query = $this->base($request, $query);
         $petitions = $query->paginate(Petition::PER_PAGE);  
@@ -116,9 +122,10 @@ class PetitionController extends Controller
 
     public function response(Request $request)
     { 
+        $user = $request->user()->getAttributes();
         $query = Petition::with(['userCreator']);
         $query->where(['answered_by' => Auth::id()]);
-        $query->whereIn('status', Petition::itemAlias('pages_dropdown', User::ROLE_ADMIN, Petition::PAGE_RESPONSE));
+        $query->whereIn('status', Petition::itemAlias('pages_dropdown', $user['role_id'], Petition::PAGE_RESPONSE));
 
         $query = $this->base($request, $query);
         $petitions = $query->paginate(Petition::PER_PAGE);  
@@ -158,9 +165,20 @@ class PetitionController extends Controller
 
     public function sign(Request $request)
     {
+        $validation = UserPetition::where(['user_id' => Auth::id(), 'petition_id' => $request->get('petition_id')])->get()->first();
+
         $sign = new UserPetition();
-        $sign = $sign->create(['user_id' => Auth::id(), 'petition_id' => $request->get('petition_id')]);
+
+        if (empty($validation->id)) {
+            $sign = $sign->create(['user_id' => Auth::id(), 'petition_id' => $request->get('petition_id')]);
+        }
+
         return response()->json($request);
+    }
+
+    public function status(Request $request)
+    {
+        Petition::where(['id' => $request->get('petition_id')])->update(['status' => $request->get('status')]);
     }
 
     public function staticProperties()

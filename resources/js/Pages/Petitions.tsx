@@ -1,4 +1,5 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import GuestLayout from '@/Layouts/GuestLayout';
 import { Head, router, usePage } from '@inertiajs/react';
 import { PageProps } from '@/types';
 import { useEffect, useState } from 'react';
@@ -10,6 +11,7 @@ import { PetitionItem } from '@/Components/PetitionItem';
 import style from '../../css/Petition.module.css'
 import usePetitionStaticProperties, { getStatusOptions } from '@/api/usePetitionStaticProperties';
 import { StatusButton } from '@/Components/StatusButton/StatusButton';
+import { PetitionButton } from '@/Components/Button/PetitionButton';
 
 
 export default function Petitions({ auth }: PageProps) {
@@ -23,8 +25,8 @@ export default function Petitions({ auth }: PageProps) {
     const queryActivatedTo = queryParams.get('activatedTo')
     const queryAnsweredFrom = queryParams.get('answeredFrom')
     const queryAnsweredTo = queryParams.get('answeredTo')
+
     let pageName = ''
-   
     switch(window.location.pathname) {
         case '/petitions/my': pageName = 'status_my'; break
         case '/petitions/signs': pageName = 'status_signs'; break
@@ -40,7 +42,7 @@ export default function Petitions({ auth }: PageProps) {
     const [refresh, setRefresh] = useState(false)
 
     const [petitionOptions, setPetitionOptions] = useState<IPetitionOptions>({
-        status: [2, 3 ,4],
+        status: [],
         name: '',
         createdFrom: '',
         createdTo: '',
@@ -71,8 +73,6 @@ export default function Petitions({ auth }: PageProps) {
 
     useEffect(()=> {
         const fetchPetitions = async () => {
-
-
             const {data: response} = await axios(`/api/v1${window.location.pathname}`, {params: {
                 page, 
                 petitionStatus:petitionOptions.status, 
@@ -141,7 +141,7 @@ export default function Petitions({ auth }: PageProps) {
         }
 
         const clickCheck = () => {
-            console.log(window.location.pathname);
+            console.log(auth);
         }
 
         const handleRefresh = () => {
@@ -153,12 +153,11 @@ export default function Petitions({ auth }: PageProps) {
     return (
         <AuthenticatedLayout
             user={auth.user}
-            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">
-                Petitions
-                    <button className={style.createButton} onClick={() => router.get('/petitions/edit')}>
-                        Create new petition
-                    </button>
-            </h2>
+            header={
+                <h2 className="font-semibold text-xl text-gray-800 leading-tight">
+                    <span style={{marginRight: '50px'}}>Petitions</span>
+                    <PetitionButton text={'Create new petition'} onClick={() => router.get('/petitions/edit')}/>
+                </h2>
             }
         >
             <Head title="Petitions" />
@@ -174,7 +173,7 @@ export default function Petitions({ auth }: PageProps) {
                 <input value={petitionOptions.name} onChange={e => handleinputPetitionQChange(e)} placeholder='Search by name'/>
 
                 <div>
-                    {properties?.pages_dropdown[2/*role*/][pageName].map((item, index, arr) => <StatusButton status={properties.status[item]} key={index}
+                    {properties?.pages_dropdown[auth.user.role_id][pageName].map((item, index, arr) => <StatusButton status={properties.status[item]} key={index}
                     activeStatus={petitionOptions.status} clickEvent={(statusId) => handleStatusChange(statusId)} 
                     first={index === 0 ? true : false} last={index === arr.length-1 ? true : false}/>)}
                 </div>
@@ -212,7 +211,7 @@ export default function Petitions({ auth }: PageProps) {
 
             </div>
 
-            {petitions.map((item) => <PetitionItem petition={item} status={properties?.status}
+            {petitions.map((item) => <PetitionItem petition={item} status={properties?.status} properties={properties}
             key={item.id} refresh={() => handleRefresh()}/>)}
 
             <div

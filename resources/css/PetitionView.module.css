@@ -39,18 +39,6 @@
     border-radius: 0.5rem
 }
 
-.editButton { 
-    margin-left: 30px;
-    padding: 10px;
-    background: white;
-    overflow: hidden;
-    --tw-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-    --tw-shadow-colored: 0 1px 2px 0 var(--tw-shadow-color);
-    box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
-    border-radius: 0.5rem;
-    border: 1px lightblue solid;
-}
-
 .signedButton {
     margin-left: 30px;
     padding: 10px;
@@ -61,6 +49,13 @@
     box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
     border-radius: 0.5rem;
     color: black;
+}
+
+.buttonBox {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin: 0 30px;
 }
 
 .answerBox {

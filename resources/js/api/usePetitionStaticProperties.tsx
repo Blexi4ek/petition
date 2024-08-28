@@ -4,10 +4,13 @@ import { useEffect, useState } from "react";
 export interface IPetitionStatus {
     [key: string]: {
         label: string,
+        button: string,
         value: number,
         statusClass: string,
         buttonClass: string,
-        activeButtonClass: string
+        activeButtonClass: string,
+        children: number[],
+        childrenAdmin: number[]
     }
 }
 

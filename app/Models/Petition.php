@@ -19,6 +19,8 @@ class Petition extends Base
         'description' => 'required|min:3|max:500'
     ];
 
+    const MINIMUM_SIGNS = 100;
+
     const PAYMENT = 'payment';
     const PAYMENT_ACTIVE = 1;
     const PAYMENT_INACTIVE = 0;
@@ -68,7 +70,8 @@ class Petition extends Base
                 'childrenAdmin' => [self::STATUS_DRAFT, self::STATUS_DECLINED, self::STATUS_ACTIVE],
             ],
             self::STATUS_DECLINED => [
-                'label' => 'Declined', 
+                'label' => 'Declined',
+                'button' => 'Decline', 
                 'value' => self::STATUS_DECLINED, 
                 'statusClass' => 'style.red',
                 'buttonClass' => 'style.buttonRed',
@@ -78,16 +81,18 @@ class Petition extends Base
             ],
 
             self::STATUS_ACTIVE => [ 
-                'label' => 'Active', 
+                'label' => 'Active',
+                'button' => 'Activate',  
                 'value' => self::STATUS_ACTIVE, 
                 'statusClass' => 'style.blue',
                 'buttonClass' => 'style.buttonBlue',
                 'activeButtonClass' => 'style.activeButtonBlue',
-                'childrenCron' => [self::STATUS_SUPPORTED, self::STATUS_UNSUPPORTED, self::STATUS_WAITING_ANSWER],
+                'childrenAdmin' => [self::STATUS_SUPPORTED, self::STATUS_UNSUPPORTED, self::STATUS_WAITING_ANSWER],
             ],
 
             self::STATUS_SUPPORTED => [ 
-                'label' => 'Supported', 
+                'label' => 'Supported',
+                'button' => 'Change to supported',  
                 'value' => self::STATUS_SUPPORTED, 
                 'statusClass' => 'style.green',
                 'buttonClass' => 'style.buttonGreen',
@@ -96,7 +101,8 @@ class Petition extends Base
             ],
 
             self::STATUS_UNSUPPORTED => [ 
-                'label' => 'Unsupported', 
+                'label' => 'Unsupported',
+                'button' => 'Change to unsupported',   
                 'value' => self::STATUS_UNSUPPORTED, 
                 'statusClass' => 'style.red',
                 'buttonClass' => 'style.buttonRed',
@@ -104,7 +110,8 @@ class Petition extends Base
             ],
 
             self::STATUS_WAITING_ANSWER => [ 
-                'label' => 'Awaiting Answer', 
+                'label' => 'Awaiting Answer',
+                'button' => 'Change to awaiting answer', 
                 'value' => self::STATUS_WAITING_ANSWER, 
                 'statusClass' => 'style.yellow',
                 'buttonClass' => 'style.buttonYellow',
@@ -113,7 +120,8 @@ class Petition extends Base
             ],
 
             self::STATUS_ANSWER_YES => [ 
-                'label' => 'Positive Answer', 
+                'label' => 'Positive Answer',
+                'button' => 'Change to positive answer', 
                 'value' => self::STATUS_ANSWER_YES, 
                 'statusClass' => 'style.green',
                 'buttonClass' => 'style.buttonGreen',
@@ -121,7 +129,8 @@ class Petition extends Base
             ],
 
             self::STATUS_ANSWER_NO => [ 
-                'label' => 'Negative Answer', 
+                'label' => 'Negative Answer',
+                'button' => 'Change to negative answer', 
                 'value' => self::STATUS_ANSWER_NO, 
                 'statusClass' => 'style.red',
                 'buttonClass' => 'style.buttonRed',
@@ -130,10 +139,14 @@ class Petition extends Base
         ],
         'signButton' => [self::STATUS_ACTIVE, self::STATUS_SUPPORTED],
         'answer' => [self::STATUS_ANSWER_YES, self::STATUS_ANSWER_NO],
+        'minimum_signs' => self::MINIMUM_SIGNS,
+
 
         'pages_dropdown' => [
             User::ROLE_GUEST => [
                 self::PAGE_ALL => [self::STATUS_ACTIVE, self::STATUS_SUPPORTED, self::STATUS_UNSUPPORTED, self::STATUS_WAITING_ANSWER, self::STATUS_ANSWER_YES, self::STATUS_ANSWER_NO ],
+                self::PAGE_MY => [],
+                self::PAGE_SIGNS => []  ,
             ],
             User::ROLE_USER => [
                 self::PAGE_ALL => [self::STATUS_ACTIVE, self::STATUS_SUPPORTED, self::STATUS_UNSUPPORTED, self::STATUS_WAITING_ANSWER, self::STATUS_ANSWER_YES, self::STATUS_ANSWER_NO ],

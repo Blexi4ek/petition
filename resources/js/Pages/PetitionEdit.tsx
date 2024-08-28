@@ -4,6 +4,7 @@ import { PageProps } from '@/types';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import style from '../../css/PetitionEdit.module.css'
+import { PetitionButton } from '@/Components/Button/PetitionButton';
 
 interface IErrorMessage {
     name: string[],
@@ -84,8 +85,8 @@ export default function PetitionEdit({ auth }: PageProps) {
                 }
 
                 <div className={style.editBox}>
-                    <button className={style.editButton} onClick={() => handleEditClick(1)}>Save as draft</button>
-                    <button className={style.editButton} onClick={() => handleEditClick(2)}>Send to moderator</button>
+                    <PetitionButton text={'Save as draft'} onClick={() => handleEditClick(1)} />
+                    <PetitionButton text={'Send to moderator'} onClick={() => handleEditClick(2)} />
                 </div>
                 
             </div>
