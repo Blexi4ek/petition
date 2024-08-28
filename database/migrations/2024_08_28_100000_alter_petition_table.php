@@ -22,7 +22,7 @@ return new class extends Migration
     public function up(): void
     {
         DB::statement('ALTER TABLE `petitions` 
-        ADD COLUMN `answer` TEXT NULL AFTER `answered_at`;
+        ADD FULLTEXT INDEX `idx_petitions_description` (`description`);
         ');
     }
 
@@ -32,12 +32,7 @@ return new class extends Migration
     public function down(): void
     {
         DB::statement('ALTER TABLE `petitions` 
-        DROP COLUMN `answer`;
+            DROP INDEX `idx_petitions_description` ;
         ');
     }
 };
-
-
-
-
-

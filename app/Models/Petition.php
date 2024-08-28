@@ -114,6 +114,7 @@ class Petition extends Base
                 'statusClass' => 'style.red',
                 'buttonClass' => 'style.buttonRed',
                 'activeButtonClass' => 'style.activeButtonRed',
+                'childrenAdmin' => [self::STATUS_WAITING_ANSWER, self::STATUS_ANSWER_YES, self::STATUS_ANSWER_NO],
             ],
 
             self::STATUS_WAITING_ANSWER => [ 
@@ -127,7 +128,7 @@ class Petition extends Base
 
             self::STATUS_ANSWER_YES => [ 
                 'label' => 'Positive Answer',
-                'button' => 'Give answer', 
+                'button' => 'Give positive answer', 
                 'value' => self::STATUS_ANSWER_YES, 
                 'statusClass' => 'style.green',
                 'buttonClass' => 'style.buttonGreen',
@@ -136,7 +137,7 @@ class Petition extends Base
 
             self::STATUS_ANSWER_NO => [ 
                 'label' => 'Negative Answer',
-                'button' => 'Change to negative answer', 
+                'button' => 'Give negative answer', 
                 'value' => self::STATUS_ANSWER_NO, 
                 'statusClass' => 'style.red',
                 'buttonClass' => 'style.buttonRed',

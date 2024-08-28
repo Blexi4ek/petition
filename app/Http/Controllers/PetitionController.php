@@ -18,17 +18,18 @@ class PetitionController extends Controller
 
     private function base($request, $query) 
     {
+        $query->with(['userPetitions']);
         if (!empty($request->get('petitionStatus'))) {
             $query->whereIn('status', $request->get('petitionStatus'));
         }
         if (!empty($request->get('petitionQ'))) {
-            #(
-                        $query->where('petitions.name', 'like', "%{$request->get('petitionQ')}%");
-            #OR
-                       # $query->where('petitions.name', 'like', "%{$request->get('petition.q')}%");
-            #)
-            
-           }            
+            $query->where(function($query1) use ($request) {
+                $query1->where('petitions.name', 'like', "%{$request->get('petitionQ')}%")
+                    ->orWhereRaw("MATCH(petitions.description) AGAINST ('{$request->get('petitionQ')}' IN BOOLEAN MODE)")
+                    ->orWhereRaw("MATCH(petitions.answer) AGAINST ('{$request->get('petitionQ')}' IN BOOLEAN MODE)");
+                }
+            );            
+        }         
         if (!empty($request->get('petitionCreatedAtFrom'))) {
             $query->where('petitions.created_at',  '>=' , $request->get('petitionCreatedAtFrom'));
         }

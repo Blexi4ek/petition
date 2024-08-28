@@ -1,5 +1,5 @@
 import React, { FC, useState } from 'react'
-import style from '../../css/PetitionItem.module.css'
+import style from './PetitionItem.module.css'
 import axios from 'axios';
 import moment from 'moment';
 import dateFormat from '@/consts/dateFormat';
@@ -48,25 +48,29 @@ export const PetitionItem: FC<IPetitionProp> = ({petition, refresh, status, prop
                         <span className={eval(status?.[petition.status]?.statusClass || '')}>{status?.[petition.status]?.label}</span>
                     </div>                        
                         
-                    <div className={style.petitionInnerBox}>
+                    <div className={style.petitionInnerInfoBox}>
+
+                        <progress max={properties?.minimum_signs} value={petition.user_petitions.length} style={{width: '500px'}}/> ({petition.user_petitions.length})
+
                         <span className={style.petitionText}>{time.format(dateFormat)}</span>
                         <span className={style.petitionText}>Author: {petition.user_creator.name}</span>
 
-                        {petition? (petition.signId) ?
-                            <button disabled className={style.petitionButtonLightGreen}>
-                                Signed
-                            </button> :
+                        <div className={style.petitionButtonBox}>
+                            {petition? (petition.signId) ?
+                                <button disabled className={style.petitionButtonLightGreen}>
+                                    Signed
+                                </button> :
 
-                            (properties?.signButton.includes(petition.status)) ?
-                            <button className={style.petitionButtonBlue} onClick={handleSignButton}>
-                                Sign
-                            </button>                 
-                            : '' 
-                            : ''
-                        }
+                                (properties?.signButton.includes(petition.status)) ?
+                                <button className={style.petitionButtonBlue} onClick={handleSignButton}>
+                                    Sign
+                                </button>                 
+                                : '' : ''
+                            }
 
-                        <button className={style.petitionButton} onClick={e => openPetition()}>Open</button>
-                        <button className={style.petitionButtonRed} onClick={e => deletePetition()}>Delete</button>
+                            <button className={style.petitionButton} onClick={e => openPetition()}>Open</button>
+                            <button className={style.petitionButtonRed} onClick={e => deletePetition()}>Delete</button>
+                        </div>
                     </div>
 
                 </div>

@@ -7,7 +7,7 @@ import axios from 'axios';
 import { MultiSelect, MultiSelectChangeEvent } from 'primereact/multiselect';
 import ReactPaginate from 'react-paginate';
 
-import { PetitionItem } from '@/Components/PetitionItem';
+import { PetitionItem } from '@/Components/PetitionItem/PetitionItem';
 import style from '../../css/Petition.module.css'
 import usePetitionStaticProperties, { getStatusOptions } from '@/api/usePetitionStaticProperties';
 import { StatusButton } from '@/Components/StatusButton/StatusButton';
