@@ -33,6 +33,10 @@ export default function PetitionView({ auth }: PageProps) {
         router.get('/petitions/edit', {id: petition?.id})
     }
 
+    const handleAnswerButton = () => {
+        router.get('/petitions/answer', {id: petition?.id})
+    }
+
     const handleSignButton = async () => {
         await axios('/api/v1/petitions/sign', {method:'post' ,params: {petition_id: petition?.id}})
         setRefresh(!refresh)
@@ -71,8 +75,19 @@ export default function PetitionView({ auth }: PageProps) {
                 </div>
 
                 <div className={style.buttonBox}>
-                    <PetitionButton text={'Edit description'} onClick={handleEditButton} />
 
+                    {petition ? properties?.editButton.includes(petition.status) ? 
+                        <span style={{marginLeft: '30px'}}>
+                            <PetitionButton text={'Edit description'} onClick={handleEditButton} /> 
+                        </span> : '' : ''
+                    }
+
+                    {auth.user.role_id === 2 ? petition ? petition.status === 7 ? 
+                        <span style={{marginLeft: '30px'}}>
+                            <PetitionButton text={'Give answer'} onClick={handleAnswerButton} /> 
+                        </span> : '' : '' : ''
+                    }
+                    
                     {petition? (properties?.signButton.includes(petition.status)) ?
                         (petition.user_petitions.filter(item => item.user.id === auth.user.id).length !== 0)?
 
@@ -97,9 +112,15 @@ export default function PetitionView({ auth }: PageProps) {
                 
 
                 {petition? (properties?.answer.includes(petition.status)) ?
-                    <div className={style.answerBox}>
-                        Answer 
-                    </div> : '' : ''
+                    <div style={{margin: '0px 30px'}}>
+                        <span className={style.answerText}>
+                            Given answer:
+                        </span>
+                        <div className={style.answerBox}>
+                            {petition.answer}
+                        </div> 
+                    </div>
+                    : '' : ''
                 }
 
                 <div className={style.signBox}>

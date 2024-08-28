@@ -14,12 +14,19 @@ class Petition extends Base
 {
     use HasFactory, Notifiable;
 
-    public $createUpdateValidation = [
-        'name' => 'required|min:3|max:100',
-        'description' => 'required|min:3|max:500'
+
+    public $validationScenarios = [
+        'createUpdateValidation' => [
+            'name' => 'required|min:3|max:100',
+            'description' => 'required|min:3|max:500'
+        ],
+        'answerValidation' => [
+            'answer' => 'required|min:3|max:500'
+        ],
     ];
 
     const MINIMUM_SIGNS = 100;
+    const DAYS = 100;
 
     const PAYMENT = 'payment';
     const PAYMENT_ACTIVE = 1;
@@ -87,7 +94,7 @@ class Petition extends Base
                 'statusClass' => 'style.blue',
                 'buttonClass' => 'style.buttonBlue',
                 'activeButtonClass' => 'style.activeButtonBlue',
-                'childrenAdmin' => [self::STATUS_SUPPORTED, self::STATUS_UNSUPPORTED, self::STATUS_WAITING_ANSWER],
+                'childrenCron' => [self::STATUS_SUPPORTED, self::STATUS_UNSUPPORTED, self::STATUS_WAITING_ANSWER],
             ],
 
             self::STATUS_SUPPORTED => [ 
@@ -116,12 +123,11 @@ class Petition extends Base
                 'statusClass' => 'style.yellow',
                 'buttonClass' => 'style.buttonYellow',
                 'activeButtonClass' => 'style.activeButtonYellow',
-                'childrenAdmin' => [self::STATUS_ANSWER_YES, self::STATUS_ANSWER_NO],
             ],
 
             self::STATUS_ANSWER_YES => [ 
                 'label' => 'Positive Answer',
-                'button' => 'Change to positive answer', 
+                'button' => 'Give answer', 
                 'value' => self::STATUS_ANSWER_YES, 
                 'statusClass' => 'style.green',
                 'buttonClass' => 'style.buttonGreen',
@@ -139,7 +145,9 @@ class Petition extends Base
         ],
         'signButton' => [self::STATUS_ACTIVE, self::STATUS_SUPPORTED],
         'answer' => [self::STATUS_ANSWER_YES, self::STATUS_ANSWER_NO],
+        'editButton' => [self::STATUS_DRAFT, self::STATUS_UNMODERATED, self::STATUS_DECLINED],
         'minimum_signs' => self::MINIMUM_SIGNS,
+        'days' => self::DAYS,
 
 
         'pages_dropdown' => [
@@ -217,7 +225,8 @@ class Petition extends Base
         'declined_at',
         'supported_at',
         'answering_started_at',
-        'answered_at'
+        'answered_at',
+        'answer',
     ];
 
     /**

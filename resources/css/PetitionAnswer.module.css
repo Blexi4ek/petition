@@ -1,0 +1,34 @@
+.outerBox{
+    padding: 50px;
+}
+
+.nameBox {
+    border: 1px black solid;
+    padding: 15px;
+    background-color: lightgrey;
+}
+
+.descriptionBox {
+    margin-top: 20px;
+    padding: 15px;
+    background-color:lightgrey;
+    border: 1px black solid;
+}
+
+.editAnswer {
+    margin-top: 15px;
+    width: 100%;
+    height: 300px;
+    vertical-align: top;
+    text-align: left;
+}
+
+.buttonBox {
+    display: flex;
+    flex-direction: row;
+    margin-top: 35px;
+}
+
+.errorText{
+    color: red;
+}

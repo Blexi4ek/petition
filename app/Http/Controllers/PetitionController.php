@@ -56,7 +56,6 @@ class PetitionController extends Controller
 
         $query->orderBy('id', 'asc');
 
-
         
         return $query;
     }
@@ -152,7 +151,21 @@ class PetitionController extends Controller
         }
         if ($request->isMethod('POST')) {
             $data = $request->all();
-            $request->validate($petition->createUpdateValidation);
+
+
+            if ($request->get('status') == Petition::STATUS_ANSWER_YES || $request->get('status') == Petition::STATUS_ANSWER_NO) {
+                $request->validate($petition->validationScenarios['answerValidation']);
+                if($id) {
+                    $petition->update(['status' => $request->get('status'),
+                    'answer' => $request->get('answer'),
+                    'answered_by' => Auth::id(),
+                    'answered_at' => Carbon::now()]);
+                } else return response()->json($petition);
+
+            } else {
+                $request->validate($petition->validationScenarios['createUpdateValidation']);
+            }
+
             if($id && $petition) {
                 $petition->update($data);
             } else if (empty($id)) {
@@ -178,7 +191,29 @@ class PetitionController extends Controller
 
     public function status(Request $request)
     {
-        Petition::where(['id' => $request->get('petition_id')])->update(['status' => $request->get('status')]);
+        $petition = Petition::where(['id' => $request->get('petition_id')]);
+        $petition->update(['status' => $request->get('status')]);
+
+        if ($request->get('status') == Petition::STATUS_UNMODERATED) {
+            $petition->update(['moderating_started_at' => Carbon::now()]);
+        }
+
+        if ($request->get('status') == Petition::STATUS_ACTIVE) {
+            $petition->update(['moderated_by' => Auth::id(), 'activated_at' => Carbon::now()]);
+        }
+
+        if ($request->get('status') == Petition::STATUS_DECLINED) {
+            $petition->update(['declined_at' => Carbon::now()]);
+        }
+
+        if ($request->get('status') == Petition::STATUS_SUPPORTED) {
+            $petition->update(['supported_at' => Carbon::now()]);
+        }
+
+        if ($request->get('status') == Petition::STATUS_WAITING_ANSWER) {
+            $petition->update(['answering_started_at' => Carbon::now()]);
+        }
+        
     }
 
     public function staticProperties()

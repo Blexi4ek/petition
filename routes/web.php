@@ -73,5 +73,10 @@ Route::get('/petitions/edit', function () {
     return Inertia::render('PetitionEdit');
 })->middleware(['auth', 'verified'])->name('petition/edit');
 
+Route::get('/petitions/answer', function () {
+    return Inertia::render('PetitionAnswer');
+})->middleware(['auth', 'verified'])->name('petition/answer');
+
+
 
 

@@ -23,6 +23,7 @@ export interface IPetitionStaticProperties {
     }
     answer: number[],
     signButton: number[],
+    editButton: number[],
     payment: {
         label: string,
         value: number
