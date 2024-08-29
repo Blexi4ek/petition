@@ -44,8 +44,8 @@ export const PetitionItem: FC<IPetitionProp> = ({petition, refresh, status, prop
                 <div className={style.petitionBox}> 
 
                     <div className={style.petitionInnerBox}>
-                        <span className={style.petitionText}>{petition.name}</span>
-                        <span className={eval(status?.[petition.status]?.statusClass || '')}>{status?.[petition.status]?.label}</span>
+                        <span style={{marginLeft: '20px'}} className={eval(status?.[petition.status]?.statusClass || '')}>{status?.[petition.status]?.label}</span>
+                        <span className={style.petitionText}>{petition.name}</span>         
                     </div>                        
                         
                     <div className={style.petitionInnerInfoBox}>

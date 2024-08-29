@@ -4,6 +4,12 @@
     margin-bottom: 30px;
 }
 
+.optionBox {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
 .chronoBox {
     display: flex;
     justify-content: space-between;
@@ -11,8 +17,12 @@
     flex-direction: column;
 }
 
-.chronoItem{
+.chronoItem {
     margin-bottom: 15px;
+}
+
+.searchMultiSelectBox {
+    width: 55%;
 }
 
 .topBox {

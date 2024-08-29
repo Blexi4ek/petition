@@ -225,4 +225,9 @@ class PetitionController extends Controller
         //return response()->json(Petition::itemAlias(Petition::STATUS, Petition::STATUS_DRAFT, 'children'));
     }
 
+    public function searchUser(Request $request)
+    {
+        $query = User::where('users.name', 'like', "{$request->get('input')}%")->get()->all();
+        return response()->json($query);
+    }
 }

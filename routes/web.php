@@ -41,9 +41,10 @@ Route::post('/api/v1/petitions/edit', [PetitionController::class, 'edit'])->name
 Route::get('/api/v1/petitions/staticProperties', [PetitionController::class, 'staticProperties'])->name('petition.staticProperties');
 Route::post('/api/v1/petitions/sign', [PetitionController::class, 'sign'])->name('petition.sign');
 Route::post('/api/v1/petitions/statusChange', [PetitionController::class, 'status'])->name('petition.status');
-
+Route::get('/api/v1/petitions/searchUser', [PetitionController::class, 'searchUser'])->name('petition.searchUser');
 
 Route::get('/api/v1/profile/me', [ProfileController::class, 'me'])->name('profile.me');
+
 
 Route::get('/petitions', function () {
     return Inertia::render('Petitions');

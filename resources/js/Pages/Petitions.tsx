@@ -12,6 +12,7 @@ import style from '../../css/Petition.module.css'
 import usePetitionStaticProperties, { getStatusOptions } from '@/api/usePetitionStaticProperties';
 import { StatusButton } from '@/Components/StatusButton/StatusButton';
 import { PetitionButton } from '@/Components/Button/PetitionButton';
+import { SearchMultiSelect } from '@/Components/SearchMultiSelect/SearchMultiSelect';
 
 
 export default function Petitions({ auth }: PageProps) {
@@ -178,36 +179,40 @@ export default function Petitions({ auth }: PageProps) {
                     first={index === 0 ? true : false} last={index === arr.length-1 ? true : false}/>)}
                 </div>
                 
-        
             </div>
 
-            <div className={style.chronoBox}>
+            <div className={style.optionBox}>
+                <div className={style.chronoBox}>
+                    <div className={style.chronoItem}>
+                        Created {' '}
+                        <input type='datetime-local' value={petitionOptions.createdFrom} onChange={e => handleCreatedFromChange(e)}/>
+                        {' to '}
+                        <input type='datetime-local' value={petitionOptions.createdTo} onChange={e => handleCreatedToChange(e)}/>
+                    </div>
 
-                
-                <div className={style.chronoItem}>
-                    Created {' '}
-                    <input type='datetime-local' value={petitionOptions.createdFrom} onChange={e => handleCreatedFromChange(e)}/>
-                    {' to '}
-                    <input type='datetime-local' value={petitionOptions.createdTo} onChange={e => handleCreatedToChange(e)}/>
+                    <div className={style.chronoItem}>
+                        Activated {' '}
+                        <input type='datetime-local' value={petitionOptions.activatedFrom} onChange={e => handleActivatedFromChange (e)}/>
+                        {' to '}
+                        <input type='datetime-local' value={petitionOptions.activatedTo} onChange={e => handleActivatedToChange (e)}/>
+                    </div>
+
+                    <div className={style.chronoItem}>
+                        Answered {' '}
+                        <input type='datetime-local' value={petitionOptions.answeredFrom} onChange={e => handleAnsweredFromChange (e)}/>
+                        {' to '}
+                        <input type='datetime-local' value={petitionOptions.answeredTo} onChange={e => handleAnsweredToChange (e)}/>
+                    </div>
+
                 </div>
 
-                <div className={style.chronoItem}>
-                    Activated {' '}
-                    <input type='datetime-local' value={petitionOptions.activatedFrom} onChange={e => handleActivatedFromChange (e)}/>
-                    {' to '}
-                    <input type='datetime-local' value={petitionOptions.activatedTo} onChange={e => handleActivatedToChange (e)}/>
+                <div className={style.searchMultiSelectBox}>
+                    <SearchMultiSelect/>
                 </div>
 
-                <div className={style.chronoItem}>
-                    Answered {' '}
-                    <input type='datetime-local' value={petitionOptions.answeredFrom} onChange={e => handleAnsweredFromChange (e)}/>
-                    {' to '}
-                    <input type='datetime-local' value={petitionOptions.answeredTo} onChange={e => handleAnsweredToChange (e)}/>
-                </div>
+                   
 
             </div>
-            
-            
 
             </div>
 
