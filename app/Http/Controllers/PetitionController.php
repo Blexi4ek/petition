@@ -48,6 +48,37 @@ class PetitionController extends Controller
         if (!empty($request->get('petitionAnsweredAtTo'))) {
             $query->where('petitions.answered_at',  '<=' , $request->get('petitionAnsweredAtTo'));
         }
+        if(!empty($request->get('petitionUserIds'))) {
+
+            if ($request->get('petitionUserSearchAnd') == 'true') {
+                if (!empty($request->get('petitionUserSearchRole'))) {
+                    if (in_array('created_by', $request->get('petitionUserSearchRole'))) {
+                        $query->whereIn('created_by', $request->get('petitionUserIds'));
+                    }
+                    if (in_array('moderated_by', $request->get('petitionUserSearchRole'))) {
+                        $query->whereIn('moderated_by', $request->get('petitionUserIds'));
+                    }
+                    if (in_array('answered_by', $request->get('petitionUserSearchRole'))) {
+                        $query->whereIn('answered_by', $request->get('petitionUserIds'));
+                    }
+                }
+                
+            } else {
+                if (!empty($request->get('petitionUserSearchRole'))) {
+                    $query->where(function($query1) use ($request) {
+                        if (in_array('created_by', $request->get('petitionUserSearchRole'))) {
+                            $query1->orWhereIn('created_by', $request->get('petitionUserIds'));
+                        }
+                        if (in_array('moderated_by', $request->get('petitionUserSearchRole'))) {
+                            $query1->orWhereIn('moderated_by', $request->get('petitionUserIds'));
+                        }
+                        if (in_array('answered_by', $request->get('petitionUserSearchRole'))) {
+                            $query1->orWhereIn('answered_by', $request->get('petitionUserIds'));
+                        }
+                    });
+                }  
+            }
+        }
 
         if (Auth::id()) {
             $query->select('petitions.*', 'user_petition.id as signId')->leftJoin('user_petition', function (JoinClause $join) {
@@ -65,7 +96,7 @@ class PetitionController extends Controller
     public function index(Request $request)
     { 
         $user = $request->user()->getAttributes();
-        $query = Petition::with(['userCreator']);
+        $query = Petition::with(['userCreator', 'userModerator', 'userPolitician']);
     
         if (Auth::id()) {
             $query->whereIn('status', Petition::itemAlias('pages_dropdown', $user['role_id'], Petition::PAGE_ALL));
@@ -227,7 +258,7 @@ class PetitionController extends Controller
 
     public function searchUser(Request $request)
     {
-        $query = User::where('users.name', 'like', "{$request->get('input')}%")->get()->all();
+        $query = User::where('users.name', 'like', "{$request->get('input')}%")->limit(100)->get();
         return response()->json($query);
     }
-}
+}   

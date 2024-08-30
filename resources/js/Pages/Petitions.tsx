@@ -2,7 +2,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import GuestLayout from '@/Layouts/GuestLayout';
 import { Head, router, usePage } from '@inertiajs/react';
 import { PageProps } from '@/types';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
 import { MultiSelect, MultiSelectChangeEvent } from 'primereact/multiselect';
 import ReactPaginate from 'react-paginate';
@@ -13,6 +13,7 @@ import usePetitionStaticProperties, { getStatusOptions } from '@/api/usePetition
 import { StatusButton } from '@/Components/StatusButton/StatusButton';
 import { PetitionButton } from '@/Components/Button/PetitionButton';
 import { SearchMultiSelect } from '@/Components/SearchMultiSelect/SearchMultiSelect';
+import { ActionMeta } from 'react-select';
 
 
 export default function Petitions({ auth }: PageProps) {
@@ -26,6 +27,8 @@ export default function Petitions({ auth }: PageProps) {
     const queryActivatedTo = queryParams.get('activatedTo')
     const queryAnsweredFrom = queryParams.get('answeredFrom')
     const queryAnsweredTo = queryParams.get('answeredTo')
+    const queryUserSearchAnd = queryParams.get('userSearchAnd')
+    const isTrueAnd = (queryUserSearchAnd? queryUserSearchAnd === 'true' : true)
 
     let pageName = ''
     switch(window.location.pathname) {
@@ -50,7 +53,10 @@ export default function Petitions({ auth }: PageProps) {
         activatedFrom: '',
         activatedTo: '',
         answeredFrom: '',
-        answeredTo: ''})
+        answeredTo: '',
+        users: [],
+        userSearchRole: [],
+        userSearchAnd: true})
 
     const properties = usePetitionStaticProperties()
 
@@ -59,20 +65,32 @@ export default function Petitions({ auth }: PageProps) {
 
         let queryStatus:number[] = []
         if (queryParams.getAll('status[0]')) {
-            
             queryParams.forEach((value, key) => {
                 if (key.includes('status')) queryStatus.push(Number(value))
+            })
+        }
+        let queryUser: string[] = []
+        if (queryParams.getAll('user[0]')) {
+            queryParams.forEach((value, key) => {
+                if (key.includes('user')) queryUser.push(value)
+            })
+        }
+        let queryUserSearchRole: number[] = []
+        if (queryParams.getAll('userSearchRole[0]')) {
+            queryParams.forEach((value, key) => {
+                if (key.includes('userSearchRole')) queryUserSearchRole.push(Number(value))
             })
         }
         
         setPetitionOptions({status: queryStatus, name: queryName || '', createdFrom:queryCreatedFrom || '',
             createdTo:queryCreatedTo || '', activatedFrom:queryActivatedFrom || '', activatedTo:queryActivatedTo || '',
-            answeredFrom: queryAnsweredFrom || '', answeredTo: queryAnsweredTo || ''
+            answeredFrom: queryAnsweredFrom || '', answeredTo: queryAnsweredTo || '', userSearchRole: queryUserSearchRole,
+            userSearchAnd: isTrueAnd,
         })
         setRefresh(!refresh)
     },[])
 
-    useEffect(()=> {
+    useMemo(()=> {
         const fetchPetitions = async () => {
             const {data: response} = await axios(`/api/v1${window.location.pathname}`, {params: {
                 page, 
@@ -83,7 +101,10 @@ export default function Petitions({ auth }: PageProps) {
                 petitionActivatedAtFrom: petitionOptions.activatedFrom,
                 petitionActivatedAtTo: petitionOptions.activatedTo,
                 petitionAnsweredFrom: petitionOptions.answeredFrom,
-                petitionAnsweredTo: petitionOptions.answeredTo
+                petitionAnsweredTo: petitionOptions.answeredTo,
+                petitionUserIds: petitionOptions.users,
+                petitionUserSearchRole: petitionOptions.userSearchRole,
+                petitionUserSearchAnd: petitionOptions.userSearchAnd,
             }});
             setTotalPages(response.last_page)
             setPetitions(response.data)
@@ -98,7 +119,8 @@ export default function Petitions({ auth }: PageProps) {
 
             router.get(window.location.pathname, {page: newPage, status:options.status, name:options.name,
                 createdFrom:options.createdFrom, createdTo:options.createdTo, activatedFrom:options.activatedFrom,
-                activatedTo:options.activatedTo, answeredFrom:options.answeredFrom, answeredTo:options.answeredTo},
+                activatedTo:options.activatedTo, answeredFrom:options.answeredFrom, answeredTo:options.answeredTo,
+                userSearch:options.users, userSearchRole: options.userSearchRole, userSearchAnd: options.userSearchAnd},
                 {preserveState: true, preserveScroll: true})
         }
 
@@ -139,6 +161,24 @@ export default function Petitions({ auth }: PageProps) {
 
         const handleAnsweredToChange = (e: React.ChangeEvent<HTMLInputElement>) => {
             refreshPage({...petitionOptions , answeredTo: e.target.value})    
+        }
+
+        const handleUserSearchChange = (option: readonly UserOption[], actionMeta: ActionMeta<UserOption>) => {
+            let users: number[] = []
+            option.map(item => users.push(item.value))
+            refreshPage({...petitionOptions , users})
+        }
+
+        const handleUserSearchRoleChange = (userRole: number) => {
+            let newArr = petitionOptions.userSearchRole
+            if (petitionOptions.userSearchRole?.includes(userRole)) newArr = newArr?.filter(item => item !== userRole)
+            else newArr?.push(userRole) 
+            refreshPage({...petitionOptions ,userSearchRole: newArr})
+        }
+
+        const handleUserSearchAndChange = (userAnd: number) => {
+            if (userAnd === 3 && petitionOptions.userSearchAnd === false) refreshPage({...petitionOptions, userSearchAnd: true}) 
+            if (userAnd === 4 && petitionOptions.userSearchAnd === true) refreshPage({...petitionOptions, userSearchAnd: false})   
         }
 
         const clickCheck = () => {
@@ -207,10 +247,21 @@ export default function Petitions({ auth }: PageProps) {
                 </div>
 
                 <div className={style.searchMultiSelectBox}>
-                    <SearchMultiSelect/>
+                    <SearchMultiSelect onChange={handleUserSearchChange}/>
+                    <div className={style.userSearchOptions}>
+                        <div>
+                            {properties?.userSearch?.map((item, index, arr) => <StatusButton status={properties.userSearch[index]} key={index}
+                            activeStatus={petitionOptions.userSearchRole} clickEvent={(userRole) => handleUserSearchRoleChange(userRole)} 
+                            first={index === 0 ? true : false} last={index === arr.length-1 ? true : false}/>)  }
+                        </div>
+                    
+                        <div style={{marginLeft: '50px'}}>
+                            {properties? [3,4].map((item, index, arr) => <StatusButton status={properties.userSearchCondition[item]} key={index}
+                            activeStatus={petitionOptions.userSearchAnd? [3] : [4]} clickEvent={(userAnd) => handleUserSearchAndChange(userAnd)} 
+                            first={index === 0 ? true : false} last={index === arr.length-1 ? true : false}/>) : ''}
+                        </div>
+                    </div>
                 </div>
-
-                   
 
             </div>
 

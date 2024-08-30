@@ -37,6 +37,13 @@
     border: solid 1px black;
     border-radius: 70px;
 }
+
+.userSearchOptions {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin-top: 15px;
+}
   
 .pagination {
     align-items: center;
@@ -49,18 +56,6 @@
     width: 1000px;
 }
 
-.multiSelect {
-    background-color: white;
-    border: 1px black solid;
-    text-align: center;
-    align-items: center;
-    padding: 10px;
-    width: 200px;
-}
 
-.multiSelectItem {
-    margin-bottom: 5px;
-    padding-left: 5px;
-}
 
 

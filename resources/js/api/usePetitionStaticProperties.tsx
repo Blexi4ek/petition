@@ -16,6 +16,17 @@ export interface IPetitionStatus {
 
 export interface IPetitionStaticProperties {
     status: IPetitionStatus,
+    userSearch:  {
+        label: string,
+        button: string,
+        value: number,
+        statusClass: string,
+        buttonClass: string,
+        activeButtonClass: string,
+        children: number[],
+        childrenAdmin: number[]
+    } [],
+    userSearchCondition: IPetitionStatus,
     pages_dropdown: {
         [key: number]: {
             [key: string]: number[];

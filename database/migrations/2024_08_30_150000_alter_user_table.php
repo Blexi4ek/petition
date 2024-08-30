@@ -21,9 +21,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        DB::statement('ALTER TABLE `petitions` 
-        ADD FULLTEXT INDEX `idx_petitions_description` (`description`);
-        ');
+        DB::statement('AALTER TABLE `users` 
+ADD INDEX `idx_users_name` (`name` ASC) VISIBLE;');
     }
 
     /**
@@ -31,8 +30,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        DB::statement('ALTER TABLE `petitions` 
-            DROP INDEX `idx_petitions_description` ;
-        ');
+        DB::statement('ALTER TABLE `users` 
+DROP INDEX `idx_users_name` ;');
     }
 };

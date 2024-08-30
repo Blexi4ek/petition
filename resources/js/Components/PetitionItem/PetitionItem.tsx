@@ -54,6 +54,8 @@ export const PetitionItem: FC<IPetitionProp> = ({petition, refresh, status, prop
 
                         <span className={style.petitionText}>{time.format(dateFormat)}</span>
                         <span className={style.petitionText}>Author: {petition.user_creator.name}</span>
+                        <span className={style.petitionText}>Moderator: {petition.user_moderator?.name}</span>
+                        <span className={style.petitionText}>Responder: {petition.user_politician?.name}</span>
 
                         <div className={style.petitionButtonBox}>
                             {petition? (petition.signId) ?

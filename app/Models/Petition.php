@@ -149,6 +149,40 @@ class Petition extends Base
         'editButton' => [self::STATUS_DRAFT, self::STATUS_UNMODERATED, self::STATUS_DECLINED],
         'minimum_signs' => self::MINIMUM_SIGNS,
         'days' => self::DAYS,
+        'userSearch' => [
+            0 => [
+                'label' => 'Creator',
+                'value' => 'created_by',
+                'buttonClass' => 'style.buttonBlue',
+                'activeButtonClass' => 'style.activeButtonBlue',
+            ],
+            1 => [
+                'label' => 'Moderator',
+                'value' => 'moderated_by',
+                'buttonClass' => 'style.buttonBlue',
+                'activeButtonClass' => 'style.activeButtonBlue',
+            ],
+            2 => [
+                'label' => 'Responder',
+                'value' => 'answered_by',
+                'buttonClass' => 'style.buttonBlue',
+                'activeButtonClass' => 'style.activeButtonBlue',
+            ],
+        ],
+        'userSearchCondition' => [
+            3 => [
+                'label' => 'And',
+                'value' => 3,
+                'buttonClass' => 'style.buttonBlue',
+                'activeButtonClass' => 'style.activeButtonBlue',
+            ],
+            4 => [
+                'label' => 'Or',
+                'value' => 4,
+                'buttonClass' => 'style.buttonBlue',
+                'activeButtonClass' => 'style.activeButtonBlue',
+            ],
+        ],
 
 
         'pages_dropdown' => [

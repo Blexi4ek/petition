@@ -31,4 +31,17 @@ interface IPetitionOptions {
     activatedTo?: string;
     answeredFrom?: string;
     answeredTo?: string;
+    users?: number[];
+    userSearchRole: number[];
+    userSearchAnd: boolean
+}
+
+interface UserResponse {
+    name: string,
+    id: number
+  }
+  
+interface UserOption {
+    label: string;
+    value: number;
 }
