@@ -261,4 +261,16 @@ class PetitionController extends Controller
         $query = User::where('users.name', 'like', "{$request->get('input')}%")->limit(100)->get();
         return response()->json($query);
     }
+
+    public function handle() {
+        $petitions = Petition::with(['userPetitions'])->whereIn('status', [Petition::STATUS_ACTIVE, Petition::STATUS_SUPPORTED])->cursor();
+
+        foreach ($petitions as $petition) {
+            if(Carbon::now()->diffInDays($petition->created_at) >= Petition::DAYS) {
+                echo $petition->id . " " . count($petition->userPetitions) .  "\n";
+
+            }
+        }
+    }
+    
 }   

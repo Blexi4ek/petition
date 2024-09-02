@@ -51,7 +51,7 @@ class Petition extends Base
     const PAGE_MODERATED = 'status_moderated';
     const PAGE_RESPONSE = 'status_response';
 
-    const PER_PAGE = 10;
+    const PER_PAGE = 5;
 
 
     public static $_items = [

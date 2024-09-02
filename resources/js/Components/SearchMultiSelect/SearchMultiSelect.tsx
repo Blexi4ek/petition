@@ -12,7 +12,6 @@ const fetchUsers = async (inputValue: string) => {
     const response = await axios.get('/api/v1/petitions/searchUser', {params: {input:inputValue}})
     let users: UserResponse[] = response.data
     let optionUsers: UserOption[] = []
-    console.log(users)
     users.map(item => optionUsers.push({label: item.name, value: item.id}))
 
     return optionUsers

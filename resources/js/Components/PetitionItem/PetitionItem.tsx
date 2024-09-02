@@ -50,12 +50,20 @@ export const PetitionItem: FC<IPetitionProp> = ({petition, refresh, status, prop
                         
                     <div className={style.petitionInnerInfoBox}>
 
-                        <progress max={properties?.minimum_signs} value={petition.user_petitions.length} style={{width: '500px'}}/> ({petition.user_petitions.length})
+                        <progress max={properties?.minimum_signs} value={petition.user_petitions.length} style={{width: '30%'}}/> ({petition.user_petitions.length})
 
-                        <span className={style.petitionText}>{time.format(dateFormat)}</span>
-                        <span className={style.petitionText}>Author: {petition.user_creator.name}</span>
-                        <span className={style.petitionText}>Moderator: {petition.user_moderator?.name}</span>
-                        <span className={style.petitionText}>Responder: {petition.user_politician?.name}</span>
+                        <span className={style.petitionText} style={{width: '20%'}} >{time.format(dateFormat)}</span>
+                        
+                        <div className={style.petitionText} style={{width: '30%'}}>
+                            <span>Author: {petition.user_creator.name}</span> <br/>
+
+                            {petition.user_moderator?
+                            <span>Moderator: {petition.user_moderator.name} <br/> </span>  : ''}
+                            
+                            {petition.user_politician?
+                            <span>Responder: {petition.user_politician.name} <br/> </span>  : ''}
+                        </div>
+
 
                         <div className={style.petitionButtonBox}>
                             {petition? (petition.signId) ?
