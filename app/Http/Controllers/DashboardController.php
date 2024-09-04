@@ -34,6 +34,8 @@ class DashboardController extends Controller
             }
             return response()->json($customer);
         } 
+        $user->payment_method_id = $request->get('card');
+        $user->save();
 
         $paymentMethod = \Stripe\PaymentMethod::retrieve($request->get('card'));
         $paymentMethod->attach(['customer' => $user->customer_id]);

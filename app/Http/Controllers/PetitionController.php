@@ -96,17 +96,10 @@ class PetitionController extends Controller
     public function index(Request $request)
     { 
         \Stripe\Stripe::setApiKey('sk_test_51PuW7VGTLFfQp8wwI4SSBaehDymDomYGhujNif21tYqBALy6gebB6Fxo1oNQof0c1VbuPnvPrmVSULsDEceAbqaX00z10KsoSN');
-        chargeCustomer('cus_Qm9czjyY5i1ff4', 50);
-        // chargeCustomer('cus_Qm9czjyY5i1ff4', 10);
-        // chargeCustomer('cus_Qm9czjyY5i1ff4', 5);
-        // chargeCustomer('cus_Qm9czjyY5i1ff4', 100);
-        
 
         $user = $request->user()->getAttributes();
         $query = Petition::with(['userCreator', 'userModerator', 'userPolitician']);
 
-        
-    
         if (Auth::id()) {
             $query->whereIn('status', Petition::itemAlias('pages_dropdown', $user['role_id'], Petition::PAGE_ALL));
         } else {
@@ -286,56 +279,31 @@ class PetitionController extends Controller
 
         \Stripe\Stripe::setApiKey('sk_test_51PuW7VGTLFfQp8wwI4SSBaehDymDomYGhujNif21tYqBALy6gebB6Fxo1oNQof0c1VbuPnvPrmVSULsDEceAbqaX00z10KsoSN');
 
-        //if isPaid == false
+        $petition = Petition::where(['id' => $request->get('id')])->get()->first();
+        if($petition->is_paid == 0) {  
+            
+            $id = $request->get('id');
 
-        $id = $request->get('id');
-
-            // Создаем Payment Link с дополнительными данными
             $paymentLink = \Stripe\PaymentLink::create([
                 'line_items' => [
                     [
-                        'price' => 'price_1PurtcGTLFfQp8wwkim1y4En', // ID цены товара
+                        'price' => 'price_1PurtcGTLFfQp8wwkim1y4En', 
                         'quantity' => 1,
                     ],
                 ],
                 'customer_creation' => 'always',
                 'metadata' => [
-                     'item_id' => $id, // Ваш ID предмета
+                    'item_id' => $id,
         ],
             ]);
-        
-            // Получаем URL ссылки на оплату
+
             $paymentLinkUrl = $paymentLink->url;
         
             return response()->json($paymentLinkUrl);
+        }    
+
+        
 
     }   
     
 }   
-
-function chargeCustomer($customerId, $amount) {
-
-    \Stripe\Stripe::setApiKey('sk_test_51PuW7VGTLFfQp8wwI4SSBaehDymDomYGhujNif21tYqBALy6gebB6Fxo1oNQof0c1VbuPnvPrmVSULsDEceAbqaX00z10KsoSN');
-
-    // $paymentMethod = \Stripe\PaymentMethod::retrieve([
-    //     'customer' => $customerId,
-    //     'type' => 'card',
-    //     'limit' => 1
-    // ]);
-
-    $cards = \Stripe\PaymentMethod::all([
-        "customer" => $customerId, "type" => "card"
-      ]);
-
-    // Создаем намерение платежа
-    $paymentIntent = \Stripe\PaymentIntent::create([
-        'amount' => $amount,
-        'currency' => 'usd',
-        'customer' => $customerId,
-        'payment_method' => $cards->data[0], // ID платежного метода
-        'off_session' => true,
-        'confirm' => true,
-    ]); 
-
-    
-}

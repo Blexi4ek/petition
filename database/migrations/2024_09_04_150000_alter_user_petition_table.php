@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        DB::statement('ALTER TABLE `petitions` 
-ADD COLUMN `is_paid` TINYINT NULL AFTER `answer` DEFAULT 0;
+        DB::statement('ALTER TABLE `user_petition` 
+ADD COLUMN `paid_at` TIMESTAMP NULL AFTER `payment_intent_id`;
         ');
     }
 
@@ -31,9 +31,11 @@ ADD COLUMN `is_paid` TINYINT NULL AFTER `answer` DEFAULT 0;
      */
     public function down(): void
     {
-        DB::statement('ALTER TABLE `petitions` 
-DROP COLUMN `is_paid`;
-        ');
+        DB::statement('ALTER TABLE `user_petition` 
+DROP COLUMN `paid_at`;
+');
     }
 };
+
+
 

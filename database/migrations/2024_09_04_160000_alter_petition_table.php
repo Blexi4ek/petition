@@ -22,7 +22,7 @@ return new class extends Migration
     public function up(): void
     {
         DB::statement('ALTER TABLE `petitions` 
-CHANGE COLUMN `isPaid` `isPaid` TINYINT ZEROFILL NULL DEFAULT NULL ;
+ADD COLUMN `paid_at` TIMESTAMP NULL AFTER `is_paid`;
         ');
     }
 
@@ -32,7 +32,7 @@ CHANGE COLUMN `isPaid` `isPaid` TINYINT ZEROFILL NULL DEFAULT NULL ;
     public function down(): void
     {
         DB::statement('ALTER TABLE `petitions` 
-CHANGE COLUMN `isPaid` `isPaid` TINYINT(3) NULL DEFAULT NULL ;
+DROP COLUMN `paid_at`;
 ');
     }
 };

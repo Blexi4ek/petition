@@ -41,7 +41,7 @@ export default function Dashboard({ auth }: PageProps) {
                     <form id="add-card-form" className={style.cardBox} onSubmit={handleSubmit}>
                         <CardElement />
                         <br />
-                        <button>Add card</button>
+                        <button>{auth.user.payment_method_id? 'Edit card' : 'Add card'}</button>
                     </form>
                     
                 </div>
