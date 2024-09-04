@@ -294,6 +294,8 @@ export default function Petitions({ auth }: PageProps) {
                     forcePage={(page || 1) - 1}
                 />
             </div>
+
+            
         </AuthenticatedLayout>
     );
 }

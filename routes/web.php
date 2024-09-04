@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PetitionController;
 use App\Http\Controllers\PetitionIdController;
 use App\Http\Controllers\ProfileController;
@@ -29,6 +30,8 @@ Route::middleware('auth')->group(function () {
 
 require __DIR__.'/auth.php';
 
+Route::post('/api/v1/dashboard/create', [DashboardController::class,'create'])->name('dashboard.create');
+
 Route::get('/api/v1/petitions/my', [PetitionController::class,'my'])->name('petition.list.my');
 Route::get('/api/v1/petitions/signs', [PetitionController::class, 'signs'])->name('petition.list.signs');
 Route::get('/api/v1/petitions/moderated', [PetitionController::class, 'moderated'])->name('petition.list.moderated');
@@ -42,6 +45,7 @@ Route::get('/api/v1/petitions/staticProperties', [PetitionController::class, 'st
 Route::post('/api/v1/petitions/sign', [PetitionController::class, 'sign'])->name('petition.sign');
 Route::post('/api/v1/petitions/statusChange', [PetitionController::class, 'status'])->name('petition.status');
 Route::get('/api/v1/petitions/searchUser', [PetitionController::class, 'searchUser'])->name('petition.searchUser');
+Route::post('/api/v1/petitions/edit/pay', [PetitionController::class,'pay'])->name('petition.pay');
 
 Route::get('/api/v1/profile/me', [ProfileController::class, 'me'])->name('profile.me');
 

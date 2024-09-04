@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import style from '../../css/PetitionEdit.module.css'
 import { PetitionButton } from '@/Components/Button/PetitionButton';
+import { loadStripe } from '@stripe/stripe-js';
 
 interface IErrorMessage {
     name: string[],
@@ -56,6 +57,10 @@ export default function PetitionEdit({ auth }: PageProps) {
         }
     }
 
+    const handlePaymentButton = async () => {
+        const response = await axios({method: 'post', url: '/api/v1/petitions/edit/pay', params: {id: petition?.id}}).then(response => window.location.href = response.data)   
+    }
+
 
     return (
         <AuthenticatedLayout
@@ -87,6 +92,7 @@ export default function PetitionEdit({ auth }: PageProps) {
                 <div className={style.editBox}>
                     <PetitionButton text={'Save as draft'} onClick={() => handleEditClick(1)} />
                     <PetitionButton text={'Send to moderator'} onClick={() => handleEditClick(2)} />
+                    <PetitionButton text={'Pay for petition'} onClick={() => handlePaymentButton()}/>
                 </div>
                 
             </div>

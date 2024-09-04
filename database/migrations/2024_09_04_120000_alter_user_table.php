@@ -22,9 +22,8 @@ return new class extends Migration
     public function up(): void
     {
         DB::statement('ALTER TABLE `users` 
-ADD COLUMN `customer_id` VARCHAR(255) NULL AFTER `updated_at`,
-ADD UNIQUE INDEX `customer_id_UNIQUE` (`customer_id` ASC) VISIBLE;
-;');
+ADD COLUMN `payment_method_id` VARCHAR(255) NULL AFTER `customer_id`;
+');
     }
 
     /**
@@ -33,10 +32,7 @@ ADD UNIQUE INDEX `customer_id_UNIQUE` (`customer_id` ASC) VISIBLE;
     public function down(): void
     {
         DB::statement('ALTER TABLE `users` 
-DROP COLUMN `customer_id`,
-DROP INDEX `customer_id_UNIQUE` ;
-;
+DROP COLUMN `payment_method_id`;
 ');
     }
 };
-

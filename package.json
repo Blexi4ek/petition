@@ -24,6 +24,8 @@
         "vite": "^5.0"
     },
     "dependencies": {
+        "@stripe/react-stripe-js": "^2.8.0",
+        "@stripe/stripe-js": "^4.4.0",
         "bootstrap": "^5.3.3",
         "classnames": "^2.5.1",
         "moment": "^2.30.1",
