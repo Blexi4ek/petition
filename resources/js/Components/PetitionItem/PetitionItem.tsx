@@ -5,15 +5,17 @@ import moment from 'moment';
 import dateFormat from '@/consts/dateFormat';
 import { router } from '@inertiajs/react';
 import { IPetitionStaticProperties, IPetitionStatus } from '@/api/usePetitionStaticProperties';
+import { User } from '@/types';
 
 interface IPetitionProp {
+    user: User
     petition: IPetition
     refresh: () => void;
     status?: IPetitionStatus;
     properties: IPetitionStaticProperties | undefined
 }
 
-export const PetitionItem: FC<IPetitionProp> = ({petition, refresh, status, properties}) => {
+export const PetitionItem: FC<IPetitionProp> = ({user, petition, refresh, status, properties}) => {
 
     const openPetition = () => {
         if (window.location.pathname.length <= 10) router.get('/petitions/view', {id: petition.id})
@@ -44,7 +46,7 @@ export const PetitionItem: FC<IPetitionProp> = ({petition, refresh, status, prop
                 <div className={style.petitionBox}> 
 
                     <div className={style.petitionInnerBox}>
-                        <span style={{marginLeft: '20px'}} className={eval(status?.[petition.status]?.statusClass || '')}>{status?.[petition.status]?.label}</span>
+                        <span style={{marginLeft: '20px'}} className={eval(status?.[petition.status].statusClass || '')}>{status?.[petition.status]?.label}</span>
                         <span className={style.petitionText}>{petition.name}</span>         
                     </div>                        
                         
@@ -79,7 +81,9 @@ export const PetitionItem: FC<IPetitionProp> = ({petition, refresh, status, prop
                             }
 
                             <button className={style.petitionButton} onClick={e => openPetition()}>Open</button>
-                            <button className={style.petitionButtonRed} onClick={e => deletePetition()}>Delete</button>
+                            {user.id === petition.created_by || user.role_id === 2 /*admin*/ ?
+                            <button className={style.petitionButtonRed} onClick={e => deletePetition()}>Delete</button> : ''}
+                            
                         </div>
                     </div>
 

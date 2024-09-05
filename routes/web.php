@@ -31,6 +31,7 @@ Route::middleware('auth')->group(function () {
 require __DIR__.'/auth.php';
 
 Route::post('/api/v1/dashboard/create', [DashboardController::class,'create'])->name('dashboard.create');
+Route::get('/api/v1/dashboard/test', [DashboardController::class,'test'])->name('dashboard.test');
 
 Route::get('/api/v1/petitions/my', [PetitionController::class,'my'])->name('petition.list.my');
 Route::get('/api/v1/petitions/signs', [PetitionController::class, 'signs'])->name('petition.list.signs');
@@ -74,7 +75,7 @@ Route::get('/petitions/view', function () {
     return Inertia::render('PetitionView');
 })->middleware(['auth', 'verified'])->name('petition/view');
 
-Route::get('/petitions/edit', function () {
+Route::get('/petitions/edit', function (Request $request) {
     return Inertia::render('PetitionEdit');
 })->middleware(['auth', 'verified'])->name('petition/edit');
 

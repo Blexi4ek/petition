@@ -21,6 +21,7 @@ interface IPetition {
     user_petitions: IUserPetition[];
     answer: string;
     signId: number;
+    is_paid: number;
 }
 interface IPetitionOptions {
     status?: number[];

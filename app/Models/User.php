@@ -8,11 +8,11 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
-
+    use HasFactory, Notifiable, HasRoles;
 
     const ROLE_GUEST = 0;   
     const ROLE_USER = 1;
@@ -54,6 +54,7 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
 
     public function createdPetitions(): HasMany
     {

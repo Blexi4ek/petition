@@ -22,7 +22,7 @@ return new class extends Migration
     public function up(): void
     {
         DB::statement('ALTER TABLE `petitions` 
-ADD COLUMN `paid_at` TIMESTAMP NULL AFTER `is_paid`;
+ADD COLUMN `payment_intent_id` VARCHAR(255) NULL AFTER `paid_at`;
         ');
     }
 
@@ -31,8 +31,9 @@ ADD COLUMN `paid_at` TIMESTAMP NULL AFTER `is_paid`;
      */
     public function down(): void
     {
-        DB::statement('ALTER TABLE `petitions` 
-DROP COLUMN `paid_at`;
+        DB::statement('ALTER TABLE `ALTER TABLE `petitions` 
+DROP COLUMN `payment_intent_id`;
+
 ');
     }
 };

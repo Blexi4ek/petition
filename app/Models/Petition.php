@@ -73,8 +73,7 @@ class Petition extends Base
                 'statusClass' => 'style.yellow',
                 'buttonClass' => 'style.buttonYellow',
                 'activeButtonClass' => 'style.activeButtonYellow',
-                'children' => [self::STATUS_DRAFT], 
-                'childrenAdmin' => [self::STATUS_DRAFT, self::STATUS_DECLINED, self::STATUS_ACTIVE],
+                'childrenAdmin' => [self::STATUS_DECLINED, self::STATUS_ACTIVE],
             ],
             self::STATUS_DECLINED => [
                 'label' => 'Declined',
@@ -232,8 +231,15 @@ class Petition extends Base
             ],
         ],
         self::PAYMENT => [
-            self::PAYMENT_ACTIVE => [ 'label' => 'Active', 'value' => self::PAYMENT_ACTIVE ],
-            self::PAYMENT_INACTIVE => [ 'label' => 'Inactive', 'value' => self::PAYMENT_INACTIVE ],
+            self::PAYMENT_ACTIVE => [
+                'label' => 'Petition is paid',
+                'value' => self::PAYMENT_ACTIVE,
+                'class' => 'style.petitionIsPaid'
+            ],
+            self::PAYMENT_INACTIVE => [
+                'label' => 'Petition is not paid',
+                'value' => self::PAYMENT_INACTIVE,
+                'class' => 'style.petitionIsNotPaid'],
         ],
     ];
 

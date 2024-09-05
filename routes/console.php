@@ -46,9 +46,10 @@ Schedule::call(function () {
         ->whereRaw('users.payment_method_id IS NOT NULL')->get()->all();
     
     foreach($petitions as $petition) {  
-        createPaymentIntent($petition->userCreator->customer_id, 1000, ['type' => 'petition_charge', 'petition_id' => strval($petition->id), 'creator_id' => strval($petition->id)]);
+        $paymentIntent = createPaymentIntent($petition->userCreator->customer_id, 1000, ['type' => 'petition_charge', 'petition_id' => strval($petition->id), 'creator_id' => strval($petition->id)]);
         $petition->is_paid = Petition::PAYMENT_ACTIVE;
         $petition->paid_at = date('Y-m-d H:i:s');
+        $petition->payment_intent_id = $paymentIntent->id;
         $petition->save();
     }
 
@@ -65,8 +66,9 @@ Schedule::call(function () {
             }
             foreach ($petition->userPetitions as $userPetition) {
                 if (!empty($userPetition->user->customer_id) && !empty($userPetition->user->payment_method_id)) {
-                    createPaymentIntent($userPetition->user->customer_id, $amount, ['type' => 'sign_charge', 'petition_id' => strval($petition->id), 'user_id' => strval($userPetition->user_id)]);
+                    $paymentIntent = createPaymentIntent($userPetition->user->customer_id, $amount, ['type' => 'sign_charge', 'petition_id' => strval($petition->id), 'user_id' => strval($userPetition->user_id)]);
                     $userPetition->paid_at = date('Y-m-d H:i:s');
+                    $userPetition->payment_intent_id = $paymentIntent->id;
                     $userPetition->save();
                 }
             }
@@ -74,5 +76,5 @@ Schedule::call(function () {
             $petition->save();
         }
     }
-})->everyMinute();
+})->name('charge')->withoutOverlapping(5)->everyMinute();
 

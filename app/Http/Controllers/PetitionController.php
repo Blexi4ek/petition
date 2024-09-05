@@ -154,47 +154,58 @@ class PetitionController extends Controller
     }
 
     public function response(Request $request)
-    { 
-        $user = $request->user()->getAttributes();
+    {
+        $user = $request->user();
+        $user = $user->getAttributes();
         $query = Petition::with(['userCreator']);
         $query->where(['answered_by' => Auth::id()]);
         $query->whereIn('status', Petition::itemAlias('pages_dropdown', $user['role_id'], Petition::PAGE_RESPONSE));
 
         $query = $this->base($request, $query);
+
         $petitions = $query->paginate(Petition::PER_PAGE);  
+
         return response()->json($petitions);
     }
 
     public function view(Request $request)
     { 
-        $query = Petition::with(['userCreator', 'userModerator', 'userPolitician', 'userPetitions.user']) ->where(['petitions.id' => $request->get('id')])->get()->first();
+        $query = Petition::with(['userCreator', 'userModerator', 'userPolitician', 'userPetitions.user'])->where(['petitions.id' => $request->get('id')])->get()->first();
         return response()->json(['data' => $query]);
     }
 
     public function delete(Request $request)
     {   
-        $result = Petition::where(['id' => $request->get('id')])->delete();
+        $petition = Petition::where(['id' => $request->get('id')])->get()->first();
+        if ($petition->created_by !== Auth::id() && Auth::user()->can('delete petitions')) {
+            return response()->json(['message' => 'User can not delete petitions', 'errors' => []]);
+        }
+        $result = $petition->delete();
         return response()->json($result);
     }
 
     public function edit(Request $request) 
     {     
+        $user = Auth::user();
         $petition = new Petition();
         if ($id = $request->get('id')) {
             $petition = Petition::where(['id' => $id])->get()->first();
+            if (!is_null($petition->created_by) && $petition->created_by !== Auth::id() && !$user->can('edit petitions') && !$user->can('answer petitions')) {
+                return response()->json(['message' => 'User can not edit petitions', 'errors' => []]);
+            }
         }
         if ($request->isMethod('POST')) {
             $data = $request->all();
-
-
             if ($request->get('status') == Petition::STATUS_ANSWER_YES || $request->get('status') == Petition::STATUS_ANSWER_NO) {
                 $request->validate($petition->validationScenarios['answerValidation']);
-                if($id) {
-                    $petition->update(['status' => $request->get('status'),
-                    'answer' => $request->get('answer'),
-                    'answered_by' => Auth::id(),
-                    'answered_at' => Carbon::now()]);
-                } else return response()->json($petition);
+                if ($id) {
+                    if ($user->can('answer petitions')) {
+                        $response = $this->status($request);
+                        return response()->json($response);
+                    } else {
+                        return response()->json(['message' => 'No permission', 'errors' => ['User can not answer petitions']]);
+                    }
+                } else return response()->json(['message' => 'Petition not found']);
 
             } else {
                 $request->validate($petition->validationScenarios['createUpdateValidation']);
@@ -226,28 +237,46 @@ class PetitionController extends Controller
     public function status(Request $request)
     {
         $petition = Petition::where(['id' => $request->get('petition_id')]);
-        $petition->update(['status' => $request->get('status')]);
-
+        
         if ($request->get('status') == Petition::STATUS_UNMODERATED) {
+            $petition->update(['status' => $request->get('status')]);
             $petition->update(['moderating_started_at' => Carbon::now()]);
-        }
-
-        if ($request->get('status') == Petition::STATUS_ACTIVE) {
-            $petition->update(['moderated_by' => Auth::id(), 'activated_at' => Carbon::now()]);
+            return response()->json(['message' => 'Status changed successfully']);
         }
 
         if ($request->get('status') == Petition::STATUS_DECLINED) {
-            $petition->update(['declined_at' => Carbon::now()]);
+            if (Auth::user()->can('unmoderated2declined petitions')) {
+                $petition->update(['status' => $request->get('status')]);
+                $petition->update(['moderated_by' => Auth::id(), 'declined_at' => Carbon::now()]);
+                return response()->json(['message' => 'Status changed successfully: "Declined"']);
+            } else return response()->json(['message' => 'No permission to change status: "Declined"' ]);
         }
 
-        if ($request->get('status') == Petition::STATUS_SUPPORTED) {
-            $petition->update(['supported_at' => Carbon::now()]);
+        if ($request->get('status') == Petition::STATUS_ACTIVE) {
+            if (Auth::user()->can('unmoderated2active petitions')) {
+                $petition->update(['status' => $request->get('status')]);
+                $petition->update(['moderated_by' => Auth::id(), 'activated_at' => Carbon::now()]);
+                return response()->json(['message' => 'Status changed successfully: "Active"']);
+            } else return response()->json(['message' => 'No permission to change status: "Active"' ]);
         }
 
-        if ($request->get('status') == Petition::STATUS_WAITING_ANSWER) {
-            $petition->update(['answering_started_at' => Carbon::now()]);
+        if ($request->get('status') == Petition::STATUS_ANSWER_YES) {
+            if (Auth::user()->can('answer_required2answer_yes petitions')) {
+                $petition->update(['status' => $request->get('status')]);
+                $petition->update(['answered_by' => Auth::id(), 'answered_at' => Carbon::now()]);
+                return response()->json(['message' => 'Status changed successfully: "Answer_yes"']);
+            } else return response()->json(['message' => 'No permission to change status: "Answer_yes"' ]);
         }
-        
+
+        if ($request->get('status') == Petition::STATUS_ANSWER_NO) {
+            if (Auth::user()->can('answer_required2answer_no petitions')) {
+                $petition->update(['status' => $request->get('status')]);
+                $petition->update(['answered_by' => Auth::id(), 'answered_at' => Carbon::now()]);
+                return response()->json(['message' => 'Status changed successfully: "Answer_no"']);
+            } else return response()->json(['message' => 'No permission to change status: "Answer_no"' ]);
+        }
+
+        return response()->json(['message' => 'Wrong status provided']);
     }
 
     public function staticProperties()

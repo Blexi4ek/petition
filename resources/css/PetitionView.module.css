@@ -1,3 +1,26 @@
+.headerBox {
+    display: flex;
+    justify-content: space-between;
+}
+
+.petitionIsPaid{
+    background-color: lightblue;
+    color: white;
+    font-size: large;
+    border-radius: 15px;
+    padding: 2px;
+    margin-right: 10px;
+}
+
+.petitionIsNotPaid{
+    border: 2px solid red;
+    font-size: large;
+    border-radius: 15px;
+    padding: 2px;
+    margin-right: 10px;
+}
+
+
 .topBox {
     margin: 30px;
     display: flex;
@@ -81,7 +104,7 @@
 
 .signBox {
     margin: 30px;
-    width: 400px;
+    width: 40%;
     padding: 20px;
     display: flex;
     flex-direction: column;
@@ -95,13 +118,8 @@
 }
 
 .signName {
-    padding-right: 50px;
     font-size: 18px;
-}
-
-.signInnerBox {
-    display: flex;
-    justify-content: space-between;
+    text-align: left;
 }
 
 .black {

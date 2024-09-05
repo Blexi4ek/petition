@@ -28,9 +28,10 @@ export default function PetitionEdit({ auth }: PageProps) {
         if (queryId) {
             const fetchPetitions = async () => {
                 const {data:response} = await axios('/api/v1/petitions/edit', {params: {id: queryId}})
-                if(!response.name) { 
+                if(!response.name || (auth.user.id !== response.created_by && auth.user.role_id !== 2 /*not admin*/)) { 
                     router.get('/petitions')
                 }
+                console.log(response)
                 setPetition(response)
                 setName(response.name)
                 setDescription(response.description)

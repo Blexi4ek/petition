@@ -24,10 +24,16 @@ export default function PetitionView({ auth }: PageProps) {
     useEffect(() => {
         const fetchPetitions = async () => {
             const {data:response} = await axios('/api/v1/petitions/view', {params: {id: queryId}})
+            if(response.data === null || 
+                (properties?.editButton.includes(response.data.status) &&
+                (auth.user.id !== response.data.created_by && auth.user.role_id !== 2 /*not admin*/))) { 
+                router.get('/petitions')
+            }
+            console.log(response.data)
             setPetition(response.data)
         }   
         fetchPetitions()
-    },[refresh])
+    },[refresh, properties])
 
     const handleEditButton = () => {
         router.get('/petitions/edit', {id: petition?.id})
@@ -50,12 +56,20 @@ export default function PetitionView({ auth }: PageProps) {
     return (
         <AuthenticatedLayout
             user={auth.user}
-            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">
-                <span className={eval(properties?.status[petition?.status || 1].statusClass || '')}>{properties?.status[petition?.status || 1].label}</span> {' '}
-                {petition ? petition.name : 'Loading'}</h2>}>
+            header={
+                <div className={style.headerBox}>
+                    <h2 className="font-semibold text-xl text-gray-800 leading-tight">
+                        <span className={eval(properties?.status[petition?.status || 1].statusClass || '')}>{properties?.status[petition?.status || 1].label}</span> {' '}
+                        {petition ? petition.name : 'Loading'}
+                    </h2> 
+                    <h3 className={petition? eval(properties?.payment[petition.is_paid].class || ''): ''}>
+                        {petition? properties?.payment[petition?.is_paid].label : ''}
+                    </h3>
+                    
+                </div>
+            }>
                 
             <Head title="Petition" />
-
                 <div className={style.topBox}>
                     <div className={style.descriptionBox}>
                         <span className={style.descriptionText}>{petition ? petition.description : 'loading'}</span> 
@@ -117,7 +131,7 @@ export default function PetitionView({ auth }: PageProps) {
                             Given answer:
                         </span>
                         <div className={style.answerBox}>
-                            {petition.answer}
+                            {petition.answer? petition.answer : 'Error: no answer found'}
                         </div> 
                     </div>
                     : '' : ''
@@ -125,19 +139,17 @@ export default function PetitionView({ auth }: PageProps) {
 
                 <div className={style.signBox}>
                     <h1 className={style.signHeader}>Petition signed by:</h1>
-                    <div>
+                    <table>
                         { petition?.user_petitions?.map((item) => 
-                            <div className={style.signInnerBox} key={item.id}>
-                                
-                                <span>{item.user.id}. </span>
-                                    <span className={style.signName}>
-                                        {item.user.name}
-                                    </span>
-                                    
-                                at: {(moment(Number(item.created_at) * 1000)).format(dateFormat)}
-                            </div>
+                            <tr key={item.id}>
+                                <td style={{width: '10%'}}>{item.user.id}. </td>
+                                <td className={style.signName} align='left'>
+                                    {item.user.name}
+                                </td> 
+                                <td align='right'>at: {(moment(Number(item.created_at) * 1000)).format(dateFormat)}</td>
+                            </tr>
                         )}
-                    </div>
+                    </table>
                 </div>
                 
 

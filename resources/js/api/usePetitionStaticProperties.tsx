@@ -37,8 +37,11 @@ export interface IPetitionStaticProperties {
     editButton: number[],
     minimum_signs: number,
     payment: {
-        label: string,
-        value: number
+        [key: number]: {
+            label: string,
+            value: number,
+            class: string
+        }
     }
 }
 

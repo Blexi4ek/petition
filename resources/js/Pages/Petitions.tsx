@@ -92,7 +92,8 @@ export default function Petitions({ auth }: PageProps) {
 
     useMemo(()=> {
         const fetchPetitions = async () => {
-            const {data: response} = await axios(`/api/v1${window.location.pathname}`, {params: {
+            const {data: response} = await axios(`/api/v1${window.location.pathname}`, {
+                params: {
                 page, 
                 petitionStatus:petitionOptions.status, 
                 petitionQ:petitionOptions.name,
@@ -106,6 +107,7 @@ export default function Petitions({ auth }: PageProps) {
                 petitionUserSearchRole: petitionOptions.userSearchRole,
                 petitionUserSearchAnd: petitionOptions.userSearchAnd,
             }});
+
             setTotalPages(response.last_page)
             setPetitions(response.data)
         }
@@ -267,7 +269,7 @@ export default function Petitions({ auth }: PageProps) {
 
             </div>
 
-            {petitions.map((item) => <PetitionItem petition={item} status={properties?.status} properties={properties}
+            {petitions.map((item) => <PetitionItem user={auth.user} petition={item} status={properties?.status} properties={properties}
             key={item.id} refresh={() => handleRefresh()}/>)}
 
             <div
