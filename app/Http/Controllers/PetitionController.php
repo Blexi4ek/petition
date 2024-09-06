@@ -5,13 +5,15 @@ namespace App\Http\Controllers;
 use App\Models\Petition;
 use App\Models\UserPetition;
 use App\Models\User;
+
 use Auth;
 use Illuminate\Http\Response;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Database\Query\JoinClause;
-use Illuminate\Database\Eloquent\Builder;     
+use Illuminate\Database\Eloquent\Builder; 
+  
 
 class PetitionController extends Controller 
 {
@@ -221,7 +223,7 @@ class PetitionController extends Controller
         return response()->json($petition);
     }
 
-    public function sign(Request $request)
+    public function sign($request)
     {
         $validation = UserPetition::where(['user_id' => Auth::id(), 'petition_id' => $request->get('petition_id')])->get()->first();
 
@@ -236,7 +238,7 @@ class PetitionController extends Controller
 
     public function status(Request $request)
     {
-        $petition = Petition::where(['id' => $request->get('petition_id')]);
+        $petition = Petition::where(['id' => $request->get('id')]);
         
         if ($request->get('status') == Petition::STATUS_UNMODERATED) {
             $petition->update(['status' => $request->get('status')]);
@@ -263,7 +265,7 @@ class PetitionController extends Controller
         if ($request->get('status') == Petition::STATUS_ANSWER_YES) {
             if (Auth::user()->can('answer_required2answer_yes petitions')) {
                 $petition->update(['status' => $request->get('status')]);
-                $petition->update(['answered_by' => Auth::id(), 'answered_at' => Carbon::now()]);
+                $petition->update(['answered_by' => Auth::id(), 'answered_at' => Carbon::now(), 'answer' => $request->get('answer')]);
                 return response()->json(['message' => 'Status changed successfully: "Answer_yes"']);
             } else return response()->json(['message' => 'No permission to change status: "Answer_yes"' ]);
         }
@@ -271,7 +273,7 @@ class PetitionController extends Controller
         if ($request->get('status') == Petition::STATUS_ANSWER_NO) {
             if (Auth::user()->can('answer_required2answer_no petitions')) {
                 $petition->update(['status' => $request->get('status')]);
-                $petition->update(['answered_by' => Auth::id(), 'answered_at' => Carbon::now()]);
+                $petition->update(['answered_by' => Auth::id(), 'answered_at' => Carbon::now(), 'answer' => $request->get('answer')]);
                 return response()->json(['message' => 'Status changed successfully: "Answer_no"']);
             } else return response()->json(['message' => 'No permission to change status: "Answer_no"' ]);
         }

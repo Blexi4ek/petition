@@ -144,13 +144,15 @@ export default function PetitionView({ auth }: PageProps) {
                     <h1 className={style.signHeader}>Petition signed by:</h1>
                     <table>
                         { petition?.user_petitions?.map((item) => 
-                            <tr key={item.id}>
-                                <td style={{width: '10%'}}>{item.user.id}. </td>
-                                <td className={style.signName} align='left'>
-                                    {item.user.name}
-                                </td> 
-                                <td align='right'>at: {(moment(Number(item.created_at) * 1000)).format(dateFormat)}</td>
-                            </tr>
+                            <tbody key={item.id}>
+                                <tr>
+                                    <td style={{width: '10%'}}>{item.user.id}. </td>
+                                    <td className={style.signName} align='left'>
+                                        {item.user.name}
+                                    </td> 
+                                    <td align='right'>at: {(moment(Number(item.created_at) * 1000)).format(dateFormat)}</td>
+                                </tr>
+                            </tbody>
                         )}
                     </table>
                 </div>
