@@ -59,6 +59,9 @@ export default function PetitionView({ auth }: PageProps) {
             header={
                 <div className={style.headerBox}>
                     <h2 className="font-semibold text-xl text-gray-800 leading-tight">
+                        {petition? properties?.hasSigns.includes(petition.status) ?
+                        <span className={style.signCount}>{petition?.user_petitions.length}</span> : '' : ''}
+                        
                         <span className={eval(properties?.status[petition?.status || 1].statusClass || '')}>{properties?.status[petition?.status || 1].label}</span> {' '}
                         {petition ? petition.name : 'Loading'}
                     </h2> 

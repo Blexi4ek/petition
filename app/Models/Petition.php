@@ -146,6 +146,7 @@ class Petition extends Base
         'signButton' => [self::STATUS_ACTIVE, self::STATUS_SUPPORTED],
         'answer' => [self::STATUS_ANSWER_YES, self::STATUS_ANSWER_NO],
         'editButton' => [self::STATUS_DRAFT, self::STATUS_UNMODERATED, self::STATUS_DECLINED],
+        'hasSigns' => [self::STATUS_ACTIVE, self::STATUS_SUPPORTED, self::STATUS_UNSUPPORTED, self::STATUS_WAITING_ANSWER, self::STATUS_ANSWER_YES, self::STATUS_ANSWER_NO],
         'minimum_signs' => self::MINIMUM_SIGNS,
         'days' => self::DAYS,
         'userSearch' => [

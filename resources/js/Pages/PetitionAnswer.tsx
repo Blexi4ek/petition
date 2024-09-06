@@ -24,7 +24,7 @@ export default function PetitionAnswer ({ auth }: PageProps)  {
             const fetchPetitions = async () => {
                 const {data:response} = await axios('/api/v1/petitions/edit', {params: {id: queryId}})
                 setPetition(response)
-                if(response.status !== 7) router.get('/petitions')
+                if(![7,8,9].includes(response.status)) router.get('/petitions')
             }   
             fetchPetitions()
         } else router.get('/petitions')
@@ -37,7 +37,7 @@ export default function PetitionAnswer ({ auth }: PageProps)  {
     const handleAnswerClick = async (status:number) => {
         try {
             const {data:response} = await axios({method: 'post', url: '/api/v1/petitions/edit', params: { id: petition?.id, answer, status }})
-            router.get('/petitions/view', {id: response.id})
+            router.get('/petitions/view', {id: queryId})
         } catch (e : any) {
             let error = JSON.parse(e.request.response)
             setErrorMessage(error.errors)

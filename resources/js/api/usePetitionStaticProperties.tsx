@@ -35,6 +35,7 @@ export interface IPetitionStaticProperties {
     answer: number[],
     signButton: number[],
     editButton: number[],
+    hasSigns: number[],
     minimum_signs: number,
     payment: {
         [key: number]: {

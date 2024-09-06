@@ -115,7 +115,7 @@ class PetitionController extends Controller
     public function my(Request $request)
     { 
         $user = $request->user()->getAttributes();
-        $query = Petition::with(['userCreator']);
+        $query = Petition::with(['userCreator', 'userModerator', 'userPolitician']);
         $query->where(['created_by' => Auth::id()])
         ->whereIn('status', Petition::itemAlias('pages_dropdown', $user['role_id'], Petition::PAGE_MY));
 
@@ -127,7 +127,7 @@ class PetitionController extends Controller
     public function signs(Request $request)
     { 
         $user = $request->user()->getAttributes();
-        $query = Petition::with(['userCreator']);
+        $query = Petition::with(['userCreator', 'userModerator', 'userPolitician']);
         $query->whereIn('status', Petition::itemAlias('pages_dropdown', $user['role_id'], Petition::PAGE_SIGNS));
         $query = $this->base($request, $query);
         $query->where(['user_petition.user_id' => Auth::id()]);
@@ -139,7 +139,7 @@ class PetitionController extends Controller
     public function moderated(Request $request)
     { 
         $user = $request->user()->getAttributes();
-        $query = Petition::with(['userCreator']);
+        $query = Petition::with(['userCreator', 'userModerator', 'userPolitician']);
 
         $query->where(function(Builder $sub_query) use ($user) {
             $sub_query->where(['status' => 2])
@@ -157,7 +157,7 @@ class PetitionController extends Controller
     {
         $user = $request->user();
         $user = $user->getAttributes();
-        $query = Petition::with(['userCreator']);
+        $query = Petition::with(['userCreator', 'userModerator', 'userPolitician']);
         $query->where(['answered_by' => Auth::id()]);
         $query->whereIn('status', Petition::itemAlias('pages_dropdown', $user['role_id'], Petition::PAGE_RESPONSE));
 
@@ -190,7 +190,7 @@ class PetitionController extends Controller
         $petition = new Petition();
         if ($id = $request->get('id')) {
             $petition = Petition::where(['id' => $id])->get()->first();
-            if (!is_null($petition->created_by) && $petition->created_by !== Auth::id() && !$user->can('edit petitions') && !$user->can('answer petitions')) {
+            if (!$user || $petition->created_by !== Auth::id() && !$user->hasAnyPermission(['edit petitions', 'answer petitions'])) {
                 return response()->json(['message' => 'User can not edit petitions', 'errors' => []]);
             }
         }
