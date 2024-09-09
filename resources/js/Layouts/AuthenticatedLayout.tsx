@@ -6,7 +6,7 @@ import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
 import { Link } from '@inertiajs/react';
 import { User } from '@/types';
 
-export default function Authenticated({ user, header, children }: PropsWithChildren<{ user: User, header?: ReactNode }>) {
+export default function Authenticated({ user, permissions, header, children }: PropsWithChildren<{ user: User, permissions: {name: string} [], header?: ReactNode }>) {
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
 
     return (
@@ -33,23 +33,19 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                                 </NavLink>
                             </div>
 
-                            {user.role_id === 1 || user.role_id === 2 ? 
-                                <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                                    <NavLink href={route('petitions/my')} active={route().current('petitions/my')}>
-                                        My petitions
-                                    </NavLink>
-                                </div> : ''
-                            }
-
-                            {user.role_id === 1 || user.role_id === 2 ? 
+                            <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                                <NavLink href={route('petitions/my')} active={route().current('petitions/my')}>
+                                    My petitions
+                                </NavLink>
+                            </div> 
+                            
                                 <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                                     <NavLink href={route('petitions/signs')} active={route().current('petitions/signs')}>
                                         Signed petitions
                                     </NavLink>
-                                </div> : ''
-                            }
+                                </div> 
 
-                            {user.role_id === 2 ? 
+                            {permissions.map(item => item.name).includes('unmoderated2active petitions') ? 
                                 <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                                     <NavLink href={route('petitions/moderated')} active={route().current('petitions/moderated')}>
                                         Moderated petitions
@@ -57,7 +53,7 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                                 </div> : ''
                             }
 
-                            {user.role_id === 2 ? 
+                            {permissions.map(item => item.name).includes('answer petitions') ? 
                                 <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                                     <NavLink href={route('petitions/response')} active={route().current('petitions/response')}>
                                         Responded petitions

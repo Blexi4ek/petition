@@ -26,7 +26,7 @@ export default function PetitionView({ auth }: PageProps) {
             const {data:response} = await axios('/api/v1/petitions/view', {params: {id: queryId}})
             if(response.data === null || 
                 (properties?.editButton.includes(response.data.status) &&
-                (auth.user.id !== response.data.created_by && auth.user.role_id !== 2 /*not admin*/))) { 
+                (auth.user.id !== response.data.created_by && !auth.permissions.map(item => item.name).includes('view petitions')))) { 
                 router.get('/petitions')
             }
             console.log(response.data)
@@ -56,6 +56,7 @@ export default function PetitionView({ auth }: PageProps) {
     return (
         <AuthenticatedLayout
             user={auth.user}
+            permissions={auth.permissions}
             header={
                 <div className={style.headerBox}>
                     <h2 className="font-semibold text-xl text-gray-800 leading-tight">
@@ -99,7 +100,7 @@ export default function PetitionView({ auth }: PageProps) {
                         </span> : '' : ''
                     }
 
-                    {auth.user.role_id === 2 ? petition ? petition.status === 7 ? 
+                    {auth.permissions.map(item => item.name).includes('answer petitions') ? petition ? petition.status === 7 ? 
                         <span style={{marginLeft: '30px'}}>
                             <PetitionButton text={'Give answer'} onClick={handleAnswerButton} /> 
                         </span> : '' : '' : ''
@@ -119,7 +120,7 @@ export default function PetitionView({ auth }: PageProps) {
                         : '' : ''
                     }
 
-                    {auth.user.role_id === 2 ? properties?.status[petition?.status || 1].childrenAdmin?.map((item,index) => 
+                    {auth.permissions.map(item => item.name).includes('unmoderated2active petitions') ? properties?.status[petition?.status || 1].childrenAdmin?.map((item,index) => 
                         <div key={index} style={{marginLeft: '30px'}}>
                             <PetitionButton text={properties.status[item].button} onClick={() => handleChangeStatusButton(item)} />
                         </div>

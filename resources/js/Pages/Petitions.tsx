@@ -196,6 +196,7 @@ export default function Petitions({ auth }: PageProps) {
     return (
         <AuthenticatedLayout
             user={auth.user}
+            permissions={auth.permissions}
             header={
                 <h2 className="font-semibold text-xl text-gray-800 leading-tight">
                     <span style={{marginRight: '50px'}}>Petitions</span>

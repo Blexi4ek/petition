@@ -21,6 +21,7 @@ export default function PetitionAnswer ({ auth }: PageProps)  {
 
     useEffect (() => {
         if(queryId) {
+            if(!auth.permissions.map(item => item.name).includes('answer petitions')) router.get('/petitions')
             const fetchPetitions = async () => {
                 const {data:response} = await axios('/api/v1/petitions/edit', {params: {id: queryId}})
                 setPetition(response)
@@ -47,6 +48,7 @@ export default function PetitionAnswer ({ auth }: PageProps)  {
 return (
     <AuthenticatedLayout 
         user={auth.user}
+        permissions={auth.permissions}
         header={<h1 className="font-semibold text-xl text-gray-800 leading-tight">{`Give answer to: "${petition?.name}"`}</h1>}>
 
     <Head title = 'Give answer'/>

@@ -329,5 +329,8 @@ class Petition extends Base
         return $this->hasMany(UserPetition::class, 'petition_id', 'id');
     }
 
-
+    public function images()
+    {
+        return $this->hasMany(Image::class, 'petition_id', 'id');
+    }
 }

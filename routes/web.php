@@ -4,6 +4,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PetitionController;
 use App\Http\Controllers\PetitionIdController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ImageController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -47,6 +48,9 @@ Route::post('/api/v1/petitions/sign', [PetitionController::class, 'sign'])->name
 Route::post('/api/v1/petitions/statusChange', [PetitionController::class, 'status'])->name('petition.status');
 Route::get('/api/v1/petitions/searchUser', [PetitionController::class, 'searchUser'])->name('petition.searchUser');
 Route::post('/api/v1/petitions/edit/pay', [PetitionController::class,'pay'])->name('petition.pay');
+
+Route::post('/api/v1/petitions/imageSave', [ImageController::class,'imageSave'])->name('petition.imageSave');
+Route::delete('/api/v1/petition/imageClear', [ImageController::class, 'imageClear'])->name('petition.imageClear');
 
 Route::get('/api/v1/profile/me', [ProfileController::class, 'me'])->name('profile.me');
 

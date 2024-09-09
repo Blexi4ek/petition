@@ -332,9 +332,8 @@ class PetitionController extends Controller
         
             return response()->json($paymentLinkUrl);
         }    
-
-        
-
     }   
+
+
     
 }   

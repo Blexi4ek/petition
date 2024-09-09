@@ -6,6 +6,8 @@ import axios from 'axios';
 import style from '../../css/PetitionEdit.module.css'
 import { PetitionButton } from '@/Components/Button/PetitionButton';
 import { loadStripe } from '@stripe/stripe-js';
+import { UploadImages } from '@/Components/UploadImages/UploadImages';
+import { ImageType } from 'react-images-uploading';
 
 interface IErrorMessage {
     name: string[],
@@ -21,6 +23,7 @@ export default function PetitionEdit({ auth }: PageProps) {
     const [name, setName] = useState('')
     const [description, setDescription] = useState('')
     const [errorMessage, setErrorMessage] = useState<IErrorMessage>()
+    const [images, setImages] = useState<any>([]);
 
     
 
@@ -28,7 +31,7 @@ export default function PetitionEdit({ auth }: PageProps) {
         if (queryId) {
             const fetchPetitions = async () => {
                 const {data:response} = await axios('/api/v1/petitions/edit', {params: {id: queryId}})
-                if(!response.name || (auth.user.id !== response.created_by && auth.user.role_id !== 2 /*not admin*/)) { 
+                if(!response.name || (auth.user.id !== response.created_by && !auth.permissions.map(item => item.name).includes('edit petitions'))) { 
                     router.get('/petitions')
                 }
                 console.log(response)
@@ -50,8 +53,24 @@ export default function PetitionEdit({ auth }: PageProps) {
 
     const handleEditClick = async (status:number) => {
         try {
-            const {data:response} = await axios({method: 'post', url: '/api/v1/petitions/edit', params: { id: petition?.id, name, description, status }})
-            router.get('/petitions/view', {id: response.id})
+            await axios({method: 'delete', url: '/api/v1/petition/imageClear', params: {id: petition?.id}})
+            const formData = new FormData();  
+            for (let i = 0; i < images.length; i++) {
+                formData.append('image', images[i].dataURL);
+                const resp = await axios.post('/api/v1/petitions/imageSave', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    },
+                    params: {
+                        id: petition?.id
+                    }
+                })
+                console.log(resp)
+            }
+            
+            const {data:response} = await axios({method: 'post', url: '/api/v1/petitions/edit', params: { id: petition?.id, name, description, status}})
+            
+            //router.get('/petitions/view', {id: response.id})
         } catch (e : any) {
             let error = JSON.parse(e.request.response)
             setErrorMessage(error.errors)
@@ -66,10 +85,11 @@ export default function PetitionEdit({ auth }: PageProps) {
     return (
         <AuthenticatedLayout
             user={auth.user}
+            permissions={auth.permissions}
             header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">{petition? `Edit "${petition.name}"` : 'Create new petition'}     </h2>}>
                 
             <Head title="Petition" />
-
+            <button onClick={() => console.log(auth.permissions)}>check</button>
             <div className={style.outerBox}>
 
                 <input className={style.editName} value={name} maxLength={100} onChange={e => handleNameChange(e) }/>
@@ -89,6 +109,8 @@ export default function PetitionEdit({ auth }: PageProps) {
                 </div>     
                 : '' 
                 }
+
+                <UploadImages images={images} setImages={setImages} />
 
                 <div className={style.editBox}>
                     <PetitionButton text={'Save as draft'} onClick={() => handleEditClick(1)} />
