@@ -26,7 +26,7 @@ class ImageController extends Controller
         $dataUri = [];
         $images = Image::where(['petition_id' => $request->get('id')])->get()->all();
         foreach ($images as $item) {
-            $image = storage_path().'/uploads/petitions/'.$request->get('id').'/'.$item->name;
+            $image = storage_path().'/uploads/petitions/images/'.$request->get('id').'/'.$item->name;
             $type = pathinfo($image, PATHINFO_EXTENSION);
             $data = file_get_contents($image);
             array_push($dataUri, 'data:image/' . $type . ';base64,' . base64_encode($data));
@@ -43,7 +43,7 @@ class ImageController extends Controller
         }
 
         if($petition) {
-            $path = strval(storage_path().'/uploads/petitions/'.$request->get('id').'/*');
+            $path = strval(storage_path().'/uploads/petitions/images/'.$request->get('id').'/*');
             $files = glob($path); 
             foreach($files as $file){ 
                 if(is_file($file)) {
@@ -64,7 +64,7 @@ class ImageController extends Controller
             return response()->json(['message' => 'User can not edit petitions', 'errors' => []]);
         }
 
-        $path = strval(storage_path().'/uploads/petitions/'.$request->get('id'));
+        $path = strval(storage_path().'/uploads/petitions/images'.$request->get('id'));
         if (!file_exists($path)) {
             mkdir($path, 0777, true);
         }
