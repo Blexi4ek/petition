@@ -22,8 +22,17 @@ use Carbon\Carbon;
 class ImageController extends Controller
 {
 
-    public function index(Request $request) {
+    public function image(Request $request) {
+        $dataUri = [];
+        $images = Image::where(['petition_id' => $request->get('id')])->get()->all();
+        foreach ($images as $item) {
+            $image = storage_path().'/uploads/petitions/'.$request->get('id').'/'.$item->name;
+            $type = pathinfo($image, PATHINFO_EXTENSION);
+            $data = file_get_contents($image);
+            array_push($dataUri, 'data:image/' . $type . ';base64,' . base64_encode($data));
+        }
 
+        return response()->json(['data' => $dataUri]);
     }
 
     public function imageClear(Request $request) {

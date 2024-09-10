@@ -190,6 +190,31 @@ export default function Petitions({ auth }: PageProps) {
         const handleRefresh = () => {
             setRefresh(!refresh)
         }
+
+        const handleDownloadCSV = async () => {
+            const {data: response} = await axios('/api/v1/petitions/csvDownload', {
+                params: {
+                    pool: pageName,
+                    page, 
+                    petitionStatus:petitionOptions.status, 
+                    petitionQ:petitionOptions.name,
+                    petitionCreatedAtFrom:petitionOptions.createdFrom,
+                    petitionCreatedAtTo: petitionOptions.createdTo,
+                    petitionActivatedAtFrom: petitionOptions.activatedFrom,
+                    petitionActivatedAtTo: petitionOptions.activatedTo,
+                    petitionAnsweredFrom: petitionOptions.answeredFrom,
+                    petitionAnsweredTo: petitionOptions.answeredTo,
+                    petitionUserIds: petitionOptions.users,
+                    petitionUserSearchRole: petitionOptions.userSearchRole,
+                    petitionUserSearchAnd: petitionOptions.userSearchAnd,
+            }})
+            console.log(response)
+            let anchor = document.createElement('a');
+            anchor.href = 'data:text/csv;charset=utf-8,' + encodeURI(response);
+            anchor.target = '_blank';
+            anchor.download = 'laptops.csv';
+            anchor.click();
+        }
     
 
 
@@ -201,6 +226,7 @@ export default function Petitions({ auth }: PageProps) {
                 <h2 className="font-semibold text-xl text-gray-800 leading-tight">
                     <span style={{marginRight: '50px'}}>Petitions</span>
                     <PetitionButton text={'Create new petition'} onClick={() => router.get('/petitions/edit')}/>
+                    <span style={{marginLeft: '30px'}}><PetitionButton text={'Download petitions'} onClick={handleDownloadCSV}/></span>
                 </h2>
             }
         >

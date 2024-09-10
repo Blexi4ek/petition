@@ -242,6 +242,13 @@ class Petition extends Base
                 'value' => self::PAYMENT_INACTIVE,
                 'class' => 'style.petitionIsNotPaid'],
         ],
+
+        'csvFields' => [
+            'id', 'name', 'description', 'status', 'created_at', 'updated_at', 'userCreator.name'
+        ],
+
+
+
     ];
 
 

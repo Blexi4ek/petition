@@ -25,16 +25,24 @@ export default function PetitionEdit({ auth }: PageProps) {
     const [errorMessage, setErrorMessage] = useState<IErrorMessage>()
     const [images, setImages] = useState<any>([]);
 
-    
-
     useEffect(() => {
         if (queryId) {
             const fetchPetitions = async () => {
                 const {data:response} = await axios('/api/v1/petitions/edit', {params: {id: queryId}})
+
+                //image view
+
+                // const {data:responseImages} = await axios('/api/v1/petitions/image', {params: {id: queryId}})
+                // let newImages:any = []
+                // responseImages.data.map(item => {
+                //     console.log(item)
+                //     newImages.push({dataURL: item})
+                // })
+                // setImages(newImages)
+
                 if(!response.name || (auth.user.id !== response.created_by && !auth.permissions.map(item => item.name).includes('edit petitions'))) { 
                     router.get('/petitions')
                 }
-                console.log(response)
                 setPetition(response)
                 setName(response.name)
                 setDescription(response.description)
@@ -65,12 +73,11 @@ export default function PetitionEdit({ auth }: PageProps) {
                         id: petition?.id
                     }
                 })
-                console.log(resp)
             }
             
             const {data:response} = await axios({method: 'post', url: '/api/v1/petitions/edit', params: { id: petition?.id, name, description, status}})
             
-            //router.get('/petitions/view', {id: response.id})
+            router.get('/petitions/view', {id: response.id})
         } catch (e : any) {
             let error = JSON.parse(e.request.response)
             setErrorMessage(error.errors)
@@ -89,7 +96,7 @@ export default function PetitionEdit({ auth }: PageProps) {
             header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">{petition? `Edit "${petition.name}"` : 'Create new petition'}     </h2>}>
                 
             <Head title="Petition" />
-            <button onClick={() => console.log(auth.permissions)}>check</button>
+            <button onClick={() => console.log(images)}>check</button>
             <div className={style.outerBox}>
 
                 <input className={style.editName} value={name} maxLength={100} onChange={e => handleNameChange(e) }/>
@@ -111,7 +118,6 @@ export default function PetitionEdit({ auth }: PageProps) {
                 }
 
                 <UploadImages images={images} setImages={setImages} />
-
                 <div className={style.editBox}>
                     <PetitionButton text={'Save as draft'} onClick={() => handleEditClick(1)} />
                     <PetitionButton text={'Send to moderator'} onClick={() => handleEditClick(2)} />

@@ -48,7 +48,9 @@ Route::post('/api/v1/petitions/sign', [PetitionController::class, 'sign'])->name
 Route::post('/api/v1/petitions/statusChange', [PetitionController::class, 'status'])->name('petition.status');
 Route::get('/api/v1/petitions/searchUser', [PetitionController::class, 'searchUser'])->name('petition.searchUser');
 Route::post('/api/v1/petitions/edit/pay', [PetitionController::class,'pay'])->name('petition.pay');
+Route::get('/api/v1/petitions/csvDownload', [PetitionController::class, 'csvDownload'])->name('petition.csvDownload');
 
+Route::get('/api/v1/petitions/image', [ImageController::class, 'image'])->name('petition.image');
 Route::post('/api/v1/petitions/imageSave', [ImageController::class,'imageSave'])->name('petition.imageSave');
 Route::delete('/api/v1/petition/imageClear', [ImageController::class, 'imageClear'])->name('petition.imageClear');
 

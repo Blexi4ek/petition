@@ -24,6 +24,7 @@ export default function PetitionView({ auth }: PageProps) {
     useEffect(() => {
         const fetchPetitions = async () => {
             const {data:response} = await axios('/api/v1/petitions/view', {params: {id: queryId}})
+
             if(response.data === null || 
                 (properties?.editButton.includes(response.data.status) &&
                 (auth.user.id !== response.data.created_by && !auth.permissions.map(item => item.name).includes('view petitions')))) { 
@@ -49,7 +50,7 @@ export default function PetitionView({ auth }: PageProps) {
     }
 
     const handleChangeStatusButton = async (statusId: number) => {
-        await axios('/api/v1/petitions/statusChange', {method:'post', params: {petition_id: petition?.id, status:statusId}})
+        await axios('/api/v1/petitions/statusChange', {method:'post', params: {id: petition?.id, status:statusId}})
         setRefresh(!refresh)
     }
 

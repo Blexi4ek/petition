@@ -13,7 +13,7 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Database\Eloquent\Builder; 
-  
+use \Laracsv\Export;
 
 class PetitionController extends Controller 
 {
@@ -131,8 +131,9 @@ class PetitionController extends Controller
         $user = $request->user()->getAttributes();
         $query = Petition::with(['userCreator', 'userModerator', 'userPolitician']);
         $query->whereIn('status', Petition::itemAlias('pages_dropdown', $user['role_id'], Petition::PAGE_SIGNS));
-        $query = $this->base($request, $query);
         $query->where(['user_petition.user_id' => Auth::id()]);
+        $query = $this->base($request, $query);
+        
         $petitions = $query->paginate(Petition::PER_PAGE);  
         return response()->json($petitions);
     }
@@ -140,7 +141,11 @@ class PetitionController extends Controller
 
     public function moderated(Request $request)
     { 
+        
         $user = $request->user()->getAttributes();
+        if (!$user->hasAnyPermission(['unmoderated2active petitions', 'unmoderated2declined petitions'])) {
+            return response()->json(['message' => 'User has no this permission']);
+        }
         $query = Petition::with(['userCreator', 'userModerator', 'userPolitician']);
 
         $query->where(function(Builder $sub_query) use ($user) {
@@ -159,6 +164,9 @@ class PetitionController extends Controller
     {
         $user = $request->user();
         $user = $user->getAttributes();
+        if (!$user->can('answer petitions')) {
+            return response()->json(['message' => 'User has no this permission']);
+        }
         $query = Petition::with(['userCreator', 'userModerator', 'userPolitician']);
         $query->where(['answered_by' => Auth::id()]);
         $query->whereIn('status', Petition::itemAlias('pages_dropdown', $user['role_id'], Petition::PAGE_RESPONSE));
@@ -238,7 +246,7 @@ class PetitionController extends Controller
 
     public function status(Request $request)
     {
-        $petition = Petition::where(['id' => $request->get('id')]);
+        $petition = Petition::where(['id' => $request->get('id')])->get()->first();
         
         if ($request->get('status') == Petition::STATUS_UNMODERATED) {
             $petition->update(['status' => $request->get('status')]);
@@ -334,6 +342,49 @@ class PetitionController extends Controller
         }    
     }   
 
+    public function csvDownload(Request $request) {
+        $user = $request->user()->getAttributes();
+        $query = Petition::with(['userCreator', 'userModerator', 'userPolitician']);
 
-    
+        $pool = $request->get('pool');
+        switch ($pool) {
+            case 'status_my': 
+                $query->where(['created_by' => Auth::id()])
+                ->whereIn('status', Petition::itemAlias('pages_dropdown', $user['role_id'], Petition::PAGE_MY)); 
+                break;
+            case 'status_signs': 
+                $query->whereIn('status', Petition::itemAlias('pages_dropdown', $user['role_id'], Petition::PAGE_SIGNS));
+                $query->where(['user_petition.user_id' => Auth::id()]); 
+                break;
+            case 'status_moderated':
+                if (!$user->hasAnyPermission(['unmoderated2active petitions', 'unmoderated2declined petitions'])) {
+                    return response()->json(['message' => 'User has no this permission']);
+                }
+                $query->where(function(Builder $sub_query) use ($user) {
+                    $sub_query->where(['status' => 2])
+                    ->orWhere(['status' => 3])
+                    ->orwhere(['moderated_by' => Auth::id()] )
+                    ->whereIn('status', Petition::itemAlias('pages_dropdown', $user['role_id'], Petition::PAGE_MODERATED));
+                }); 
+                break;
+            case 'status_response':
+                if (!$user->can('answer petitions')) {
+                    return response()->json(['message' => 'User has no this permission']);
+                }
+                $query->where(['answered_by' => Auth::id()]);
+                $query->whereIn('status', Petition::itemAlias('pages_dropdown', $user['role_id'], Petition::PAGE_RESPONSE)); 
+                break;
+        }
+
+        if (Auth::id()) {
+            $query->whereIn('status', Petition::itemAlias('pages_dropdown', $user['role_id'], Petition::PAGE_ALL));
+        } else {
+            $query->whereIn('status', Petition::itemAlias('pages_dropdown', User::ROLE_GUEST, Petition::PAGE_ALL));
+        }
+
+        $query = $this->base($request, $query);
+        $query = $query->get();
+        $csvExporter = new Export();
+        $csvExporter->build($query, Petition::itemAlias('csvFields'))->download('petitions.csv');
+    }
 }   

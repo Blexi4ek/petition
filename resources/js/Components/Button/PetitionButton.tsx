@@ -3,7 +3,7 @@ import style from './Button.module.css'
 
 interface IPetitionButtonProp {
     text: string;
-    onClick: () => void
+    onClick: () => void;
 }
 
 export const PetitionButton: FC<IPetitionButtonProp> = ({text, onClick}) => {
