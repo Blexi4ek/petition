@@ -61,6 +61,15 @@ export default function Authenticated({ user, permissions, header, children }: P
                                 </div> : ''
                             }
 
+                            {permissions.map(item => item.name).includes('change role') ? 
+                                <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                                    <NavLink href={route('petitions/users')} active={route().current('petitions/users')}>
+                                        User list
+                                    </NavLink>
+                                </div> : ''
+                            }
+
+
                         </div>
 
                         <div className="hidden sm:flex sm:items-center sm:ms-6">

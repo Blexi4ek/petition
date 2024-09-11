@@ -6,6 +6,13 @@ export interface User {
     role_id: number
     customer_id: string
     payment_method_id: string
+    created_at: Date
+    user_roles: Role[]
+}
+
+export interface Role {
+    id: number
+    name: string
 }
 
 export type PageProps<T extends Record<string, unknown> = Record<string, unknown>> = T & {

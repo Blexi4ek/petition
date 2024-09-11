@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PetitionController;
-use App\Http\Controllers\PetitionIdController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ImageController;
 use Illuminate\Foundation\Application;
@@ -57,6 +57,9 @@ Route::delete('/api/v1/petition/imageClear', [ImageController::class, 'imageClea
 
 Route::get('/api/v1/profile/me', [ProfileController::class, 'me'])->name('profile.me');
 
+Route::get('/api/v1/petitions/users', [UserController::class, 'index'])->name('petition.users');
+Route::get('/api/v1/petitions/users/roles', [UserController::class, 'roles'])->name('petition.roles');
+Route::get('/api/v1/petitions/users/roleChange', [UserController::class, 'roleChange'])->name('petition.roleChange');
 
 
 Route::get('/petitions', function () {
@@ -90,6 +93,10 @@ Route::get('/petitions/edit', function (Request $request) {
 Route::get('/petitions/answer', function () {
     return Inertia::render('PetitionAnswer');
 })->middleware(['auth', 'verified'])->name('petition/answer');
+
+Route::get('/petitions/users', function () {
+    return Inertia::render('UserList');
+})->middleware(['auth', 'verified'])->name('petitions/users');
 
 
 

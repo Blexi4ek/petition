@@ -143,7 +143,7 @@ class PetitionController extends Controller
     public function moderated(Request $request)
     { 
         
-        $user = $request->user()->getAttributes();
+        $user = $request->user();
         if (!$user->hasAnyPermission(['unmoderated2active petitions', 'unmoderated2declined petitions'])) {
             return response()->json(['message' => 'User has no this permission']);
         }
@@ -164,12 +164,11 @@ class PetitionController extends Controller
     public function response(Request $request)
     {
         $user = $request->user();
-        $user = $user->getAttributes();
         if (!$user->can('answer petitions')) {
             return response()->json(['message' => 'User has no this permission']);
         }
         $query = Petition::with(['userCreator', 'userModerator', 'userPolitician']);
-        $query->where(['answered_by' => Auth::id()]);
+        $query->where(['answered_by' => Auth::id()])->orWhere(['status' => Petition::STATUS_WAITING_ANSWER]);
         $query->whereIn('status', Petition::itemAlias('pages_dropdown', $user['role_id'], Petition::PAGE_RESPONSE));
 
         $query = $this->base($request, $query);
