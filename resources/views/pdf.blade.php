@@ -1,10 +1,14 @@
 <html>
-<body style="font-family:'Open Sans Condensed Light',Helvetica,Arial,sans-sherif;padding:20px 50px;font-size:18px">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    </head>
+
+<body style="font-family: DejaVu Sans;padding:20px 50px;font-size:18px">
 <div class="col-md-8 descr-block">
-    <p style="font-family: 'Open Sans Condensed Light', Helvetica, Arial, sans-serif; font-size: 36px; text-transform: uppercase;  ">
+    <p style="font-family: DejaVu Sans; font-size: 36px; text-transform: uppercase;  ">
         Заголовок петиції
     </p>
-    <p style ="font-family:'Open Sans Condensed'; ">
+    <p style ="font-family: DejaVu Sans; ">
         <strong>
             {{$petition['name']}}
         </strong>
@@ -24,14 +28,14 @@
         <span>Дата початку збору підписів:</span>
         <span>{{$date}}</span>
     </p>
-    <p style="font-family: 'Open Sans Condensed Light', Helvetica, Arial, sans-serif; font-size: 36px; text-transform: uppercase;  ">
+    <p style="font-family: DejaVu Sans; font-size: 36px; text-transform: uppercase;  ">
         Суть електронної петиції
     </p>
     <p>
         {{$petition['description']}}
     </p>
 
-    <p style="font-family: 'Open Sans Condensed Light', Helvetica, Arial, sans-serif; font-size: 36px; text-transform: uppercase;  ">
+    <p style="font-family: DejaVu Sans; font-size: 36px; text-transform: uppercase;  ">
         Відповідь
     </p>
     <p>

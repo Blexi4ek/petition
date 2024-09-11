@@ -60,16 +60,19 @@ export default function PetitionView({ auth }: PageProps) {
             permissions={auth.permissions}
             header={
                 <div className={style.headerBox}>
-                    <h2 className="font-semibold text-xl text-gray-800 leading-tight">
+                    <h2 className="font-semibold text-xl text-gray-800 leading-tight" style={{alignContent:'center'}}>
                         {petition? properties?.hasSigns.includes(petition.status) ?
                         <span className={style.signCount}>{petition?.user_petitions.length}</span> : '' : ''}
                         
                         <span className={eval(properties?.status[petition?.status || 1].statusClass || '')}>{properties?.status[petition?.status || 1].label}</span> {' '}
                         {petition ? petition.name : 'Loading'}
                     </h2> 
-                    <h3 className={petition? eval(properties?.payment[petition.is_paid].class || ''): ''}>
-                        {petition? properties?.payment[petition?.is_paid].label : ''}
-                    </h3>
+                    <div style={{display: 'flex', flexDirection:'row'}}>
+                        <h3 className={petition? eval(properties?.payment[petition.is_paid].class || ''): ''} style={{alignContent: 'center'}}>
+                            {petition? properties?.payment[petition?.is_paid].label : ''}
+                        </h3>
+                    </div>
+                    
                     
                 </div>
             }>

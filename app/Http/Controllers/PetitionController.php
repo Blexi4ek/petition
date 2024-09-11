@@ -14,7 +14,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Database\Eloquent\Builder; 
 use \Laracsv\Export;
-use Spatie\LaravelPdf\Facades\Pdf;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class PetitionController extends Controller 
 {
@@ -393,8 +393,8 @@ class PetitionController extends Controller
         $petition = Petition::with(['userCreator'])->where(['id' => $request->get('id')])->get()->first();
         $status = Petition::itemAlias('status', $petition->status, 'label');
 
-        Pdf::view('pdf', ['petition' => $petition, 'status' => $status, 'date' => Carbon::parse($petition->created_at)->format('d.m.Y h:i')])
-        ->format('A4')->save(storage_path()."/uploads/pdfs/$petition->name.pdf");
-        return view('pdf', ['petition' => $petition, 'status' => $status, 'date' => Carbon::parse($petition->created_at)->format('d.m.Y h:i')]);
+        $pdf = Pdf::loadView('pdf', ['petition' => $petition, 'status' => $status, 'date' => Carbon::parse($petition->created_at)->format('d.m.Y h:i')],);
+        $pdf->setOption(['defaultFont' => 'Open Sans Condensed Light']);
+        return response()->download($pdf->download('invoice.pdf'));
     }
 }   
