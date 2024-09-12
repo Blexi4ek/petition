@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use App\Policies\PetitionPolicy;
+use App\Policies\UserPolicy;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -19,6 +22,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Gate::define('view-petition', [PetitionPolicy::class, 'view']);
+        Gate::define('edit-petition', [PetitionPolicy::class, 'edit']);
+        Gate::define('delete-petition', [PetitionPolicy::class, 'delete']);
+        Gate::define('view-statistics', [UserPolicy::class, 'view']);
     }
 }

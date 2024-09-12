@@ -1,17 +1,18 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { PageProps, Role, User } from '@/types'
-import { Head, router } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
-import style from '../../css/UserLIst.module.css'
+import style from '../../css/UserList.module.css'
 import { PetitionButton } from '@/Components/Button/PetitionButton';
 import moment from 'moment';
 import dateFormat from '@/consts/dateFormat';
 import ReactPaginate from 'react-paginate';
 
-export default function PetitionAnswer ({ auth }: PageProps)  {
+export default function UserList ({ auth }: PageProps)  {
     
     const [users, setUsers] = useState<User[]>([])
+    const [userQ, setUserQ] = useState('')
     const [page, setPage] = useState(1)
     const [totalPages, setTotalPages] = useState(1)
     const [roles, setRoles] = useState<Role[]>([])
@@ -30,8 +31,7 @@ export default function PetitionAnswer ({ auth }: PageProps)  {
 
     useEffect(() => {
         const fetchUsers = async () => {
-            const {data:response} = await axios('/api/v1/petitions/users', {params: {page}})
-            console.log(response)
+            const {data:response} = await axios('/api/v1/petitions/users', {params: {page, userQ}})
             setUsers(response.data)
             setTotalPages(response.last_page)
         }
@@ -43,6 +43,12 @@ export default function PetitionAnswer ({ auth }: PageProps)  {
         setRefresh(!refresh)
     }
 
+    const handleinputUserQChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setUserQ(e.target.value)
+        setRefresh(!refresh)
+    }
+
+
 return (
     <AuthenticatedLayout 
         user={auth.user}
@@ -53,7 +59,8 @@ return (
 
     <div className={style.outerBox}>
     <h1 className={style.userHeader}>Users:</h1>
-        <div className={style.tableBox}>
+    <input value={userQ} onChange={handleinputUserQChange} placeholder='Search by name'/>
+        <div>
                 <table>
                     <thead>
                         <tr>
@@ -61,10 +68,10 @@ return (
                         </tr>
                     </thead>
 
-                    { users?.map((user) => 
-                        <tbody key={user.id}>
+                    { users?.map((user, index) => 
+                        <tbody key={user.id} style={index % 2 === 1 ? {backgroundColor: 'lightgray'} : {backgroundColor: 'white'}}>
                             <tr>
-                                <td style={{width: '10%'}}>{user.id}. </td>
+                                <td >{user.id}. </td>
                                 <td align='left'>
                                     {user.name}
                                 </td>
@@ -80,6 +87,9 @@ return (
                                             checked = { user.user_roles?.map(userRole => userRole.id).includes(role.id)  } onChange={() => handleRoleChange(role.name ,user.id)} />
                                         </span> 
                                     )}
+                                </td>
+                                <td>
+                                    <Link style={{marginLeft: '30px'}} href={route(`profile/statistics`, {id: user.id})}>Check user's statistic</Link>
                                 </td>
                             </tr>
                         </tbody>

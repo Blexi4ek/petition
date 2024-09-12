@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\UserPetition;
+use Gate;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -23,9 +25,9 @@ class UserController extends Controller
 {
     public function index (Request $request) {
         if(!Auth::user()->can('change role')) {
-            return response()->json(['message' => 'Has no permission to view user list']);
+            return response()->json(['message' => 'Have no permission to view user list']);
         }
-        $users = User::with('userRoles')->paginate(50);
+        $users = User::with('userRoles')->where('users.name', 'like', "%{$request->get('userQ')}%")->paginate(50);
         return response()->json($users);
     } 
 
@@ -36,7 +38,7 @@ class UserController extends Controller
 
     public function roleChange(Request $request) {
         if(!Auth::user()->can('change role')) {
-            return response()->json(['message' => 'Has no permission to change role']);
+            return response()->json(['message' => 'Have no permission to change role']);
         }
         $user = User::where(['id' => $request->get('id')])->first();
         $role = $request->get('role');
@@ -47,6 +49,23 @@ class UserController extends Controller
             $user->assignRole($role);
             return response()->json(['message' => "$user->name's role '$role' was successfully added"]);
         }
+    }
+
+    public function statistics(Request $request) {
+        $id = $request->get('id');
+        if(!Gate::allows('view-statistics', $id)) {
+            abort(403);
+        }
+        $user = User::where(['id' => $id])->first();
+        $createdStat = Petition::where(['created_by' => $id])->count();
+        $moderatedStat = Petition::where(['moderated_by' => $id])->count();
+        $respondedStat = Petition::where(['answered_by' => $id])->count();
+        $signedStat = UserPetition::where(['user_id' => $id])->count();
+        return response()->json(['createdCount' => $createdStat,
+        'moderatedCount' => $moderatedStat,
+        'respondedCount' => $respondedStat,
+        'signedCount' => $signedStat,
+        'user' => $user]);     
     }
 
 }

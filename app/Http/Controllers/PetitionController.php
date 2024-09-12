@@ -7,6 +7,7 @@ use App\Models\UserPetition;
 use App\Models\User;
 
 use Auth;
+use Gate;
 use Illuminate\Http\Response;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
@@ -165,7 +166,7 @@ class PetitionController extends Controller
     {
         $user = $request->user();
         if (!$user->can('answer petitions')) {
-            return response()->json(['message' => 'User has no this permission']);
+            return response()->json(['message' => 'User does not have this permission']);
         }
         $query = Petition::with(['userCreator', 'userModerator', 'userPolitician']);
         $query->where(['answered_by' => Auth::id()])->orWhere(['status' => Petition::STATUS_WAITING_ANSWER]);
@@ -180,15 +181,18 @@ class PetitionController extends Controller
 
     public function view(Request $request)
     { 
-        $query = Petition::with(['userCreator', 'userModerator', 'userPolitician', 'userPetitions.user'])->where(['petitions.id' => $request->get('id')])->get()->first();
-        return response()->json(['data' => $query]);
+        $petition = Petition::with(['userCreator', 'userModerator', 'userPolitician', 'userPetitions.user'])->where(['petitions.id' => $request->get('id')])->get()->first();
+        if(!Gate::allows('view-petition', $petition)) {
+            return response()->json(['message' => 'User can not view this petition', 'errors' => []]);
+        }
+        return response()->json(['data' => $petition]);
     }
 
     public function delete(Request $request)
     {   
         $petition = Petition::where(['id' => $request->get('id')])->get()->first();
-        if ($petition->created_by !== Auth::id() && Auth::user()->can('delete petitions')) {
-            return response()->json(['message' => 'User can not delete petitions', 'errors' => []]);
+        if(!Gate::allows('delete-petition', $petition)) {
+            return response()->json(['message' => 'User can not delete this petition', 'errors' => []]);
         }
         $result = $petition->delete();
         return response()->json($result);
@@ -200,8 +204,8 @@ class PetitionController extends Controller
         $petition = new Petition();
         if ($id = $request->get('id')) {
             $petition = Petition::where(['id' => $id])->get()->first();
-            if (!$user || $petition->created_by !== Auth::id() && !$user->hasAnyPermission(['edit petitions', 'answer petitions'])) {
-                return response()->json(['message' => 'User can not edit petitions', 'errors' => []]);
+            if (!Gate::allows('edit-petition', $petition)) {
+                return response()->json(['message' => 'User can not edit this petition', 'errors' => []]);
             }
         }
         if ($request->isMethod('POST')) {

@@ -61,19 +61,19 @@ export default function PetitionEdit({ auth }: PageProps) {
 
     const handleEditClick = async (status:number) => {
         try {
-            await axios({method: 'delete', url: '/api/v1/petition/imageClear', params: {id: petition?.id}})
-            const formData = new FormData();  
-            for (let i = 0; i < images.length; i++) {
-                formData.append('image', images[i].dataURL);
-                const resp = await axios.post('/api/v1/petitions/imageSave', formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data'
-                    },
-                    params: {
-                        id: petition?.id
-                    }
-                })
-            }
+            //await axios({method: 'delete', url: '/api/v1/petition/imageClear', params: {id: petition?.id}})
+            // const formData = new FormData();  
+            // for (let i = 0; i < images.length; i++) {
+            //     formData.append('image', images[i].dataURL);
+            //     const resp = await axios.post('/api/v1/petitions/imageSave', formData, {
+            //         headers: {
+            //             'Content-Type': 'multipart/form-data'
+            //         },
+            //         params: {
+            //             id: petition?.id
+            //         }
+            //     })
+            // }
             
             const {data:response} = await axios({method: 'post', url: '/api/v1/petitions/edit', params: { id: petition?.id, name, description, status}})
             

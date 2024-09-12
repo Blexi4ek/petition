@@ -60,6 +60,7 @@ Route::get('/api/v1/profile/me', [ProfileController::class, 'me'])->name('profil
 Route::get('/api/v1/petitions/users', [UserController::class, 'index'])->name('petition.users');
 Route::get('/api/v1/petitions/users/roles', [UserController::class, 'roles'])->name('petition.roles');
 Route::get('/api/v1/petitions/users/roleChange', [UserController::class, 'roleChange'])->name('petition.roleChange');
+Route::get('/api/v1/petitions/users/statistics', [UserController::class, 'statistics'])->name('petition.userStatistics');
 
 
 Route::get('/petitions', function () {
@@ -97,6 +98,10 @@ Route::get('/petitions/answer', function () {
 Route::get('/petitions/users', function () {
     return Inertia::render('UserList');
 })->middleware(['auth', 'verified'])->name('petitions/users');
+
+Route::get('/profile/statistics', function () {
+    return Inertia::render('UserStatistics');
+})->middleware(['auth', 'verified'])->name('profile/statistics');
 
 
 

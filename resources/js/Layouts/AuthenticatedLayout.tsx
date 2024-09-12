@@ -45,7 +45,7 @@ export default function Authenticated({ user, permissions, header, children }: P
                                     </NavLink>
                                 </div> 
 
-                            {permissions.map(item => item.name).includes('unmoderated2active petitions') ? 
+                            {permissions?.map(item => item.name).includes('unmoderated2active petitions') ? 
                                 <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                                     <NavLink href={route('petitions/moderated')} active={route().current('petitions/moderated')}>
                                         Moderated petitions
@@ -53,7 +53,7 @@ export default function Authenticated({ user, permissions, header, children }: P
                                 </div> : ''
                             }
 
-                            {permissions.map(item => item.name).includes('answer petitions') ? 
+                            {permissions?.map(item => item.name).includes('answer petitions') ? 
                                 <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                                     <NavLink href={route('petitions/response')} active={route().current('petitions/response')}>
                                         Responded petitions
@@ -61,7 +61,7 @@ export default function Authenticated({ user, permissions, header, children }: P
                                 </div> : ''
                             }
 
-                            {permissions.map(item => item.name).includes('change role') ? 
+                            {permissions?.map(item => item.name).includes('change role') ? 
                                 <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                                     <NavLink href={route('petitions/users')} active={route().current('petitions/users')}>
                                         User list
@@ -101,6 +101,7 @@ export default function Authenticated({ user, permissions, header, children }: P
 
                                     <Dropdown.Content>
                                         <Dropdown.Link href={route('profile.edit')}>Profile</Dropdown.Link>
+                                        <Dropdown.Link href={route(`profile/statistics`, {id: user.id})}>Statistic</Dropdown.Link>
                                         <Dropdown.Link href={route('logout')} method="post" as="button">
                                             Log Out
                                         </Dropdown.Link>
