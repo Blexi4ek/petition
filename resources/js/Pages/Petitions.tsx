@@ -191,9 +191,10 @@ export default function Petitions({ auth }: PageProps) {
             setRefresh(!refresh)
         }
 
-        const handleDownloadCSV = async () => {
+        const handleDownloadCSV = async (zip: boolean) => {
             const {data: response} = await axios('/api/v1/petitions/csvDownload', {
                 params: {
+                    zip,
                     pool: pageName,
                     page, 
                     petitionStatus:petitionOptions.status, 
@@ -208,12 +209,19 @@ export default function Petitions({ auth }: PageProps) {
                     petitionUserSearchRole: petitionOptions.userSearchRole,
                     petitionUserSearchAnd: petitionOptions.userSearchAnd,
             }})
-            console.log(response)
-            let anchor = document.createElement('a');
-            anchor.href = 'data:text/csv;charset=utf-8,' + encodeURI(response);
-            anchor.target = '_blank';
-            anchor.download = 'laptops.csv';
-            anchor.click();
+            if (response) {
+                let anchor = document.createElement('a');
+                anchor.target = '_blank';
+                if (zip) {
+                    anchor.href = 'data:application/zip;' + (response);
+                    anchor.download = 'petitions.zip';
+                } else {
+                    anchor.href = 'data:text/csv;charset=utf-8,' + encodeURI(response);
+                    anchor.download = 'petitions.csv';
+                }
+                anchor.click();
+            }
+            
         }
     
 
@@ -226,7 +234,8 @@ export default function Petitions({ auth }: PageProps) {
                 <h2 className="font-semibold text-xl text-gray-800 leading-tight">
                     <span style={{marginRight: '50px'}}>Petitions</span>
                     <PetitionButton text={'Create new petition'} onClick={() => router.get('/petitions/edit')}/>
-                    <span style={{marginLeft: '30px'}}><PetitionButton text={'Download petitions'} onClick={handleDownloadCSV}/></span>
+                    <span style={{marginLeft: '30px'}}><PetitionButton text={'Download petitions'} onClick={() => handleDownloadCSV(false)}/></span>
+                    <span style={{marginLeft: '30px'}}><PetitionButton text={'Download petitions in zip'} onClick={() => handleDownloadCSV(true)}/></span>
                 </h2>
             }
         >

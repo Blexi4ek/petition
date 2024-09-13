@@ -50,6 +50,8 @@ Route::get('/api/v1/petitions/searchUser', [PetitionController::class, 'searchUs
 Route::post('/api/v1/petitions/edit/pay', [PetitionController::class,'pay'])->name('petition.pay');
 Route::get('/api/v1/petitions/csvDownload', [PetitionController::class, 'csvDownload'])->name('petition.csvDownload');
 Route::get('/api/v1/petitions/pdf', [PetitionController::class, 'pdf'])->name('petition.pdf');
+Route::get('/api/v1/petitions/curl', [PetitionController::class, 'curl'])->name('petition.curl');
+Route::get('/api/v1/petitions/curlLaravel', [PetitionController::class, 'curlLaravel'])->name('petition.curlLaravel');
 
 Route::get('/api/v1/petitions/image', [ImageController::class, 'image'])->name('petition.image');
 Route::post('/api/v1/petitions/imageSave', [ImageController::class,'imageSave'])->name('petition.imageSave');

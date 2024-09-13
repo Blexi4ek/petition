@@ -8,6 +8,7 @@ use App\Models\User;
 
 use Auth;
 use Gate;
+use Http;
 use Illuminate\Http\Response;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
@@ -16,6 +17,8 @@ use Illuminate\Database\Query\JoinClause;
 use Illuminate\Database\Eloquent\Builder; 
 use \Laracsv\Export;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Storage;
+use ZipArchive;
 
 class PetitionController extends Controller 
 {
@@ -388,15 +391,59 @@ class PetitionController extends Controller
         $query = $this->base($request, $query);
         $query = $query->get();
         $csvExporter = new Export();
-        $csvExporter->build($query, Petition::itemAlias('csvFields'))->download('petitions.csv');
+        $csvExporter->build($query, Petition::itemAlias('csvFields'));
+        
+
+        if ($request->get('zip') === 'true') {
+            $csvWriter = $csvExporter->getWriter();
+            Storage::disk('local')->put('csv.csv', $csvWriter);
+
+            $zip = new ZipArchive;
+            $zipFileName = 'petitions.zip';
+
+            if ($zip->open(public_path($zipFileName), ZipArchive::CREATE) === TRUE) {
+
+                $zip->addFile(storage_path().'/app/csv.csv', 'petitions');
+                $zip->close();
+
+                return response()->download(public_path($zipFileName))->deleteFileAfterSend();
+            } else {
+                return "Failed to create the zip file.";
+            }
+        } else {
+            $csvExporter->download('petitions.csv');
+        }
+        
+        
     }
 
     public function pdf(Request $request) {
+
         $petition = Petition::with(['userCreator'])->where(['id' => $request->get('id')])->get()->first();
         $status = Petition::itemAlias('status', $petition->status, 'label');
 
         $pdf = Pdf::loadView('pdf', ['petition' => $petition, 'status' => $status, 'date' => Carbon::parse($petition->created_at)->format('d.m.Y h:i')],);
         $pdf->setOption(['defaultFont' => 'Open Sans Condensed Light']);
         return response()->download($pdf->download('invoice.pdf'));
+    }
+
+    public function curl(Request $request) {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, 'https://api.airport.happydmitry.com/airports/locationsPrice/OZH,WRO/2250/1');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        $headers = array();
+        $headers[] = 'Content-Type: application/x-www-form-urlencoded';
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+        $result = curl_exec($ch);
+        if (curl_errno($ch)) {
+            echo 'Error:' . curl_error($ch);
+        }
+        curl_close($ch);
+        return $result;
+    }
+    public function curlLaravel (Request $request) {
+        $response = Http::get('https://api.airport.happydmitry.com/airports/locationsPrice/OZH,WRO/2250/1');
+        return response()->json($response->json());
     }
 }   
