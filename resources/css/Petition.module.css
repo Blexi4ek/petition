@@ -56,6 +56,13 @@
     width: 1000px;
 }
 
-
+@media screen and (max-width: 600px) {
+    .statusBox{
+        flex-wrap: wrap;
+    }
+    .optionBox{
+        flex-wrap: wrap;
+    }
+}
 
 

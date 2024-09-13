@@ -152,7 +152,6 @@ class PetitionController extends Controller
 
         $query->where(function(Builder $sub_query) use ($user) {
             $sub_query->where(['status' => 2])
-            ->orWhere(['status' => 3])
             ->orwhere(['moderated_by' => Auth::id()] )
             ->whereIn('status', Petition::itemAlias('pages_dropdown', $user['role_id'], Petition::PAGE_MODERATED));
         });
