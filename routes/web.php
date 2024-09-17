@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\PageController;
 use App\Http\Controllers\PetitionController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProfileController;
@@ -85,9 +86,7 @@ Route::get('/petitions/response', function () {
     return Inertia::render('Petitions');
 })->middleware(['auth', 'verified'])->name('petitions/response');
 
-Route::get('/petitions/view', function () {
-    return Inertia::render('PetitionView');
-})->middleware(['auth', 'verified'])->name('petition/view');
+Route::get('/petitions/view', [PageController::class, 'view'])->middleware(['auth', 'verified'])->name('petition/view');
 
 Route::get('/petitions/edit', function (Request $request) {
     return Inertia::render('PetitionEdit');

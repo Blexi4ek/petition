@@ -1,50 +1,8 @@
+import { IPetitionStaticProperties } from "@/types";
 import axios from "axios";
 import { useEffect, useState } from "react";
 
-export interface IPetitionStatus {
-    [key: string]: {
-        label: string,
-        button: string,
-        value: number,
-        statusClass: string,
-        buttonClass: string,
-        activeButtonClass: string,
-        children: number[],
-        childrenAdmin: number[]
-    }
-}
 
-export interface IPetitionStaticProperties {
-    status: IPetitionStatus,
-    userSearch:  {
-        label: string,
-        button: string,
-        value: number,
-        statusClass: string,
-        buttonClass: string,
-        activeButtonClass: string,
-        children: number[],
-        childrenAdmin: number[]
-    } [],
-    userSearchCondition: IPetitionStatus,
-    pages_dropdown: {
-        [key: number]: {
-            [key: string]: number[];
-        }
-    }
-    answer: number[],
-    signButton: number[],
-    editButton: number[],
-    hasSigns: number[],
-    minimum_signs: number,
-    payment: {
-        [key: number]: {
-            label: string,
-            value: number,
-            class: string
-        }
-    }
-}
 
 function usePetitionStaticProperties() { 
 

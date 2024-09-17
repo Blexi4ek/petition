@@ -4,8 +4,8 @@ import axios from 'axios';
 import moment from 'moment';
 import dateFormat from '@/consts/dateFormat';
 import { router } from '@inertiajs/react';
-import { IPetitionStaticProperties, IPetitionStatus } from '@/api/usePetitionStaticProperties';
-import { User } from '@/types';
+
+import { IPetitionStaticProperties, IPetitionStatus, User } from '@/types';
 
 interface IPetitionProp {
     user: User
